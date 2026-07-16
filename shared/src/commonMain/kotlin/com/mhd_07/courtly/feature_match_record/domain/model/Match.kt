@@ -1,0 +1,111 @@
+package com.mhd_07.courtly.feature_match_record.domain.model
+
+import com.mhd_07.courtly.feature_match_record.domain.usecase.Command
+import kotlin.time.Clock
+import kotlin.time.Instant
+
+
+data class Match(
+    val teamLeft: Team,
+    val teamRight: Team,
+    val type: MatchType,
+    val location: String,
+    val dateTime: Instant = Clock.System.now(),
+    val status: MatchStatus,
+    val timeline: List<Command>
+) {
+    fun teamRightScore(): Match =
+        copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.next()))
+
+    fun teamLeftScore(): Match =
+        copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.next()))
+
+    fun teamRightDescore(): Match =
+        copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.prev()))
+
+    fun teamLeftDescore(): Match =
+        copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.prev()))
+
+//    fun transfer(index: Int, from: Side): Match {
+//        if (index >= (if (from == Side.TeamRight) teamRight else teamLeft).players.size)
+//            return this
+//        val player =
+//            if (from == Side.TeamRight) teamRight.players[index] else teamLeft.players[index]
+//        val right =
+//            if (from == Side.TeamRight) teamRight.players - player else teamRight.players + player
+//        val left =
+//            if (from == Side.TeamRight) teamLeft.players + player else teamLeft.players - player
+//        return copy(
+//            teamRight = teamRight.copy(players = right),
+//            teamLeft = teamLeft.copy(players = left)
+//        )
+//    }
+
+    fun handlePlayers(): Match {
+        val right = teamRight.players
+        val left = teamLeft.players
+
+        val fieldCap = if (type == MatchType.Double) 2 else 1
+
+        val rightN = right.mapIndexed { index, player ->
+            if (index + 1 <= fieldCap)
+                player.copy(bench = false)
+            else
+                player.copy(bench = true)
+        }
+        val leftN = left.mapIndexed { index, player ->
+            if (index + 1 <= fieldCap)
+                player.copy(bench = false)
+            else
+                player.copy(bench = true)
+        }
+
+        return copy(
+            teamRight = teamRight.copy(players = rightN),
+            teamLeft = teamLeft.copy(players = leftN)
+        )
+    }
+
+    fun sub(from: Side, to: Side, fromIndex: Int, toIndex: Int?): Match {
+        val fromTeam = (if (from == Side.TeamRight) teamRight else teamLeft).players.toMutableList()
+        val toTeam = (if (to == Side.TeamRight) teamRight else teamLeft).players.toMutableList()
+
+        if (fromIndex >= fromTeam.size)
+            return this
+        if (toIndex != null && toIndex >= toTeam.size)
+            return this
+
+        return if (from == to) {
+            val player1 = fromTeam[fromIndex]
+            val player2 = fromTeam[toIndex!!]
+            fromTeam[fromIndex] = player2
+            fromTeam[toIndex] = player1
+            if (from == Side.TeamRight)
+                copy(teamRight = teamRight.copy(players = fromTeam))
+            else
+                copy(teamLeft = teamLeft.copy(players = fromTeam))
+        } else {
+            val player1 = fromTeam[fromIndex]
+            if (toIndex == null) {
+                fromTeam.removeAt(fromIndex)
+                toTeam.add(player1)
+            } else {
+                val player2 = toTeam[toIndex]
+                toTeam[toIndex] = player1
+                fromTeam[fromIndex] = player2
+            }
+
+            if (from == Side.TeamRight)
+                copy(
+                    teamRight = teamRight.copy(players = fromTeam),
+                    teamLeft = teamLeft.copy(players = toTeam)
+                )
+            else
+                copy(
+                    teamLeft = teamLeft.copy(players = fromTeam),
+                    teamRight = teamRight.copy(players = toTeam)
+                )
+        }
+    }
+
+}
