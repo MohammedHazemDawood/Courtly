@@ -1,8 +1,8 @@
-package com.mhd_07.courtly.feature_match_record.domain.model
+package com.mhd_07.courtly.core.domain.model
 
+import com.mhd_07.courtly.feature_match_record.domain.model.MatchIntent
 import kotlin.time.Clock
 import kotlin.time.Instant
-
 
 data class Match(
     val teamLeft: Team,

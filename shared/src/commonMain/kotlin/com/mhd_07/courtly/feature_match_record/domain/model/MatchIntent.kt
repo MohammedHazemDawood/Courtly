@@ -1,5 +1,8 @@
 package com.mhd_07.courtly.feature_match_record.domain.model
 
+import com.mhd_07.courtly.core.domain.model.Score
+import com.mhd_07.courtly.core.domain.model.Side
+
 sealed interface MatchIntent {
 
     sealed interface TimelineIntent : MatchIntent {

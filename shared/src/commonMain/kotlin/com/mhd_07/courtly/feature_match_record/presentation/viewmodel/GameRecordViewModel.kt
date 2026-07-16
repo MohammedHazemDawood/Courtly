@@ -2,12 +2,12 @@ package com.mhd_07.courtly.feature_match_record.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.mhd_07.courtly.feature_match_record.domain.model.Match
+import com.mhd_07.courtly.core.domain.model.Match
 import com.mhd_07.courtly.feature_match_record.domain.model.MatchIntent
-import com.mhd_07.courtly.feature_match_record.domain.model.MatchStatus
-import com.mhd_07.courtly.feature_match_record.domain.model.Score
-import com.mhd_07.courtly.feature_match_record.domain.model.Side
-import com.mhd_07.courtly.feature_match_record.domain.model.opposite
+import com.mhd_07.courtly.core.domain.model.MatchStatus
+import com.mhd_07.courtly.core.domain.model.Score
+import com.mhd_07.courtly.core.domain.model.Side
+import com.mhd_07.courtly.core.domain.model.opposite
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
