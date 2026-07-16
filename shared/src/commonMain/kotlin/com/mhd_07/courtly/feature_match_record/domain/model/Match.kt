@@ -1,6 +1,5 @@
 package com.mhd_07.courtly.feature_match_record.domain.model
 
-import com.mhd_07.courtly.feature_match_record.domain.usecase.Command
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -8,23 +7,43 @@ import kotlin.time.Instant
 data class Match(
     val teamLeft: Team,
     val teamRight: Team,
+    val ballTeam: Side? = null,
     val type: MatchType,
     val location: String,
     val dateTime: Instant = Clock.System.now(),
     val status: MatchStatus,
-    val timeline: List<Command>
+    val timeline: List<MatchIntent.TimelineIntent>,
+    val bestOf : Int = 3,
+    val winner : Side? = null
 ) {
+    companion object {
+        val initial = Match(
+            teamLeft = Team.initial,
+            teamRight = Team.initial,
+            type = MatchType.Single,
+            location = "",
+            status = MatchStatus.Coming,
+            timeline = emptyList()
+        )
+    }
+
     fun teamRightScore(): Match =
-        copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.next()))
+        if (teamRight.currentScore != teamLeft.currentScore && teamRight.currentScore == Score.Forty)
+            copy(teamRight = teamRight.copy(currentScore = Score.Win))
+        else
+            copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.next()))
 
     fun teamLeftScore(): Match =
-        copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.next()))
+        if (teamLeft.currentScore != teamRight.currentScore && teamLeft.currentScore == Score.Forty)
+            copy(teamLeft = teamLeft.copy(currentScore = Score.Win))
+        else
+            copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.next()))
 
-    fun teamRightDescore(): Match =
-        copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.prev()))
-
-    fun teamLeftDescore(): Match =
-        copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.prev()))
+//    fun teamRightDescore(): Match =
+//        copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.prev()))
+//
+//    fun teamLeftDescore(): Match =
+//        copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.prev()))
 
 //    fun transfer(index: Int, from: Side): Match {
 //        if (index >= (if (from == Side.TeamRight) teamRight else teamLeft).players.size)
@@ -66,7 +85,8 @@ data class Match(
         )
     }
 
-    fun sub(from: Side, to: Side, fromIndex: Int, toIndex: Int?): Match {
+    fun sub(from: Side, fromIndex: Int, toIndex: Int?): Match {
+        val to = from.opposite()
         val fromTeam = (if (from == Side.TeamRight) teamRight else teamLeft).players.toMutableList()
         val toTeam = (if (to == Side.TeamRight) teamRight else teamLeft).players.toMutableList()
 

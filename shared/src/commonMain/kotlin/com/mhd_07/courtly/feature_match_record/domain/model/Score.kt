@@ -10,7 +10,9 @@ enum class Score(val display: String) {
 }
 
 fun Score.next(): Score {
-    return Score.entries.getOrElse(ordinal + 1) { this }
+    return Score.entries.let {
+        it.getOrElse(ordinal + 1) { this }
+    }
 }
 
 fun Score.prev(): Score {
