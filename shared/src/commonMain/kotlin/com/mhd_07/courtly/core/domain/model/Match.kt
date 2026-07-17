@@ -1,6 +1,6 @@
 package com.mhd_07.courtly.core.domain.model
 
-import com.mhd_07.courtly.feature_match_record.domain.model.MatchIntent
+import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -12,7 +12,7 @@ data class Match(
     val location: String,
     val dateTime: Instant = Clock.System.now(),
     val status: MatchStatus,
-    val timeline: List<MatchIntent.TimelineIntent>,
+    val timeline: List<TimelineAction>,
     val bestOf : Int = 3,
     val winner : Side? = null
 ) {

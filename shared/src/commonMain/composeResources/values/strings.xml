@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Courtly</string>
+    <string name="live">Live</string>
+    <string name="upcoming">Upcoming</string>
+    <string name="finished">Finished</string>
+    <string name="undo">Undo</string>
+    <string name="redo">Redo</string>
+</resources>

@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.core.ui.theme
+package com.mhd_07.courtly.core.presentation.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

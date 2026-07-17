@@ -1,10 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.internal.types.error.ErrorModuleDescriptor.platform
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.koin.compiler)
 }
 
 kotlin {
@@ -37,6 +39,7 @@ kotlin {
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+            api(libs.koin.core.android)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -49,7 +52,9 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             api(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlinx.datetime)
-
+            implementation(libs.tabler.icons.kmp)
+            api(libs.koin.core)
+            api(libs.koin.core.viewmodel)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

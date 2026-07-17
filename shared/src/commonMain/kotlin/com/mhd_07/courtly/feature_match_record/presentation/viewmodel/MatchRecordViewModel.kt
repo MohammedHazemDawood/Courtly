@@ -3,11 +3,11 @@ package com.mhd_07.courtly.feature_match_record.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mhd_07.courtly.core.domain.model.Match
-import com.mhd_07.courtly.feature_match_record.domain.model.MatchIntent
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.Score
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.opposite
+import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,12 +15,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class GameRecordViewModel : ViewModel() {
+class MatchRecordViewModel : ViewModel() {
     private val _state = MutableStateFlow(Match.initial)
     val state = _state.asStateFlow()
 
-    private val _undoStack = MutableStateFlow<ArrayDeque<MatchIntent.TimelineIntent>>(ArrayDeque())
-    private val _redoStack = MutableStateFlow<ArrayDeque<MatchIntent.TimelineIntent>>(ArrayDeque())
+    private val _undoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
+    private val _redoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
 
     val isUndoAvailable = _undoStack.map { it.isNotEmpty() }.stateIn(
         scope = viewModelScope,
@@ -37,42 +37,52 @@ class GameRecordViewModel : ViewModel() {
         when (intent) {
             MatchIntent.Redo -> redo()
             MatchIntent.Undo -> undo()
-            is MatchIntent.TimelineIntent -> executeTimelineIntent(intent)
+
+            is MatchIntent.Point -> {
+                val score =
+                    if (intent.side == Side.TeamLeft) _state.value.teamLeft.currentScore else _state.value.teamRight.currentScore
+                addTimelineIntent(TimelineAction.Point(intent.side, score))
+                clearRedo()
+                executePoint(intent.side)
+                checkGameWin()
+            }
+
+            is MatchIntent.Sub -> {
+                addTimelineIntent(
+                    TimelineAction.Sub(intent.from, intent.indexFrom, intent.indexTo)
+                )
+                clearRedo()
+                executeTransfer(
+                    from = intent.from,
+                    indexFrom = intent.indexFrom,
+                    indexTo = intent.indexTo
+                )
+            }
+
+            is MatchIntent.Transfer -> {
+                addTimelineIntent(TimelineAction.Transfer(intent.from, intent.indexFrom))
+                clearRedo()
+                executeTransfer(
+                    from = intent.from,
+                    indexFrom = intent.indexFrom,
+                    indexTo = null
+                )
+            }
         }
     }
 
-    private fun executeTimelineIntent(intent: MatchIntent.TimelineIntent) {
-        when (intent) {
-            is MatchIntent.TimelineIntent.Point -> executeScore(intent.side)
-            is MatchIntent.TimelineIntent.Sub -> executeTransfer(
-                from = intent.from,
-                indexFrom = intent.indexFrom,
-                indexTo = intent.indexTo
-            )
-
-            is MatchIntent.TimelineIntent.Transfer -> executeTransfer(
-                from = intent.from,
-                indexFrom = intent.indexFrom,
-                indexTo = null
-            )
-
-            is MatchIntent.TimelineIntent.WinGame -> executeWinGame(intent.side)
-            is MatchIntent.TimelineIntent.WinMatch -> executeMatchWin(intent.side)
-        }
-        addTimelineIntent(intent)
-        if (intent !is MatchIntent.TimelineIntent.WinGame)
-            checkGameWin()
-    }
-
-    private fun addTimelineIntent(intent: MatchIntent.TimelineIntent) {
+    private fun addTimelineIntent(timelineAction: TimelineAction) {
         _undoStack.update {
-            ArrayDeque(it).apply { addLast(intent) }
+            ArrayDeque(it).apply { addLast(timelineAction) }
         }
+    }
+
+    private fun clearRedo() {
         _redoStack.update { ArrayDeque() }
     }
 
 
-    private fun executeScore(side: Side) {
+    private fun executePoint(side: Side) {
         _state.update { if (side == Side.TeamRight) it.teamRightScore() else it.teamLeftScore() }
     }
 
@@ -87,6 +97,8 @@ class GameRecordViewModel : ViewModel() {
     }
 
     private fun executeWinGame(side: Side) {
+        val ballPlayer = if (side == Side.TeamRight) _state.value.teamRight.ballPlayer else _state.value.teamLeft.ballPlayer
+        addTimelineIntent(TimelineAction.WinGame(side, ballPlayer = ballPlayer))
         _state.update {
             it.run {
                 copy(
@@ -111,9 +123,9 @@ class GameRecordViewModel : ViewModel() {
         val leftScore = _state.value.teamLeft.currentScore
 
         if (rightScore == Score.Win) {
-            executeTimelineIntent(MatchIntent.TimelineIntent.WinGame(Side.TeamRight))
+            executeWinGame(Side.TeamRight)
         } else if (leftScore == Score.Win) {
-            executeTimelineIntent(MatchIntent.TimelineIntent.WinGame(Side.TeamLeft))
+            executeWinGame(Side.TeamLeft)
         }
     }
 
@@ -124,6 +136,7 @@ class GameRecordViewModel : ViewModel() {
                 winner = side
             )
         }
+        addTimelineIntent(TimelineAction.WinMatch(side))
     }
 
     private fun checkMatchWin() {
@@ -134,17 +147,17 @@ class GameRecordViewModel : ViewModel() {
         val majority: Int = (_state.value.bestOf / 2) + 1
 
         if (rightWinCount == majority) {
-            executeTimelineIntent(MatchIntent.TimelineIntent.WinMatch(Side.TeamRight))
+            executeMatchWin(Side.TeamRight)
         }
         if (leftWinCount == majority) {
-            executeTimelineIntent(MatchIntent.TimelineIntent.WinMatch(Side.TeamLeft))
+            executeMatchWin(Side.TeamLeft)
         }
 
     }
 
 
     private fun undo() {
-        var top: MatchIntent.TimelineIntent? = null
+        var top: TimelineAction? = null
         _undoStack.update {
             ArrayDeque(it).apply {
                 top = removeLastOrNull()
@@ -155,16 +168,16 @@ class GameRecordViewModel : ViewModel() {
                 ArrayDeque(it).apply { addLast(top) }
             }
             when (top) {
-                is MatchIntent.TimelineIntent.Point -> undoPoint(top)
-                is MatchIntent.TimelineIntent.Sub -> undoSub(top)
-                is MatchIntent.TimelineIntent.Transfer -> undoTransfer(top)
-                is MatchIntent.TimelineIntent.WinGame -> undoWinGame(top)
-                is MatchIntent.TimelineIntent.WinMatch -> undoWinMatch()
+                is TimelineAction.Point -> undoPoint(top)
+                is TimelineAction.Sub -> undoSub(top)
+                is TimelineAction.Transfer -> undoTransfer(top)
+                is TimelineAction.WinGame -> undoWinGame(top)
+                is TimelineAction.WinMatch -> undoWinMatch()
             }
         }
     }
 
-    private fun undoPoint(intent: MatchIntent.TimelineIntent.Point) {
+    private fun undoPoint(intent: TimelineAction.Point) {
         _state.update {
             if (intent.side == Side.TeamRight)
                 it.copy(teamRight = it.teamRight.copy(currentScore = intent.currentScore))
@@ -173,7 +186,7 @@ class GameRecordViewModel : ViewModel() {
         }
     }
 
-    private fun undoTransfer(intent: MatchIntent.TimelineIntent.Transfer) {
+    private fun undoTransfer(intent: TimelineAction.Transfer) {
         _state.update {
             it.sub(
                 from = intent.from.opposite(),
@@ -183,7 +196,7 @@ class GameRecordViewModel : ViewModel() {
         }
     }
 
-    private fun undoSub(intent: MatchIntent.TimelineIntent.Sub) {
+    private fun undoSub(intent: TimelineAction.Sub) {
         _state.update {
             it.sub(
                 from = intent.from.opposite(),
@@ -193,7 +206,7 @@ class GameRecordViewModel : ViewModel() {
         }
     }
 
-    private fun undoWinGame(intent: MatchIntent.TimelineIntent.WinGame) {
+    private fun undoWinGame(intent: TimelineAction.WinGame) {
         _state.update {
             it.run {
                 copy(
@@ -221,14 +234,58 @@ class GameRecordViewModel : ViewModel() {
     }
 
     private fun redo() {
-        var top: MatchIntent.TimelineIntent? = null
+        var top: TimelineAction? = null
         _redoStack.update {
             ArrayDeque(it).apply {
                 top = removeLastOrNull()
             }
         }
-        if (top != null)
-            executeTimelineIntent(top)
+        top?.let { action ->
+            when (action) {
+                is TimelineAction.Point -> {
+                    executePoint(action.side)
+                }
+
+                is TimelineAction.Sub -> {
+                    executeTransfer(action.from, action.indexFrom, action.indexTo)
+                }
+
+                is TimelineAction.Transfer -> {
+                    executeTransfer(action.from, action.indexFrom, null)
+                }
+
+                is TimelineAction.WinGame -> {
+                    _state.update {
+                        it.run {
+                            copy(
+                                teamRight = teamRight.copy(
+                                    currentScore = Score.Zero,
+                                    prevWins = teamRight.prevWins + (action.side == Side.TeamRight),
+                                    ballPlayer = null,
+                                ),
+                                teamLeft = teamLeft.copy(
+                                    currentScore = Score.Zero,
+                                    prevWins = teamLeft.prevWins + (action.side == Side.TeamLeft),
+                                    ballPlayer = null,
+                                ),
+                                ballTeam = ballTeam?.opposite(),
+                            )
+                        }
+                    }
+                }
+
+                is TimelineAction.WinMatch -> {
+                    executeMatchWin(action.side)
+                }
+            }
+
+            addTimelineIntent(action)
+
+            val nextInLine = _redoStack.value.lastOrNull()
+            if (nextInLine is TimelineAction.WinGame || nextInLine is TimelineAction.WinMatch) {
+                redo()
+            }
+        }
     }
 }
 

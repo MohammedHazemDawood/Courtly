@@ -1,22 +1,19 @@
 package com.mhd_07.courtly
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
-import com.mhd_07.courtly.core.ui.theme.CourtlyTheme
+import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
+import com.mhd_07.courtly.core.presentation.ui.theme.Dimension
+import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchScreen
 
 @Composable
 @Preview
 fun App() {
     CourtlyTheme {
-        Surface(modifier = Modifier.fillMaxSize()){
-            Box(modifier = Modifier.fillMaxSize(0.5f)) {
-                Text(text = "Hello World")
-            }
+        CompositionLocalProvider(LocalDimensions provides Dimension()) {
+            MatchScreen()
         }
     }
 }
