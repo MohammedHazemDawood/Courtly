@@ -13,8 +13,8 @@ data class Match(
     val dateTime: Instant = Clock.System.now(),
     val status: MatchStatus,
     val timeline: List<TimelineAction>,
-    val bestOf : Int = 3,
-    val winner : Side? = null
+    val bestOf: Int = 3,
+    val winner: Side? = null
 ) {
     companion object {
         val initial = Match(
@@ -27,17 +27,44 @@ data class Match(
         )
     }
 
-    fun teamRightScore(): Match =
-        if (teamRight.currentScore != teamLeft.currentScore && teamRight.currentScore == Score.Forty)
+    fun teamRightScore(): Match = when {
+        teamRight.currentScore == Score.Advantage ->
             copy(teamRight = teamRight.copy(currentScore = Score.Win))
-        else
+        teamRight.currentScore == Score.Forty &&
+                teamLeft.currentScore == Score.Advantage ->
+            copy(
+                teamRight = teamRight.copy(currentScore = Score.Forty),
+                teamLeft = teamLeft.copy(currentScore = Score.Forty))
+        teamRight.currentScore == Score.Forty &&
+                teamLeft.currentScore == Score.Forty ->
+            copy(teamRight = teamRight.copy(currentScore = Score.Advantage))
+        teamRight.currentScore == Score.Forty ->
+            copy(teamRight = teamRight.copy(currentScore = Score.Win))
+        else ->
             copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.next()))
+    }
 
-    fun teamLeftScore(): Match =
-        if (teamLeft.currentScore != teamRight.currentScore && teamLeft.currentScore == Score.Forty)
+    fun teamLeftScore(): Match = when {
+        teamLeft.currentScore == Score.Advantage ->
             copy(teamLeft = teamLeft.copy(currentScore = Score.Win))
-        else
+
+        teamLeft.currentScore == Score.Forty &&
+                teamRight.currentScore == Score.Advantage ->
+            copy(
+                teamLeft = teamLeft.copy(currentScore = Score.Forty),
+                teamRight = teamRight.copy(currentScore = Score.Forty)
+            )
+
+        teamLeft.currentScore == Score.Forty &&
+                teamRight.currentScore == Score.Forty ->
+            copy(teamLeft = teamLeft.copy(currentScore = Score.Advantage))
+
+        teamLeft.currentScore == Score.Forty ->
+            copy(teamLeft = teamLeft.copy(currentScore = Score.Win))
+
+        else ->
             copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.next()))
+    }
 
 //    fun teamRightDescore(): Match =
 //        copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.prev()))

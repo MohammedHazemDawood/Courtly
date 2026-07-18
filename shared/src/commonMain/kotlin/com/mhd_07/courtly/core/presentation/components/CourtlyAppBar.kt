@@ -58,7 +58,7 @@ fun CourtlyAppBar(
                 IconButton(onClick = onBackClick) {
                     Icon(
                         imageVector = TablerIcons.Outlined.ChevronLeft,
-                        contentDescription = null
+                        contentDescription = "Back" //TODO: Change to stringResource
                     )
                 }
             }
@@ -69,10 +69,13 @@ fun CourtlyAppBar(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                 ) {
-                    IconButton(onClick = it.action) {
+                    IconButton(
+                        onClick = it.action,
+                        enabled = it.enabled
+                    ) {
                         Icon(
                             imageVector = it.icon,
-                            contentDescription = it.contentDescription
+                            contentDescription = it.contentDescription,
                         )
                     }
                 }
@@ -82,8 +85,8 @@ fun CourtlyAppBar(
 }
 
 data class ActionIcon(
-    val icon : ImageVector,
-    val contentDescription : String,
-    val action : () -> Unit,
-    val enabled : Boolean = true
+    val icon: ImageVector,
+    val contentDescription: String,
+    val action: () -> Unit,
+    val enabled: Boolean = true
 )

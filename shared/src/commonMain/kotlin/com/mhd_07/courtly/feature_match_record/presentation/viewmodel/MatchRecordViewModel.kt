@@ -8,6 +8,7 @@ import com.mhd_07.courtly.core.domain.model.Score
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.opposite
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
+import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,10 +39,13 @@ class MatchRecordViewModel : ViewModel() {
             MatchIntent.Redo -> redo()
             MatchIntent.Undo -> undo()
 
+
+
             is MatchIntent.Point -> {
+                if (_state.value.status == MatchStatus.Finished) return //TODO: make it != Live
                 val score =
                     if (intent.side == Side.TeamLeft) _state.value.teamLeft.currentScore else _state.value.teamRight.currentScore
-                addTimelineIntent(TimelineAction.Point(intent.side, score))
+                addTimelineIntent(Point(intent.side, score))
                 clearRedo()
                 executePoint(intent.side)
                 checkGameWin()
@@ -49,7 +53,7 @@ class MatchRecordViewModel : ViewModel() {
 
             is MatchIntent.Sub -> {
                 addTimelineIntent(
-                    TimelineAction.Sub(intent.from, intent.indexFrom, intent.indexTo)
+                    Sub(intent.from, intent.indexFrom, intent.indexTo)
                 )
                 clearRedo()
                 executeTransfer(
@@ -60,12 +64,65 @@ class MatchRecordViewModel : ViewModel() {
             }
 
             is MatchIntent.Transfer -> {
-                addTimelineIntent(TimelineAction.Transfer(intent.from, intent.indexFrom))
+                addTimelineIntent(Transfer(intent.from, intent.indexFrom))
                 clearRedo()
                 executeTransfer(
                     from = intent.from,
                     indexFrom = intent.indexFrom,
                     indexTo = null
+                )
+            }
+
+            is MatchIntent.EditBestOf -> _state.update { it.copy(bestOf = intent.newBestOf) }
+            is MatchIntent.EditBallPlayer -> _state.update {
+                if (it.ballTeam == Side.TeamLeft) it.copy(
+                    teamLeft = it.teamLeft.copy(ballPlayer = intent.newBallPlayer)
+                ) else it.copy(
+                    teamRight = it.teamRight.copy(ballPlayer = intent.newBallPlayer)
+                )
+            }
+
+            is MatchIntent.EditPlayerName -> _state.update {
+                if (intent.side == Side.TeamLeft) it.copy(
+                    teamLeft = it.teamLeft.copy(
+                        players = it.teamLeft.players.toMutableList().apply {
+                            set(
+                                intent.index,
+                                it.teamLeft.players[intent.index].copy(name = intent.newName)
+                            )
+                        }
+                    )
+                ) else it.copy(
+                    teamRight = it.teamRight.copy(
+                        players = it.teamRight.players.toMutableList().apply {
+                            set(
+                                intent.index,
+                                it.teamRight.players[intent.index].copy(name = intent.newName)
+                            )
+                        }
+                    )
+                )
+            }
+
+            is MatchIntent.EditTeamColor -> _state.update {
+                if (intent.side == Side.TeamLeft) it.copy(
+                    teamLeft = it.teamLeft.copy(color = intent.newColor)
+                ) else it.copy(
+                    teamRight = it.teamRight.copy(color = intent.newColor)
+                )
+            }
+
+            is MatchIntent.EditTeamName -> _state.update {
+                if (intent.side == Side.TeamLeft) it.copy(
+                    teamLeft = it.teamLeft.copy(name = intent.newName)
+                ) else it.copy(
+                    teamRight = it.teamRight.copy(name = intent.newName)
+                )
+            }
+            is MatchIntent.StartGame -> _state.update {
+                it.copy(
+                    status = MatchStatus.Live,
+                    ballTeam = intent.startingTeam
                 )
             }
         }
@@ -97,8 +154,9 @@ class MatchRecordViewModel : ViewModel() {
     }
 
     private fun executeWinGame(side: Side) {
-        val ballPlayer = if (side == Side.TeamRight) _state.value.teamRight.ballPlayer else _state.value.teamLeft.ballPlayer
-        addTimelineIntent(TimelineAction.WinGame(side, ballPlayer = ballPlayer))
+        val ballPlayer =
+            if (side == Side.TeamRight) _state.value.teamRight.ballPlayer else _state.value.teamLeft.ballPlayer
+        addTimelineIntent(WinGame(side, ballPlayer = ballPlayer, anotherTeamScore = if (side == Side.TeamRight) _state.value.teamLeft.currentScore else _state.value.teamRight.currentScore))
         _state.update {
             it.run {
                 copy(
@@ -136,7 +194,7 @@ class MatchRecordViewModel : ViewModel() {
                 winner = side
             )
         }
-        addTimelineIntent(TimelineAction.WinMatch(side))
+        addTimelineIntent(WinMatch(side))
     }
 
     private fun checkMatchWin() {
@@ -168,16 +226,16 @@ class MatchRecordViewModel : ViewModel() {
                 ArrayDeque(it).apply { addLast(top) }
             }
             when (top) {
-                is TimelineAction.Point -> undoPoint(top)
-                is TimelineAction.Sub -> undoSub(top)
-                is TimelineAction.Transfer -> undoTransfer(top)
-                is TimelineAction.WinGame -> undoWinGame(top)
-                is TimelineAction.WinMatch -> undoWinMatch()
+                is Point -> undoPoint(top)
+                is Sub -> undoSub(top)
+                is Transfer -> undoTransfer(top)
+                is WinGame -> undoWinGame(top)
+                is WinMatch -> undoWinMatch()
             }
         }
     }
 
-    private fun undoPoint(intent: TimelineAction.Point) {
+    private fun undoPoint(intent: Point) {
         _state.update {
             if (intent.side == Side.TeamRight)
                 it.copy(teamRight = it.teamRight.copy(currentScore = intent.currentScore))
@@ -186,7 +244,7 @@ class MatchRecordViewModel : ViewModel() {
         }
     }
 
-    private fun undoTransfer(intent: TimelineAction.Transfer) {
+    private fun undoTransfer(intent: Transfer) {
         _state.update {
             it.sub(
                 from = intent.from.opposite(),
@@ -196,7 +254,7 @@ class MatchRecordViewModel : ViewModel() {
         }
     }
 
-    private fun undoSub(intent: TimelineAction.Sub) {
+    private fun undoSub(intent: Sub) {
         _state.update {
             it.sub(
                 from = intent.from.opposite(),
@@ -206,17 +264,19 @@ class MatchRecordViewModel : ViewModel() {
         }
     }
 
-    private fun undoWinGame(intent: TimelineAction.WinGame) {
+    private fun undoWinGame(intent: WinGame) {
         _state.update {
             it.run {
                 copy(
                     teamRight = teamRight.copy(
                         prevWins = teamRight.prevWins.dropLast(1),
                         ballPlayer = if (intent.side == Side.TeamRight) intent.ballPlayer else null,
+                        currentScore = if (intent.side == Side.TeamRight) Score.Zero else intent.anotherTeamScore
                     ),
                     teamLeft = teamLeft.copy(
                         prevWins = teamLeft.prevWins.dropLast(1),
                         ballPlayer = if (intent.side == Side.TeamLeft) intent.ballPlayer else null,
+                        currentScore = if (intent.side == Side.TeamLeft) Score.Zero else intent.anotherTeamScore
                     ),
                     ballTeam = ballTeam?.opposite(),
                 )
@@ -242,19 +302,18 @@ class MatchRecordViewModel : ViewModel() {
         }
         top?.let { action ->
             when (action) {
-                is TimelineAction.Point -> {
+                is Point -> {
                     executePoint(action.side)
                 }
 
-                is TimelineAction.Sub -> {
+                is Sub -> {
                     executeTransfer(action.from, action.indexFrom, action.indexTo)
                 }
 
-                is TimelineAction.Transfer -> {
+                is Transfer -> {
                     executeTransfer(action.from, action.indexFrom, null)
                 }
-
-                is TimelineAction.WinGame -> {
+                is WinGame -> {
                     _state.update {
                         it.run {
                             copy(
@@ -274,7 +333,8 @@ class MatchRecordViewModel : ViewModel() {
                     }
                 }
 
-                is TimelineAction.WinMatch -> {
+
+                is WinMatch -> {
                     executeMatchWin(action.side)
                 }
             }
@@ -282,7 +342,7 @@ class MatchRecordViewModel : ViewModel() {
             addTimelineIntent(action)
 
             val nextInLine = _redoStack.value.lastOrNull()
-            if (nextInLine is TimelineAction.WinGame || nextInLine is TimelineAction.WinMatch) {
+            if (nextInLine is WinGame || nextInLine is WinMatch) {
                 redo()
             }
         }

@@ -5,7 +5,7 @@ enum class Score(val display: String) {
     Fifteen("15"),
     Thirty("30"),
     Forty("40"),
-    Advantage("Advantage"),
+    Advantage("AD"),
     Win("Win")
 }
 

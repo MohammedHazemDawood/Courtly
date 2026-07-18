@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.internal.types.error.ErrorModuleDescriptor.platform
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -20,7 +19,7 @@ kotlin {
         }
     }
 
-    androidLibrary {
+    android {
         namespace = "com.mhd_07.courtly.shared"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -55,6 +54,7 @@ kotlin {
             implementation(libs.tabler.icons.kmp)
             api(libs.koin.core)
             api(libs.koin.core.viewmodel)
+            implementation(libs.constraintlayout.compose.multiplatform)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -1,0 +1,74 @@
+package com.mhd_07.courtly.feature_match_record.presentation.component
+
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.constraintlayout.compose.ChainStyle
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import com.mhd_07.courtly.core.domain.model.Team
+import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+
+@Composable
+fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finished: Boolean) {
+    val dimension = LocalDimensions.current
+    ConstraintLayout(modifier = modifier) {
+        val (teamLeftName, teamRightName, teamLeftSets, teamRightSets) = createRefs()
+        createVerticalChain(
+            teamLeftSets,
+            teamRightSets.withChainParams(
+                topMargin = dimension.small
+            ),
+            chainStyle = ChainStyle.Packed
+        )
+
+        TeamSets(
+            modifier = Modifier.fillMaxWidth(if (bestOf  >= 5) 0.5f else 0.35f).constrainAs(teamLeftSets) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            teamPrevWins = teamLeft.prevWins,
+            bestOf = bestOf,
+            finished = finished
+        )
+        TeamSets(
+            modifier = Modifier.fillMaxWidth(if (bestOf  >= 5) 0.5f else 0.35f).constrainAs(teamRightSets) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            },
+            teamPrevWins = teamRight.prevWins,
+            bestOf = bestOf,
+            finished = finished
+        )
+        Text(
+            text = teamLeft.name,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.constrainAs(teamLeftName) {
+                centerVerticallyTo(teamLeftSets)
+                start.linkTo(parent.start, margin = dimension.xSmall)
+                end.linkTo(teamLeftSets.start, margin = dimension.xSmall)
+                width = Dimension.fillToConstraints
+                horizontalBias  = 0f
+            }, textAlign = TextAlign.Start
+        )
+        Text(
+            text = teamRight.name,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.constrainAs(teamRightName) {
+                centerVerticallyTo(teamRightSets)
+                start.linkTo(teamRightSets.end, margin = dimension.xSmall)
+                end.linkTo(parent.end, margin = dimension.xSmall)
+                width = Dimension.fillToConstraints
+                horizontalBias  = 1f
+            }, textAlign = TextAlign.End
+        )
+    }
+}

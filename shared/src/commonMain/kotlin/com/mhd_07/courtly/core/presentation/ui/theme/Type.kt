@@ -5,13 +5,14 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import courtly.shared.generated.resources.Res
-import courtly.shared.generated.resources.orbitron
+import courtly.shared.generated.resources.righteous
 import org.jetbrains.compose.resources.Font
 
 @Composable
-fun CourtlyTypography() : Typography{
-    val orbitron = FontFamily(Font(Res.font.orbitron))
+fun CourtlyTypography(): Typography {
+    val orbitron = FontFamily(Font(Res.font.righteous))
 
     return with(MaterialTheme.typography) {
         copy(
@@ -45,7 +46,8 @@ fun CourtlyTypography() : Typography{
             ),
             titleMedium = titleMedium.copy(
                 fontFamily = orbitron,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
             ),
             titleSmall = titleSmall.copy(
                 fontFamily = orbitron,
@@ -65,7 +67,8 @@ fun CourtlyTypography() : Typography{
             ),
             bodyLarge = bodyLarge.copy(
                 fontFamily = orbitron,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp
             ),
             bodyMedium = bodyMedium.copy(
                 fontFamily = orbitron,

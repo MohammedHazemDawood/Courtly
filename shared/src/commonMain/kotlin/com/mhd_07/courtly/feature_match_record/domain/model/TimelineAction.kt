@@ -7,6 +7,6 @@ sealed interface TimelineAction {
     data class Point(val side: Side, val currentScore: Score) : TimelineAction
     data class Transfer(val from: Side, val indexFrom: Int) : TimelineAction
     data class Sub(val from: Side, val indexFrom: Int, val indexTo: Int) : TimelineAction
-    data class WinGame(val side: Side, val ballPlayer: Int? = null) : TimelineAction
+    data class WinGame(val side: Side, val anotherTeamScore : Score, val ballPlayer: Int? = null) : TimelineAction
     data class WinMatch(val side: Side) : TimelineAction
 }
