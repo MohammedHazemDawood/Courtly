@@ -43,3 +43,6 @@ val accent1 = Color(0xFFC4A37A)
 val accent2 = Color(0xFFB38A9A)
 val accent3 = Color(0xFF5B9A7E)
 val accent4 = Color(0xFF8A9A7E)
+
+val enter = Color(0xFF31a730)
+val exit = Color(0xFFc5221f)

@@ -35,7 +35,7 @@ fun TeamSets(modifier: Modifier, teamPrevWins: List<Boolean>, bestOf: Int, finis
         sets.forEachIndexed { index, win ->
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = if (winner)  MaterialTheme.colorScheme.primary else if (index == teamPrevWins.size && !finished) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceContainer,
+                    containerColor = if (winner)  MaterialTheme.colorScheme.primary else if (index == teamPrevWins.size && !finished) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface,
                     contentColor = if (winner) MaterialTheme.colorScheme.onPrimary else if (index == teamPrevWins.size && !finished) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
                 ),
                 modifier = Modifier.weight(1f).aspectRatio(1f),

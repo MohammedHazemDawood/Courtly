@@ -2,12 +2,14 @@ package com.mhd_07.courtly.feature_match_record.presentation.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,8 +22,10 @@ import com.mhd_07.courtly.core.presentation.components.ActionIcon
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.feature_match_record.presentation.component.Court
 import com.mhd_07.courtly.feature_match_record.presentation.component.CurrentGamePoints
 import com.mhd_07.courtly.feature_match_record.presentation.component.Sets
+import com.mhd_07.courtly.feature_match_record.presentation.component.Tables
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchIntent
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchRecordViewModel
 import courtly.shared.generated.resources.Res
@@ -40,7 +44,10 @@ fun MatchScreen(
     val state = viewModel.state.collectAsStateWithLifecycle()
     val undoAvailable = viewModel.isUndoAvailable.collectAsStateWithLifecycle().value
     val redoAvailable = viewModel.isRedoAvailable.collectAsStateWithLifecycle().value
-
+    LaunchedEffect(Unit) {
+        // TODO: Remove
+        viewModel.handleIntent(MatchIntent.StartGame(Side.TeamRight))
+    }
     MatchScreenContent(
         state = state.value,
         undoAvailable = undoAvailable,
@@ -91,20 +98,39 @@ fun MatchScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             val dimension = LocalDimensions.current
-            Spacer(modifier = Modifier.padding(dimension.small))
+            Spacer(modifier = Modifier.padding(dimension.xSmall))
             Sets(
                 modifier = Modifier.fillMaxWidth(),
                 teamLeft = state.teamLeft,
                 teamRight = state.teamRight,
                 bestOf = state.bestOf,
-                finished = state.status == MatchStatus.Finished
+                finished = state.status == MatchStatus.Finished,
+                winner = state.winner
             )
-            Spacer(modifier = Modifier.padding(dimension.medium))
+            Spacer(modifier = Modifier.padding(dimension.small))
             CurrentGamePoints(
                 modifier = Modifier.fillMaxWidth(0.4f),
                 teamLeftScore = state.teamLeft.currentScore,
                 teamRightScore = state.teamRight.currentScore,
                 onPoint = onPoint
+            )
+            Spacer(modifier = Modifier.padding(dimension.small))
+            Court(
+                modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(2f),
+                fill = MaterialTheme.colorScheme.primary,
+                stroke = MaterialTheme.colorScheme.onBackground,
+                side = state.ballTeam,
+                hCourtSide = state.ballHalf,
+                win = state.winner!=null
+            )
+            Spacer(modifier = Modifier.padding(dimension.medium))
+            Tables(
+                modifier = Modifier.fillMaxWidth().padding(dimension.small),
+                timeline = state.timeline,
+                players = state.teamLeft.players + state.teamRight.players,
+                teamLeft = state.teamLeft,
+                teamRight = state.teamRight,
+                startingTime = state.dateTime
             )
         }
     }

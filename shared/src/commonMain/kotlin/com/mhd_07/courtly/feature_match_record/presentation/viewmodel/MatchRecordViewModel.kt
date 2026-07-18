@@ -2,6 +2,7 @@ package com.mhd_07.courtly.feature_match_record.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mhd_07.courtly.core.domain.model.HCourtSide
 import com.mhd_07.courtly.core.domain.model.Match
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.Score
@@ -11,17 +12,23 @@ import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
 class MatchRecordViewModel : ViewModel() {
     private val _state = MutableStateFlow(Match.initial)
-    val state = _state.asStateFlow()
-
     private val _undoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
     private val _redoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
+
+    val state = combine(_state, _undoStack) { state, undoStack ->
+        state.copy(timeline = undoStack)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = _state.value
+    )
 
     val isUndoAvailable = _undoStack.map { it.isNotEmpty() }.stateIn(
         scope = viewModelScope,
@@ -40,12 +47,15 @@ class MatchRecordViewModel : ViewModel() {
             MatchIntent.Undo -> undo()
 
 
-
             is MatchIntent.Point -> {
-                if (_state.value.status == MatchStatus.Finished) return //TODO: make it != Live
-                val score =
-                    if (intent.side == Side.TeamLeft) _state.value.teamLeft.currentScore else _state.value.teamRight.currentScore
-                addTimelineIntent(Point(intent.side, score))
+                if (_state.value.status != MatchStatus.Live) return
+                addTimelineIntent(
+                    Point(
+                        intent.side,
+                        teamRightScore = _state.value.teamRight.currentScore,
+                        teamLeftScore = _state.value.teamLeft.currentScore
+                    )
+                )
                 clearRedo()
                 executePoint(intent.side)
                 checkGameWin()
@@ -53,23 +63,29 @@ class MatchRecordViewModel : ViewModel() {
 
             is MatchIntent.Sub -> {
                 addTimelineIntent(
-                    Sub(intent.from, intent.indexFrom, intent.indexTo)
+                    Sub(intent.side, intent.indexFrom, intent.indexTo)
                 )
                 clearRedo()
                 executeTransfer(
-                    from = intent.from,
+                    from = intent.side,
                     indexFrom = intent.indexFrom,
                     indexTo = intent.indexTo
                 )
             }
 
             is MatchIntent.Transfer -> {
-                addTimelineIntent(Transfer(intent.from, intent.indexFrom))
+                addTimelineIntent(
+                    Transfer(
+                        from = intent.from,
+                        indexFrom = intent.indexFrom,
+                        indexTo = intent.indexTo
+                    )
+                )
                 clearRedo()
                 executeTransfer(
                     from = intent.from,
                     indexFrom = intent.indexFrom,
-                    indexTo = null
+                    indexTo = intent.indexTo
                 )
             }
 
@@ -119,10 +135,12 @@ class MatchRecordViewModel : ViewModel() {
                     teamRight = it.teamRight.copy(name = intent.newName)
                 )
             }
+
             is MatchIntent.StartGame -> _state.update {
                 it.copy(
                     status = MatchStatus.Live,
-                    ballTeam = intent.startingTeam
+                    ballTeam = intent.startingTeam,
+                    ballHalf = HCourtSide.Right
                 )
             }
         }
@@ -140,7 +158,15 @@ class MatchRecordViewModel : ViewModel() {
 
 
     private fun executePoint(side: Side) {
-        _state.update { if (side == Side.TeamRight) it.teamRightScore() else it.teamLeftScore() }
+        _state.update { state ->
+            val updated =
+                if (side == Side.TeamRight)
+                    state.teamRightScore()
+                else
+                    state.teamLeftScore()
+
+            updated.copy(ballHalf = state.ballHalf.opposite())
+        }
     }
 
     private fun executeTransfer(from: Side, indexFrom: Int, indexTo: Int?) {
@@ -156,7 +182,17 @@ class MatchRecordViewModel : ViewModel() {
     private fun executeWinGame(side: Side) {
         val ballPlayer =
             if (side == Side.TeamRight) _state.value.teamRight.ballPlayer else _state.value.teamLeft.ballPlayer
-        addTimelineIntent(WinGame(side, ballPlayer = ballPlayer, anotherTeamScore = if (side == Side.TeamRight) _state.value.teamLeft.currentScore else _state.value.teamRight.currentScore))
+        addTimelineIntent(
+            WinGame(
+                side,
+                ballPlayer = ballPlayer,
+                teamLeftScore = _state.value.teamLeft.currentScore,
+                teamRightScore = _state.value.teamRight.currentScore,
+                ballHalf = _state.value.ballHalf,
+                teamLeftWins = _state.value.teamLeft.prevWins.count { it },
+                teamRightWins = _state.value.teamRight.prevWins.count { it },
+            )
+        )
         _state.update {
             it.run {
                 copy(
@@ -171,6 +207,7 @@ class MatchRecordViewModel : ViewModel() {
                         ballPlayer = null,
                     ),
                     ballTeam = ballTeam?.opposite(),
+                    ballHalf = HCourtSide.Right
                 )
             }
         }.also { checkMatchWin() }
@@ -237,10 +274,11 @@ class MatchRecordViewModel : ViewModel() {
 
     private fun undoPoint(intent: Point) {
         _state.update {
-            if (intent.side == Side.TeamRight)
-                it.copy(teamRight = it.teamRight.copy(currentScore = intent.currentScore))
-            else
-                it.copy(teamLeft = it.teamLeft.copy(currentScore = intent.currentScore))
+            it.copy(
+                teamRight = it.teamRight.copy(currentScore = intent.teamRightScore),
+                teamLeft = it.teamLeft.copy(currentScore = intent.teamLeftScore),
+                ballHalf = it.ballHalf.opposite()
+            )
         }
     }
 
@@ -257,7 +295,7 @@ class MatchRecordViewModel : ViewModel() {
     private fun undoSub(intent: Sub) {
         _state.update {
             it.sub(
-                from = intent.from.opposite(),
+                from = intent.side.opposite(),
                 fromIndex = intent.indexTo,
                 toIndex = intent.indexFrom
             )
@@ -271,14 +309,15 @@ class MatchRecordViewModel : ViewModel() {
                     teamRight = teamRight.copy(
                         prevWins = teamRight.prevWins.dropLast(1),
                         ballPlayer = if (intent.side == Side.TeamRight) intent.ballPlayer else null,
-                        currentScore = if (intent.side == Side.TeamRight) Score.Zero else intent.anotherTeamScore
+                        currentScore = intent.teamRightScore
                     ),
                     teamLeft = teamLeft.copy(
                         prevWins = teamLeft.prevWins.dropLast(1),
                         ballPlayer = if (intent.side == Side.TeamLeft) intent.ballPlayer else null,
-                        currentScore = if (intent.side == Side.TeamLeft) Score.Zero else intent.anotherTeamScore
+                        currentScore = intent.teamLeftScore
                     ),
                     ballTeam = ballTeam?.opposite(),
+                    ballHalf = intent.ballHalf
                 )
             }
         }.also { undo() }
@@ -307,12 +346,13 @@ class MatchRecordViewModel : ViewModel() {
                 }
 
                 is Sub -> {
-                    executeTransfer(action.from, action.indexFrom, action.indexTo)
+                    executeTransfer(action.side, action.indexFrom, action.indexTo)
                 }
 
                 is Transfer -> {
                     executeTransfer(action.from, action.indexFrom, null)
                 }
+
                 is WinGame -> {
                     _state.update {
                         it.run {

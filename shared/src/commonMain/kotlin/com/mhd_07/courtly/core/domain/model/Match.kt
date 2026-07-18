@@ -14,7 +14,8 @@ data class Match(
     val status: MatchStatus,
     val timeline: List<TimelineAction>,
     val bestOf: Int = 3,
-    val winner: Side? = null
+    val winner: Side? = null,
+    val ballHalf : HCourtSide = HCourtSide.Right
 ) {
     companion object {
         val initial = Match(

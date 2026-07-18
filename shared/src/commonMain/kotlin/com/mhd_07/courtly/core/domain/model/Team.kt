@@ -12,7 +12,7 @@ data class Team(
 ) {
     companion object {
         val initial = Team(
-            name = "Eagle Team",
+            name = "Any Team",
             color = Color.Unspecified,
             currentScore = Score.Zero,
             prevWins = emptyList(),

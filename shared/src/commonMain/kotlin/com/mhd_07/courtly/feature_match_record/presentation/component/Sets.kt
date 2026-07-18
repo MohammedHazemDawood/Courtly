@@ -10,11 +10,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 
 @Composable
-fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finished: Boolean) {
+fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finished: Boolean, winner : Side?) {
     val dimension = LocalDimensions.current
     ConstraintLayout(modifier = modifier) {
         val (teamLeftName, teamRightName, teamLeftSets, teamRightSets) = createRefs()
@@ -55,7 +56,8 @@ fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finis
                 end.linkTo(teamLeftSets.start, margin = dimension.xSmall)
                 width = Dimension.fillToConstraints
                 horizontalBias  = 0f
-            }, textAlign = TextAlign.Start
+            }, textAlign = TextAlign.Start,
+            color = if (winner == Side.TeamLeft) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
         )
         Text(
             text = teamRight.name,
@@ -68,7 +70,8 @@ fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finis
                 end.linkTo(parent.end, margin = dimension.xSmall)
                 width = Dimension.fillToConstraints
                 horizontalBias  = 1f
-            }, textAlign = TextAlign.End
+            }, textAlign = TextAlign.End,
+            color = if (winner == Side.TeamRight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
         )
     }
 }
