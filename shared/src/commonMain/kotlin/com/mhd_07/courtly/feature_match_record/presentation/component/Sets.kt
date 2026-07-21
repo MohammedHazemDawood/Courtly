@@ -15,7 +15,16 @@ import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 
 @Composable
-fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finished: Boolean, winner : Side?) {
+fun Sets(
+    modifier: Modifier,
+    leftName: String,
+    rightName: String,
+    bestOf: Int,
+    finished: Boolean,
+    winner: Side?,
+    currentSet: Pair<Int, Int>,
+    prevSets : List<Pair<Int, Int>>
+) {
     val dimension = LocalDimensions.current
     ConstraintLayout(modifier = modifier) {
         val (teamLeftName, teamRightName, teamLeftSets, teamRightSets) = createRefs()
@@ -28,25 +37,29 @@ fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finis
         )
 
         TeamSets(
-            modifier = Modifier.fillMaxWidth(if (bestOf  >= 5) 0.5f else 0.35f).constrainAs(teamLeftSets) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
-            teamPrevWins = teamLeft.prevWins,
+            modifier = Modifier.fillMaxWidth(if (bestOf >= 5) 0.5f else 0.35f)
+                .constrainAs(teamLeftSets) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            playedSets = (prevSets).map { it.first } + currentSet.first,
             bestOf = bestOf,
-            finished = finished
+            finished = finished,
+            winner = winner == Side.TeamLeft
         )
         TeamSets(
-            modifier = Modifier.fillMaxWidth(if (bestOf  >= 5) 0.5f else 0.35f).constrainAs(teamRightSets) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            },
-            teamPrevWins = teamRight.prevWins,
+            modifier = Modifier.fillMaxWidth(if (bestOf >= 5) 0.5f else 0.35f)
+                .constrainAs(teamRightSets) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                },
+            playedSets = prevSets.map { it.second } + currentSet.second,
             bestOf = bestOf,
-            finished = finished
+            finished = finished,
+            winner = winner == Side.TeamRight
         )
         Text(
-            text = teamLeft.name,
+            text = leftName,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium,
@@ -55,12 +68,12 @@ fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finis
                 start.linkTo(parent.start, margin = dimension.xSmall)
                 end.linkTo(teamLeftSets.start, margin = dimension.xSmall)
                 width = Dimension.fillToConstraints
-                horizontalBias  = 0f
+                horizontalBias = 0f
             }, textAlign = TextAlign.Start,
             color = if (winner == Side.TeamLeft) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
         )
         Text(
-            text = teamRight.name,
+            text = rightName,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleMedium,
@@ -69,7 +82,7 @@ fun Sets(modifier: Modifier, teamLeft: Team, teamRight: Team, bestOf: Int, finis
                 start.linkTo(teamRightSets.end, margin = dimension.xSmall)
                 end.linkTo(parent.end, margin = dimension.xSmall)
                 width = Dimension.fillToConstraints
-                horizontalBias  = 1f
+                horizontalBias = 1f
             }, textAlign = TextAlign.End,
             color = if (winner == Side.TeamRight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
         )

@@ -101,17 +101,19 @@ fun MatchScreenContent(
             Spacer(modifier = Modifier.padding(dimension.xSmall))
             Sets(
                 modifier = Modifier.fillMaxWidth(),
-                teamLeft = state.teamLeft,
-                teamRight = state.teamRight,
+                leftName = state.teamLeft.name,
+                rightName = state.teamRight.name,
                 bestOf = state.bestOf,
                 finished = state.status == MatchStatus.Finished,
-                winner = state.winner
+                winner = state.winner,
+                currentSet = state.currentSet,
+                prevSets = state.prevSets
             )
             Spacer(modifier = Modifier.padding(dimension.small))
             CurrentGamePoints(
                 modifier = Modifier.fillMaxWidth(0.4f),
-                teamLeftScore = state.teamLeft.currentScore,
-                teamRightScore = state.teamRight.currentScore,
+                teamLeftScore = state.currentScore.first,
+                teamRightScore = state.currentScore.second,
                 onPoint = onPoint
             )
             Spacer(modifier = Modifier.padding(dimension.small))
@@ -141,7 +143,7 @@ fun MatchScreenContent(
 fun MatchScreenPreview() {
     CourtlyTheme(darkTheme = true) {
         MatchScreenContent(
-            state = Match.initial.copy(
+            state = Match.dummy.copy(
                 status = MatchStatus.Live,
                 teamLeft = Team.initial.copy(name = "Barca"),
                 teamRight = Team.initial.copy(name = "Atliti"),
@@ -156,5 +158,5 @@ fun MatchScreenPreview() {
     }
 }
 
-fun List<Boolean>.toSets(bestOf: Int): List<Boolean> =
-    this + List((bestOf - size).coerceAtLeast(0)) { false }
+fun List<Int>.toSets(bestOf: Int): List<Int> =
+    this + List((bestOf - size).coerceAtLeast(0)) { 0 }

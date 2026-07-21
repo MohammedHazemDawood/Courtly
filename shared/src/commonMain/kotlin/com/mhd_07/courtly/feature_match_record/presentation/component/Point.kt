@@ -36,6 +36,7 @@ fun Point(
     teamRight: Team,
     startingTime: Instant
 ) {
+    if(action.teamRightScore ==  Score.Zero && action.teamLeftScore == Score.Zero) return
     val dimension = LocalDimensions.current
     Card(
         modifier = Modifier.fillMaxWidth().padding(dimension.small),

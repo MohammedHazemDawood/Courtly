@@ -94,7 +94,7 @@ fun Substitution(
                     color = enter
                 ) //Todo: Add string Res
                 Spacer(modifier = Modifier.size(dimension.xxSmall))
-                Text(text = if (action.side == Side.TeamLeft) teamLeft.players[action.indexFrom].name else teamRight.players[action.indexFrom].name)
+                Text(text = action.player1.name)
                 Text(
                     text = if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name,
                     style = MaterialTheme.typography.labelMedium,
@@ -127,9 +127,9 @@ fun Substitution(
                     color = exit
                 ) //Todo: Add string Res
                 Spacer(modifier = Modifier.size(dimension.xxSmall))
-                Text(text = if (action.side == Side.TeamLeft) teamRight.players[action.indexTo].name else teamLeft.players[action.indexTo].name)
+                Text(text = action.player2.name)
                 Text(
-                    text = if (action.side == Side.TeamLeft) teamRight.name else teamLeft.name,
+                    text = if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name,
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Gray
                 )
@@ -156,7 +156,7 @@ fun Substitution(
 fun SubPreview() {
     CourtlyTheme(darkTheme = true) {
             Substitution(
-                action = TimelineAction.Sub(side = Side.TeamLeft, 0, indexTo = 0),
+                action = TimelineAction.Sub(side = Side.TeamLeft, player1 = Player(name = "Player 1", avatar = null, handle = null, bench = false), player2 = Player(name = "Player 2", avatar = null, handle = null, bench = false)),
                 teamLeft = Team.initial.copy(
                     players = listOf(
                         Player(name = "Player 1", avatar = null, handle = null, bench = false)

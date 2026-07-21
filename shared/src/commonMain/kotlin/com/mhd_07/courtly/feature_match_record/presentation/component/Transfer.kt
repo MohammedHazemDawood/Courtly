@@ -95,7 +95,7 @@ fun Transfer(
                     color = enter
                 ) //Todo: Add string Res
                 Spacer(modifier = Modifier.size(dimension.xxSmall))
-                Text(text = if (action.from == Side.TeamLeft) teamLeft.players[action.indexFrom].name else teamRight.players[action.indexFrom].name)
+                Text(text = action.player1.name)
                 Text(
                     text = if (action.from == Side.TeamLeft) teamLeft.name else teamRight.name,
                     style = MaterialTheme.typography.labelMedium,
@@ -152,6 +152,7 @@ fun Transfer(
     }
 }
 
+/*
 @Preview
 @Composable
 fun TransferPreview() {
@@ -172,3 +173,4 @@ fun TransferPreview() {
         )
     }
 }
+*/

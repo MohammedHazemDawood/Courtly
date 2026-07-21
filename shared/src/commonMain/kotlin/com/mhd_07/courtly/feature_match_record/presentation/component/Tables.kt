@@ -75,7 +75,12 @@ fun Tables(
                 teamRight = teamRight
             )
         },
-        { Players(players) },
+        {
+            Players(
+                teamLeft = teamLeft,
+                teamRight = teamRight
+            )
+        },
 //        { Comments() }
     )
     var selectedTab by remember { mutableStateOf(0) }
@@ -147,7 +152,7 @@ fun TimeLine(
         horizontalAlignment = Alignment.CenterHorizontally,
         state = lazyListState,
     ) {
-        items(timeline.reversed().dropLast(1)) { action ->
+        items(timeline.reversed()) { action ->
             when (action) {
                 is TimelineAction.Point -> Point(
                     action = action,
@@ -155,6 +160,7 @@ fun TimeLine(
                     teamRight = teamRight,
                     startingTime = startingTime
                 )
+
                 is TimelineAction.Sub -> Substitution(
                     action = action,
                     teamLeft = teamLeft,
@@ -163,29 +169,53 @@ fun TimeLine(
                 )
 
                 is TimelineAction.Transfer -> TODO()
-                is TimelineAction.WinGame ->  WinGame(
+                is TimelineAction.WinGame -> WinGame(
                     action = action,
                     teamLeft = teamLeft,
                     teamRight = teamRight,
                     startingTime = startingTime
                 )
+
                 is TimelineAction.WinMatch -> WinMatch(
                     action = action,
                     teamLeft = teamLeft,
                     teamRight = teamRight,
                     startingTime = startingTime
                 )
+
+                is TimelineAction.WinSet -> {//TODO()
+                }
             }
         }
     }
 }
 
-@Composable
-fun Players(players: List<Player>) {
-    Text("Players")
-}
 
+@Preview
 @Composable
-fun Comments() {
-    Text("Comments")
+fun TablesPreview() {
+    CourtlyTheme(darkTheme = true) {
+        Tables(
+            modifier = Modifier.fillMaxSize(),
+            timeline = emptyList(),
+            players = listOf(
+                Player(name = "Alice", avatar = null, handle = "alice", bench = false),
+                Player(name = "Bob", avatar = null, handle = "bo vsb", bench = false),
+                Player(name = "Eve", avatar = null, handle = "eve", bench = true)
+            ),
+            teamLeft = Team.initial.copy(
+                players = listOf(
+                    Player(name = "Alice", avatar = null, handle = "alice", bench = false),
+                    Player(name = "Bob", avatar = null, handle = "sbob", bench = false),
+                )
+            ),
+            teamRight = Team.initial.copy(
+                players = listOf(
+                    Player(name = "Charlie", avatar = null, handle = "charlie", bench = false),
+                    Player(name = "Dana", avatar = null, handle = "dana", bench = true)
+                )
+            ),
+            startingTime = Clock.System.now()
+        )
+    }
 }

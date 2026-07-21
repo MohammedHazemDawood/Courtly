@@ -1,6 +1,7 @@
 package com.mhd_07.courtly.feature_match_record.domain.model
 
 import com.mhd_07.courtly.core.domain.model.HCourtSide
+import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.model.Score
 import com.mhd_07.courtly.core.domain.model.Side
 import kotlin.time.Clock
@@ -19,21 +20,20 @@ sealed interface TimelineAction {
 
     data class Transfer(
         val from: Side,
-        val indexFrom: Int,
-        val indexTo: Int?,
+        val player1: Player,
+        val player2: Player?,
         override val time: Instant = Clock.System.now()
-    ) :
-        TimelineAction
+    ) : TimelineAction
 
     data class Sub(
-        val side: Side, val indexFrom: Int, val indexTo: Int,
+        val side: Side, val player1: Player, val player2: Player,
         override val time: Instant = Clock.System.now()
     ) : TimelineAction
 
     data class WinGame(
         val side: Side,
         val teamRightScore: Score,
-        val teamRightWins: Int ,
+        val teamRightWins: Int,
         val teamLeftScore: Score,
         val teamLeftWins: Int,
         val ballPlayer: Int? = null,
@@ -43,4 +43,10 @@ sealed interface TimelineAction {
 
     data class WinMatch(val side: Side, override val time: Instant = Clock.System.now()) :
         TimelineAction
+
+    data class WinSet(
+        override val time: Instant = Clock.System.now(),
+        val side: Side,
+        val result: Pair<Int, Int>
+    ) : TimelineAction
 }

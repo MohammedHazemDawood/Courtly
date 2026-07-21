@@ -35,7 +35,7 @@ fun WinMatch(
     Column(
         modifier = Modifier.fillMaxWidth().padding(dimension.xSmall),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(dimension.xSmall)
+        verticalArrangement = Arrangement.spacedBy(dimension.xxSmall)
     ) {
         Row(
             modifier = Modifier

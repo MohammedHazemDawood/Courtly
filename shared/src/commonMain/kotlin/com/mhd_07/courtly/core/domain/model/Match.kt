@@ -8,63 +8,79 @@ data class Match(
     val teamLeft: Team,
     val teamRight: Team,
     val ballTeam: Side? = null,
-    val type: MatchType,
-    val location: String,
+    val type: MatchType = MatchType.Double,
+    val location: String = "",
     val dateTime: Instant = Clock.System.now(),
     val status: MatchStatus,
     val timeline: List<TimelineAction>,
     val bestOf: Int = 3,
     val winner: Side? = null,
-    val ballHalf : HCourtSide = HCourtSide.Right
+    val mode: MatchMode = MatchMode.Professional,
+    val ballHalf: HCourtSide = HCourtSide.Right,
+    val ballPlayer: Int? = null,
+    val currentScore: Pair<Score, Score> = Score.Zero to Score.Zero,
+    val currentSet: Pair<Int, Int> = 0 to 0,
+    val prevSets : List<Pair<Int, Int>> = emptyList()
 ) {
     companion object {
-        val initial = Match(
-            teamLeft = Team.initial,
-            teamRight = Team.initial,
+        val dummy = Match(
+            teamLeft = Team.initial.copy(
+                name = "Left",
+                players = listOf(
+                    Player(name = "Alice", handle = "alice_12", avatar = null, bench = false),
+                    Player(name = "Bob", handle = "bob7", avatar = null, bench = false),
+                    Player(name = "Charlie", handle = "charlie_99", avatar = null, bench = true),
+                    Player(name = "Dana", handle = "dana_3", avatar = null, bench = true)
+                )
+            ),
+            teamRight = Team.initial.copy(
+                name = "Right",
+                players = listOf(
+                    Player(name = "Eve", handle = "eve01", avatar = null, bench = false),
+                    Player(name = "Frank", handle = "frank_22", avatar = null, bench = false),
+                    Player(name = "Grace", handle = "grace_5", avatar = null, bench = true)
+                )
+            ),
             type = MatchType.Single,
             location = "",
             status = MatchStatus.Coming,
             timeline = emptyList()
         )
     }
+    //TODO: Remove this dummy data
 
-    fun teamRightScore(): Match = when {
-        teamRight.currentScore == Score.Advantage ->
-            copy(teamRight = teamRight.copy(currentScore = Score.Win))
-        teamRight.currentScore == Score.Forty &&
-                teamLeft.currentScore == Score.Advantage ->
+    fun teamRightScore(): Match = when (currentScore.second) {
+        Score.Advantage ->
+            copy(currentScore = currentScore.copy(second = Score.Win))
+
+        Score.Forty if currentScore.first == Score.Advantage ->
             copy(
-                teamRight = teamRight.copy(currentScore = Score.Forty),
-                teamLeft = teamLeft.copy(currentScore = Score.Forty))
-        teamRight.currentScore == Score.Forty &&
-                teamLeft.currentScore == Score.Forty ->
-            copy(teamRight = teamRight.copy(currentScore = Score.Advantage))
-        teamRight.currentScore == Score.Forty ->
-            copy(teamRight = teamRight.copy(currentScore = Score.Win))
-        else ->
-            copy(teamRight = teamRight.copy(currentScore = teamRight.currentScore.next()))
-    }
-
-    fun teamLeftScore(): Match = when {
-        teamLeft.currentScore == Score.Advantage ->
-            copy(teamLeft = teamLeft.copy(currentScore = Score.Win))
-
-        teamLeft.currentScore == Score.Forty &&
-                teamRight.currentScore == Score.Advantage ->
-            copy(
-                teamLeft = teamLeft.copy(currentScore = Score.Forty),
-                teamRight = teamRight.copy(currentScore = Score.Forty)
+                currentScore = Score.Forty to Score.Forty
             )
 
-        teamLeft.currentScore == Score.Forty &&
-                teamRight.currentScore == Score.Forty ->
-            copy(teamLeft = teamLeft.copy(currentScore = Score.Advantage))
+        Score.Forty if currentScore.first == Score.Forty ->
+            copy(currentScore = currentScore.copy(second = Score.Advantage))
 
-        teamLeft.currentScore == Score.Forty ->
-            copy(teamLeft = teamLeft.copy(currentScore = Score.Win))
+        Score.Forty ->
+            copy(currentScore = currentScore.copy(second = Score.Win))
 
-        else ->
-            copy(teamLeft = teamLeft.copy(currentScore = teamLeft.currentScore.next()))
+        else -> copy(currentScore = currentScore.copy(second = currentScore.second.next()))
+    }
+
+    fun teamLeftScore(): Match = when (currentScore.first) {
+        Score.Advantage ->
+            copy(currentScore = currentScore.copy(first = Score.Win))
+
+        Score.Forty if currentScore.second == Score.Advantage ->
+            copy(currentScore = Score.Forty to Score.Forty)
+
+        Score.Forty if currentScore.second == Score.Forty ->
+            copy(currentScore = currentScore.copy(first = Score.Advantage))
+
+        Score.Forty ->
+            copy(currentScore = currentScore.copy(first = Score.Win))
+
+        else -> copy(currentScore = currentScore.copy(first = currentScore.first.next()))
     }
 
 //    fun teamRightDescore(): Match =
@@ -113,19 +129,18 @@ data class Match(
         )
     }
 
-    fun sub(from: Side, fromIndex: Int, toIndex: Int?): Match {
-        val to = from.opposite()
+    fun sub(from: Side, to: Side, player1: Player, player2: Player?): Match {
         val fromTeam = (if (from == Side.TeamRight) teamRight else teamLeft).players.toMutableList()
         val toTeam = (if (to == Side.TeamRight) teamRight else teamLeft).players.toMutableList()
+        val fromIndex = fromTeam.indexOf(player1)
+        val toIndex = toTeam.indexOf(player2)
 
-        if (fromIndex >= fromTeam.size)
-            return this
-        if (toIndex != null && toIndex >= toTeam.size)
+        if (toIndex != -1)
             return this
 
         return if (from == to) {
             val player1 = fromTeam[fromIndex]
-            val player2 = fromTeam[toIndex!!]
+            val player2 = fromTeam[toIndex]
             fromTeam[fromIndex] = player2
             fromTeam[toIndex] = player1
             if (from == Side.TeamRight)
@@ -134,7 +149,7 @@ data class Match(
                 copy(teamLeft = teamLeft.copy(players = fromTeam))
         } else {
             val player1 = fromTeam[fromIndex]
-            if (toIndex == null) {
+            if (toIndex == -1) {
                 fromTeam.removeAt(fromIndex)
                 toTeam.add(player1)
             } else {

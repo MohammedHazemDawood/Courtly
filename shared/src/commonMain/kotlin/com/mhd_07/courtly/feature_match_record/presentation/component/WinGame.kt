@@ -75,7 +75,7 @@ fun WinGame(
         }
         Spacer(modifier = Modifier.size(dimension.xSmall))
         Box(modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Sets", modifier = Modifier.align(Alignment.Center))
+            Text(text = "Set", modifier = Modifier.align(Alignment.Center))
         }
         Spacer(modifier = Modifier.size(dimension.xSmall))
         Row(
@@ -89,7 +89,7 @@ fun WinGame(
         Spacer(modifier = Modifier.size(dimension.xSmall))
 
     }
-}
+} // TODO: Fix sets number
 
 @Preview
 @Composable
