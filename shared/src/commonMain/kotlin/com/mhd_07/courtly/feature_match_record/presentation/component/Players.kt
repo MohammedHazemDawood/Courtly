@@ -1,16 +1,19 @@
 package com.mhd_07.courtly.feature_match_record.presentation.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +26,7 @@ import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import dev.seyfarth.tablericons.TablerIcons
+import dev.seyfarth.tablericons.outlined.ArrowsUpDown
 import dev.seyfarth.tablericons.outlined.User
 
 @Composable
@@ -58,71 +62,25 @@ fun Players(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, Alignment.Start)
-                ) {
-                    if (index < activeLeft.size) {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = MaterialTheme.shapes.small,
-//                modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f)
-                        ) {
-                            //TODO: Use Coil
-                            Icon(
-                                imageVector = TablerIcons.Outlined.User,
-                                contentDescription = null,
-                                modifier = Modifier.padding(dimensions.xSmall)
-                            )
-                        }
-                        Column(/*verticalArrangement = Arrangement.spacedBy(dimensions.xxSmall)*/) {
-                            Text(text = activeLeft[index].name, overflow = TextOverflow.Ellipsis)
-                            Text(
-                                text = "@${activeLeft[index].handle ?: ""}",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.labelSmall,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
+                if (index < activeLeft.size)
+                    PlayerLeft(
+                        modifier = Modifier.weight(1f),
+                        name = activeLeft[index].name,
+                        handle = activeLeft[index].handle,
+                        avatar = activeLeft[index].avatar,
+                        alignment = Alignment.Start
+                    )
+                else Box(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.weight(0.4f))
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, Alignment.End)
-                ) {
-                    if (index < activeRight.size) {
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(text = activeRight[index].name, overflow = TextOverflow.Ellipsis)
-                            Text(
-                                text = "@${activeRight[index].handle ?: ""}",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.labelSmall,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = MaterialTheme.shapes.small,
-//                modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f)
-                        ) {
-                            //TODO: Use Coil
-                            Icon(
-                                imageVector = TablerIcons.Outlined.User,
-                                contentDescription = null,
-                                modifier = Modifier.padding(dimensions.xSmall)
-                            )
-                        }
-                    }
-                }
+                if (index < activeRight.size)
+                    PlayerRight(
+                        modifier = Modifier.weight(1f),
+                        name = activeRight[index].name,
+                        handle = activeRight[index].handle,
+                        avatar = activeRight[index].avatar,
+                        alignment = Alignment.End
+                    )
+                else Box(modifier = Modifier.weight(1f))
             }
         }
         item {
@@ -139,74 +97,140 @@ fun Players(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, Alignment.Start)
-                ) {
-                    if (index < benchLeft.size) {
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = MaterialTheme.shapes.small,
-//                modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f)
-                        ) {
-                            //TODO: Use Coil
-                            Icon(
-                                imageVector = TablerIcons.Outlined.User,
-                                contentDescription = null,
-                                modifier = Modifier.padding(dimensions.xSmall)
-                            )
-                        }
-                        Column(/*verticalArrangement = Arrangement.spacedBy(dimensions.xxSmall)*/) {
-                            Text(text = benchLeft[index].name, overflow = TextOverflow.Ellipsis)
-                            Text(
-                                text = "@${benchLeft[index].handle ?: ""}",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.labelSmall,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                }
+                if (index < benchLeft.size)
+                    PlayerLeft(
+                        modifier = Modifier.weight(1f),
+                        name = benchLeft[index].name,
+                        handle = benchLeft[index].handle,
+                        avatar = benchLeft[index].avatar,
+                        alignment = Alignment.Start
+                    )
+                else Box(modifier = Modifier.weight(1f))
                 Spacer(modifier = Modifier.weight(0.4f))
-                Row(
-                    modifier = Modifier.weight(1f),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, Alignment.End)
-                ) {
-                    if (index < benchRight.size) {
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text(text = benchRight[index].name, overflow = TextOverflow.Ellipsis)
-                            Text(
-                                text = "@${benchRight[index].handle ?: ""}",
-                                color = Color.Gray,
-                                style = MaterialTheme.typography.labelSmall,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        Card(
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                contentColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = MaterialTheme.shapes.small,
-//                modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f)
-                        ) {
-                            //TODO: Use Coil
-                            Icon(
-                                imageVector = TablerIcons.Outlined.User,
-                                contentDescription = null,
-                                modifier = Modifier.padding(dimensions.xSmall)
-                            )
-                        }
-                    }
-                }
+                if (index < benchRight.size)
+                    PlayerRight(
+                        modifier = Modifier.weight(1f),
+                        name = benchRight[index].name,
+                        handle = benchRight[index].handle,
+                        avatar = benchRight[index].avatar,
+                        alignment = Alignment.End
+                    )
+                else Box(modifier = Modifier.weight(1f))
             }
         }
     }
+}
+
+@Composable
+fun PlayerLeft(
+    modifier: Modifier,
+    name: String,
+    handle: String?,
+    avatar: Any?,
+    alignment: Alignment.Horizontal
+) {
+    val dimensions = LocalDimensions.current
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+//        if (index < activeLeft.size) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, alignment)
+        ) {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                shape = MaterialTheme.shapes.small,
+//                modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f)
+            ) {
+                //TODO: Use Coil
+                Icon(
+                    imageVector = TablerIcons.Outlined.User,
+                    contentDescription = null,
+                    modifier = Modifier.padding(dimensions.xSmall)
+                )
+            }
+            Column(/*verticalArrangement = Arrangement.spacedBy(dimensions.xxSmall)*/) {
+                Text(text = name, overflow = TextOverflow.Ellipsis)
+                Text(
+                    text = "@${handle ?: ""}",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.labelSmall,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+        IconButton(onClick = {}) {
+            Icon(
+                imageVector = TablerIcons.Outlined.ArrowsUpDown,
+                contentDescription = "Substitute",
+                modifier = Modifier.size(dimensions.small)
+            )//Use String res
+        }
+    }
+//    }
+}
+
+@Composable
+fun PlayerRight(
+    modifier: Modifier,
+    name: String,
+    handle: String?,
+    avatar: Any?,
+    alignment: Alignment.Horizontal
+) {
+    val dimensions = LocalDimensions.current
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+//        if (index < activeLeft.size) {
+        IconButton(onClick = {}) {
+            Icon(
+                imageVector = TablerIcons.Outlined.ArrowsUpDown,
+                contentDescription = "Substitute",
+                modifier = Modifier.size(dimensions.small)
+            )//Use String res
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, alignment)
+        ) {
+            Column(/*verticalArrangement = Arrangement.spacedBy(dimensions.xxSmall)*/
+                horizontalAlignment = alignment
+            ) {
+                Text(text = name, overflow = TextOverflow.Ellipsis)
+                Text(
+                    text = "@${handle ?: ""}",
+                    color = Color.Gray,
+                    style = MaterialTheme.typography.labelSmall,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                ),
+                shape = MaterialTheme.shapes.small,
+//                modifier = Modifier.fillMaxWidth(0.2f).aspectRatio(1f)
+            ) {
+                //TODO: Use Coil
+                Icon(
+                    imageVector = TablerIcons.Outlined.User,
+                    contentDescription = null,
+                    modifier = Modifier.padding(dimensions.xSmall)
+                )
+            }
+        }
+    }
+//    }
 }
 
 @Preview

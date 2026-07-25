@@ -6,14 +6,24 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.mhd_07.courtly.core.domain.model.Match
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.Side
@@ -22,12 +32,13 @@ import com.mhd_07.courtly.core.presentation.components.ActionIcon
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match_record.presentation.component.Court
 import com.mhd_07.courtly.feature_match_record.presentation.component.CurrentGamePoints
 import com.mhd_07.courtly.feature_match_record.presentation.component.Sets
 import com.mhd_07.courtly.feature_match_record.presentation.component.Tables
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchIntent
-import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchRecordViewModel
+import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchViewModel
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.redo
 import courtly.shared.generated.resources.undo
@@ -39,34 +50,19 @@ import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MatchScreen(
-    viewModel: MatchRecordViewModel = koinViewModel()
-) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
-    val undoAvailable = viewModel.isUndoAvailable.collectAsStateWithLifecycle().value
-    val redoAvailable = viewModel.isRedoAvailable.collectAsStateWithLifecycle().value
-    LaunchedEffect(Unit) {
-        // TODO: Remove
-        viewModel.handleIntent(MatchIntent.StartGame(Side.TeamRight))
-    }
-    MatchScreenContent(
-        state = state.value,
-        undoAvailable = undoAvailable,
-        redoAvailable = redoAvailable,
-        onUndo = { viewModel.handleIntent(MatchIntent.Undo) },
-        onRedo = { viewModel.handleIntent(MatchIntent.Redo) },
-        onPoint = { viewModel.handleIntent(MatchIntent.Point(it)) }
-    )
-}
-
-@Composable
-fun MatchScreenContent(
     state: Match,
     undoAvailable: Boolean,
     redoAvailable: Boolean,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
-    onPoint: (Side) -> Unit
+    onPoint: (Side) -> Unit,
+    navBack: () -> Unit
 ) {
+    var quitDialog by remember { mutableStateOf(false) }
+    BackHandler {
+        quitDialog = true
+//        navBack()
+    }
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -75,7 +71,7 @@ fun MatchScreenContent(
                 dotVisible = state.status == MatchStatus.Live,
                 titleColor = if (state.status == MatchStatus.Live) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground,
                 backVisible = true,
-                onBackClick = { },
+                onBackClick = { quitDialog = true },
                 actions = arrayOf(
                     ActionIcon(
                         TablerIcons.Outlined.ArrowBackUp,
@@ -93,6 +89,36 @@ fun MatchScreenContent(
             )
         }
     ) {
+        if (quitDialog)
+            AlertDialog(
+                modifier = Modifier.fillMaxWidth(0.8f),
+                onDismissRequest = { quitDialog = false },
+                title = {
+                    Text(
+                        text = "You really wanna quit?", //TODO: Change to stringResource
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                },
+                confirmButton = {
+                    Button(
+                        onClick = { navBack() },
+//                        enabled = state.status == MatchStatus.Finished
+                    ) {
+                        Text(
+                            text = "Quit", //TODO: Change to stringResource
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                },
+                dismissButton = {
+                    Button(onClick = { }) {
+                        Text(
+                            text = "Cancel", //TODO: Change to stringResource
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
+                }
+            )
         Column(
             modifier = Modifier.fillMaxSize().padding(it),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -123,13 +149,13 @@ fun MatchScreenContent(
                 stroke = MaterialTheme.colorScheme.onBackground,
                 side = state.ballTeam,
                 hCourtSide = state.ballHalf,
-                win = state.winner!=null
+                win = state.winner != null
             )
             Spacer(modifier = Modifier.padding(dimension.medium))
             Tables(
                 modifier = Modifier.fillMaxWidth().padding(dimension.small),
                 timeline = state.timeline,
-                players = state.teamLeft.players + state.teamRight.players,
+//                players = state.teamLeft.players + state.teamRight.players,
                 teamLeft = state.teamLeft,
                 teamRight = state.teamRight,
                 startingTime = state.dateTime
@@ -138,6 +164,7 @@ fun MatchScreenContent(
     }
 }
 
+/*
 @Preview
 @Composable
 fun MatchScreenPreview() {
@@ -157,6 +184,7 @@ fun MatchScreenPreview() {
         )
     }
 }
+*/
 
 fun List<Int>.toSets(bestOf: Int): List<Int> =
     this + List((bestOf - size).coerceAtLeast(0)) { 0 }

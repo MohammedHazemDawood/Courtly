@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.koin.compiler)
+    kotlin("plugin.serialization") version "2.4.10"
 }
 
 kotlin {
@@ -55,6 +56,9 @@ kotlin {
             api(libs.koin.core)
             api(libs.koin.core.viewmodel)
             implementation(libs.constraintlayout.compose.multiplatform)
+            implementation(libs.jetbrains.navigation3.ui)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

@@ -7,75 +7,73 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import courtly.shared.generated.resources.Res
-import courtly.shared.generated.resources.righteous
+import courtly.shared.generated.resources.oswald
 import org.jetbrains.compose.resources.Font
 
 @Composable
 fun CourtlyTypography(): Typography {
-    val orbitron = FontFamily(Font(Res.font.righteous))
+    val mainFont = FontFamily(Font(Res.font.oswald))
 
     return with(MaterialTheme.typography) {
         copy(
             displayLarge = displayLarge.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             displayMedium = displayMedium.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             displaySmall = displaySmall.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             headlineLarge = headlineLarge.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             headlineMedium = headlineMedium.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             headlineSmall = headlineSmall.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             titleLarge = titleLarge.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             titleMedium = titleMedium.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
             ),
             titleSmall = titleSmall.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Bold
             ),
             labelLarge = labelLarge.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Normal
             ),
             labelMedium = labelMedium.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Normal
             ),
             labelSmall = labelSmall.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Normal
             ),
             bodyLarge = bodyLarge.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Normal,
-                fontSize = 14.sp
             ),
             bodyMedium = bodyMedium.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Normal
             ),
             bodySmall = bodySmall.copy(
-                fontFamily = orbitron,
+                fontFamily = mainFont,
                 fontWeight = FontWeight.Normal
             ),
         )

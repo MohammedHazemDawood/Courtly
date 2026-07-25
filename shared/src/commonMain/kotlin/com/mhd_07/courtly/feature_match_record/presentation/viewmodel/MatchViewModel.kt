@@ -18,8 +18,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
-class MatchRecordViewModel : ViewModel() {
-    private val _state = MutableStateFlow(Match.dummy)
+class MatchViewModel : ViewModel() {
+    private val _state = MutableStateFlow(Match())
     private val _undoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
     private val _redoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
 
@@ -30,6 +30,13 @@ class MatchRecordViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = _state.value
     )
+
+    override fun onCleared() {
+        super.onCleared()
+        _undoStack.update { ArrayDeque() }
+        _redoStack.update { ArrayDeque() }
+        _state.update { Match() }
+    }
 
     val isUndoAvailable = _undoStack.map { it.isNotEmpty() }.stateIn(
         scope = viewModelScope,
@@ -142,7 +149,15 @@ class MatchRecordViewModel : ViewModel() {
                     ballHalf = HCourtSide.Right
                 )
             }
+
+            is MatchIntent.EditLocation -> _state.update { it.copy(location = intent.newLocation) }
+            is MatchIntent.EditMode -> _state.update { it.copy(mode = intent.mode) }
+            is MatchIntent.EditType -> _state.update { it.copy(type = intent.type) }
         }
+    }
+
+    fun clearVM() {
+        onCleared()
     }
 
     private fun addTimelineAction(timelineAction: TimelineAction) {
@@ -177,6 +192,7 @@ class MatchRecordViewModel : ViewModel() {
                 player2 = player2
             ).handlePlayers()
         }
+
     }
 
     private fun executeWinGame(side: Side) {
@@ -258,8 +274,7 @@ class MatchRecordViewModel : ViewModel() {
         if (_state.value.currentSet.first == _state.value.mode.matchPerSet) {
             executeSetWin(Side.TeamLeft)
             checkMatchWin()
-        }
-        else if (_state.value.currentSet.second == _state.value.mode.matchPerSet) {
+        } else if (_state.value.currentSet.second == _state.value.mode.matchPerSet) {
             executeSetWin(Side.TeamRight)
             checkMatchWin()
         }
@@ -347,8 +362,12 @@ class MatchRecordViewModel : ViewModel() {
                     ballTeam = ballTeam?.opposite(),
                     ballHalf = intent.ballHalf,
                     currentSet = currentSet.copy(
-                        first = currentSet.first - (if (intent.side == Side.TeamLeft) 1 else 0),
-                        second = currentSet.second - (if (intent.side == Side.TeamRight) 1 else 0)
+                        first = (currentSet.first - (if (intent.side == Side.TeamLeft) 1 else 0)).coerceAtLeast(
+                            0
+                        ),
+                        second = (currentSet.second - (if (intent.side == Side.TeamRight) 1 else 0)).coerceAtLeast(
+                            0
+                        )
                     )
                 )
             }
@@ -390,11 +409,25 @@ class MatchRecordViewModel : ViewModel() {
         top?.let { action ->
             when (action) {
                 is Point -> {
+                    addTimelineAction(
+                        Point(
+                            action.side,
+                            teamLeftScore = state.value.currentScore.first,
+                            teamRightScore = state.value.currentScore.second
+                        )
+                    )
                     executePoint(action.side)
                 }
 
                 is Sub -> {
                     executeTransfer(action.side, action.side, action.player1, action.player2)
+                    addTimelineAction(
+                        Sub(
+                            side = action.side,
+                            player1 = action.player1,
+                            player2 = action.player2
+                        )
+                    )
                 }
 
                 is Transfer -> {
@@ -403,6 +436,13 @@ class MatchRecordViewModel : ViewModel() {
                         action.from.opposite(),
                         action.player1,
                         action.player2
+                    )
+                    addTimelineAction(
+                        Transfer(
+                            from = action.from,
+                            player1 = action.player1,
+                            player2 = action.player2
+                        )
                     )
                 }
 
@@ -437,7 +477,7 @@ class MatchRecordViewModel : ViewModel() {
                 is WinSet -> executeSetWin(action.side)
             }
 
-            addTimelineAction(action)
+//            addTimelineAction(action)
 
             val nextInLine = _redoStack.value.lastOrNull()
             if (nextInLine is WinGame || nextInLine is WinMatch || nextInLine is WinSet) {

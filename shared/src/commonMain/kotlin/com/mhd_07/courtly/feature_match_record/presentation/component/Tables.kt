@@ -4,12 +4,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,8 +14,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Text
@@ -31,23 +26,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mhd_07.courtly.core.domain.model.Player
-import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
-import com.mhd_07.courtly.core.presentation.ui.theme.enter
-import com.mhd_07.courtly.core.presentation.ui.theme.exit
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.ArrowsUpDown
-import dev.seyfarth.tablericons.outlined.User
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.minus
-import kotlinx.datetime.until
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -55,7 +40,6 @@ import kotlin.time.Instant
 fun Tables(
     modifier: Modifier,
     timeline: List<TimelineAction>,
-    players: List<Player>,
     teamLeft: Team,
     teamRight: Team,
     startingTime: Instant
@@ -115,7 +99,6 @@ fun Tables(
                 topEnd = CornerSize(0.dp)
             )
         ) {
-
             tabContents[selectedTab].invoke()
         }
     }
@@ -198,11 +181,11 @@ fun TablesPreview() {
         Tables(
             modifier = Modifier.fillMaxSize(),
             timeline = emptyList(),
-            players = listOf(
+           /* players = listOf(
                 Player(name = "Alice", avatar = null, handle = "alice", bench = false),
                 Player(name = "Bob", avatar = null, handle = "bo vsb", bench = false),
                 Player(name = "Eve", avatar = null, handle = "eve", bench = true)
-            ),
+            ),*/
             teamLeft = Team.initial.copy(
                 players = listOf(
                     Player(name = "Alice", avatar = null, handle = "alice", bench = false),
