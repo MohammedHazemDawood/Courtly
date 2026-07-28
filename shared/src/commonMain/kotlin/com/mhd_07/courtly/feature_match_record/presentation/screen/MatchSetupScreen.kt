@@ -52,6 +52,9 @@ import com.mhd_07.courtly.core.domain.model.MatchType
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.core.presentation.ui.theme.fieldsTextStyle
+import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
+import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match_record.domain.model.SetupStep
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchIntent
@@ -156,7 +159,7 @@ fun MatchSetupScreen(
                             title = "Team Left Name", //TODO: Change to stringResource
                             label = "Enter Team Left Name",//TODO: Change to stringResource
                             value = state.teamLeft.name,
-                            onChange = { side -> onChangeName(Side.TeamLeft, side) },
+                            onChange = { name -> onChangeName(Side.TeamLeft, name) },
                             next = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
                             focusRequester = teamLeftFocus
                         )
@@ -224,8 +227,8 @@ fun SingleTextPage(
     label: String,
     value: String,
     onChange: (String) -> Unit,
-    next: () -> Unit,
-    focusRequester: FocusRequester
+    next: () -> Unit = {},
+    focusRequester: FocusRequester = FocusRequester()
 ) {
     Column(
         modifier = modifier,
@@ -233,7 +236,7 @@ fun SingleTextPage(
     ) {
         Text(
             title,
-            style = MaterialTheme.typography.titleMedium
+            style = titleTextStyle
         )
         BasicTextField(
             value = value,
@@ -241,20 +244,19 @@ fun SingleTextPage(
             modifier = Modifier.fillMaxWidth().focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             keyboardActions = KeyboardActions(onNext = {
-                println("value = '$value'")
                 if (value.isNotEmpty()) {
                     next()
                 }
             }),
             maxLines = 2,
-            textStyle = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onBackground),
+            textStyle = fieldsTextStyle.copy(color = MaterialTheme.colorScheme.onBackground),
             cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
             decorationBox = {
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (value.isEmpty())
                         Text(
                             text = label,
-                            style = MaterialTheme.typography.bodyLarge.copy(color = Color.Gray)
+                            style = fieldsTextStyle.copy(color = Color.Gray)
                         )
                     it()
                 }
@@ -309,7 +311,7 @@ fun OptionSelector(
         readOnly = true,
         modifier = modifier,
         maxLines = 2,
-        textStyle = MaterialTheme.typography.bodyLarge.copy(
+        textStyle = fieldsTextStyle.copy(
             color = MaterialTheme.colorScheme.onBackground,
             textAlign = textAlign
         ),
@@ -364,7 +366,7 @@ fun ModeSelectionField(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalDimensions.current.xSmall)
     ) {
-        Text("Mode", style = MaterialTheme.typography.titleMedium) //TODO: Change to stringResource
+        Text("Mode", style = titleTextStyle) //TODO: Change to stringResource
         OptionSelector(
             modifier = Modifier.fillMaxWidth(),
             onSelected = { onSelected(MatchMode.entries[it]) },
@@ -373,7 +375,7 @@ fun ModeSelectionField(
         )
         Text(
             if (selected == MatchMode.Professional) "Playing Like Competitions where set is a 6 games" else "Playing Like Community Games where set is a 1 games", //TODO: Change to stringResource
-            style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray)
+            style = notesTextStyle
         )
     }
 }
@@ -388,7 +390,7 @@ fun TypeSelectionField(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalDimensions.current.xSmall)
     ) {
-        Text("Type", style = MaterialTheme.typography.titleMedium) //TODO: Change to stringResource
+        Text("Type", style = titleTextStyle) //TODO: Change to stringResource
         OptionSelector(
             modifier = Modifier.fillMaxWidth(),
             onSelected = { onSelected(MatchType.entries[it]) },
@@ -397,7 +399,7 @@ fun TypeSelectionField(
         )
         Text(
             "Play with 4 person or 2", //TODO: Change to stringResource
-            style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray)
+            style = notesTextStyle
         )
     }
 }
@@ -415,13 +417,13 @@ fun BestOfSelectionField(
         val dimensions = LocalDimensions.current
         Text(
             "System",
-            style = MaterialTheme.typography.titleMedium
+            style = titleTextStyle
         ) //TODO: Change to stringResource
         Row(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
-            Text("Best Of")
+            Text("Best Of", style = fieldsTextStyle)
             OptionSelector(
                 modifier = Modifier.fillMaxWidth(),
                 selected = selected.toString(),
@@ -432,7 +434,7 @@ fun BestOfSelectionField(
         }
         Text(
             "Win Game After 2 or 3 matches", //TODO: Change to stringResource
-            style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray)
+            style = notesTextStyle
         )
 
     }

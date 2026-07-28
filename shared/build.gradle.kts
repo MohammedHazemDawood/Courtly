@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -7,6 +8,40 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.koin.compiler)
     kotlin("plugin.serialization") version "2.4.10"
+    alias(libs.plugins.buildkonfig)
+
+}
+
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").inputStream().use(::load)
+}
+
+fun localProperty(name: String): String =
+    localProperties.getProperty(name)
+        ?: error("$name is missing from local.properties")
+
+buildkonfig {
+    packageName = "com.mhd_07.courtly.shared"
+
+    defaultConfigs {
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "SUPABASE_URL",
+            localProperty("supabase.url")
+        )
+
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "SUPABASE_KEY",
+            localProperty("supabase.key")
+        )
+
+        buildConfigField(
+            com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING,
+            "GOOGLE_WEB_CLIENT_ID",
+            localProperty("google.auth.client.supabase")
+        )
+    }
 }
 
 kotlin {
@@ -36,10 +71,22 @@ kotlin {
         }
     }
 
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
     sourceSets {
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
+
             api(libs.koin.core.android)
+
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play.services.auth)
+            implementation(libs.googleid)
+            implementation(libs.ktor.client.okhttp)
+
+
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -59,9 +106,23 @@ kotlin {
             implementation(libs.jetbrains.navigation3.ui)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.jetbrains.lifecycle.viewmodelNavigation3)
+
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.websockets)
+
+            implementation(project.dependencies.platform("io.github.jan-tennert.supabase:bom:3.7.0"))
+            implementation(libs.postgrest.kt)
+            implementation(libs.auth.kt)
+            implementation(libs.auth.compose)
+            implementation(libs.realtime.kt)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+
         }
     }
 }

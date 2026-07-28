@@ -12,10 +12,11 @@ import com.mhd_07.courtly.core.presentation.components.ActionIcon
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Plus
+import dev.seyfarth.tablericons.outlined.UserCircle
 import kotlin.collections.listOf
 
 @Composable
-fun HomeScreen(navToGameSetup: () -> Unit) {
+fun HomeScreen(navToGameSetup: () -> Unit, navToProfileScreen: () -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CourtlyAppBar(
             title = "Courtly",
@@ -25,7 +26,10 @@ fun HomeScreen(navToGameSetup: () -> Unit) {
                     contentDescription = "Add", //TODO: Change to stringResource
                     action = navToGameSetup
                 )
-            )
+            ),
+            startingIcon = TablerIcons.Outlined.UserCircle,
+            startingDescription = "Profile",
+            onStartingIconClick = navToProfileScreen
         )//TODO: Change to stringResource
     }) {
         Box(modifier = Modifier.fillMaxSize().padding(it), contentAlignment = Alignment.Center) {

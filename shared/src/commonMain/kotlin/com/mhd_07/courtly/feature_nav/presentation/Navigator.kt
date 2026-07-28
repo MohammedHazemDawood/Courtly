@@ -1,0 +1,95 @@
+package com.mhd_07.courtly.feature_nav.presentation
+
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import androidx.savedstate.serialization.SavedStateConfiguration
+import com.mhd_07.courtly.core.presentation.screens.CoreUI
+import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchUI
+import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
+import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
+import com.mhd_07.courtly.feature_sign.presentation.screen.SignUI
+import io.github.jan.supabase.auth.status.SessionStatus
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
+import org.koin.compose.viewmodel.koinViewModel
+
+@Composable
+fun AppNavigator(deepsLink: String? = null) {
+
+
+    val backStack = rememberNavBackStack(configuration = SavedStateConfiguration {
+        serializersModule = SerializersModule {
+            polymorphic(NavKey::class) {
+                subclass(Graphs.Core::class, Graphs.Core.serializer())
+                subclass(Graphs.Sign::class, Graphs.Sign.serializer())
+                subclass(Graphs.Match::class, Graphs.Match.serializer())
+            }
+        }
+    }, Graphs.Sign)
+
+    val viewModel: NavViewModel = koinViewModel()
+    val authState = viewModel.status.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(authState.value) {
+        println("AuthState: ${authState.value}")
+        when (authState.value) {
+            is SessionStatus.Authenticated -> {
+                println("Accepted")
+                backStack.clear()
+                backStack.add(Graphs.Core)
+            }
+
+            else -> {
+                if (backStack.lastOrNull() != Graphs.Sign) {
+                    backStack.clear()
+                    backStack.add(Graphs.Sign)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(deepsLink) {
+        resolveDeepLink(deepsLink)?.let {
+            backStack.clear()
+            backStack.add(it)
+        }
+    }
+
+
+    NavDisplay(
+        backStack = backStack,
+        modifier = Modifier.fillMaxSize(),
+        entryDecorators = listOf(
+            rememberSaveableStateHolderNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator()
+        ),
+        entryProvider = entryProvider {
+            entry<Graphs.Sign> {
+                SignUI()
+            }
+            entry<Graphs.Core> {
+                CoreUI { backStack.add(Graphs.Match) }
+            }
+            entry<Graphs.Match> {
+                MatchUI {
+                    if (backStack.size > 1) {
+                        backStack.clear()
+                        backStack.add(Graphs.Core)
+                    }
+                }
+            }
+        })
+}
+
+fun resolveDeepLink(deepsLink: String?): NavKey? =
+    if (deepsLink?.contains("https://courtly.app//confirmed") == true) Graphs.Sign else null

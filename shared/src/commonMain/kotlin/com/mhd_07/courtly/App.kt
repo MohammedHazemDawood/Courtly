@@ -6,16 +6,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.Dimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
-import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchScreen
-import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchSetupScreen
-import com.mhd_07.courtly.nav.AppNavigator
+import com.mhd_07.courtly.feature_nav.presentation.AppNavigator
 
 @Composable
 @Preview
-fun App() {
+fun App(deepsLink: String? = null) {
     CourtlyTheme {
         CompositionLocalProvider(LocalDimensions provides Dimensions()) {
-            AppNavigator()
+            AppNavigator(deepsLink)
         }
     }
 }

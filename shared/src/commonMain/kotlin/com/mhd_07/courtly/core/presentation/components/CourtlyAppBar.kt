@@ -84,6 +84,65 @@ fun CourtlyAppBar(
     )
 }
 
+
+@Composable
+fun CourtlyAppBar(
+    title: String,
+    titleColor: Color = MaterialTheme.colorScheme.onBackground,
+    startingIcon: ImageVector,//TODO: Will Any? on implementing coil
+    onStartingIconClick: () -> Unit = {},
+    startingDescription: String,
+    dotVisible: Boolean = false,
+    vararg actions: ActionIcon,
+) {
+    val dimensions = LocalDimensions.current
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+            ) {
+                Text(text = title, color = titleColor)
+                if (dotVisible)
+                    Box(
+                        modifier = Modifier.clip(CircleShape).size(dimensions.small)
+                            .background(color = titleColor)
+                    )
+            }
+        },
+        navigationIcon = {
+                IconButton(onClick = onStartingIconClick) {
+                    Icon(
+                        imageVector = startingIcon,
+                        contentDescription = startingDescription
+                    )
+                }
+        },
+        actions = {
+            actions.forEach {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                ) {
+                    IconButton(
+                        onClick = it.action,
+                        enabled = it.enabled
+                    ) {
+                        Icon(
+                            imageVector = it.icon,
+                            contentDescription = it.contentDescription,
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
+
 data class ActionIcon(
     val icon: ImageVector,
     val contentDescription: String,

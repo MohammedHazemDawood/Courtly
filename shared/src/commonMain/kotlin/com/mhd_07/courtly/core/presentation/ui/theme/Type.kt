@@ -3,7 +3,10 @@ package com.mhd_07.courtly.core.presentation.ui.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import courtly.shared.generated.resources.Res
@@ -16,67 +19,67 @@ fun CourtlyTypography(): Typography {
 
     return with(MaterialTheme.typography) {
         copy(
-            displayLarge = displayLarge.copy(
+            // "Enter your email address"
+            displayLarge = TextStyle(
+                fontSize = 32.sp,
                 fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            displayMedium = displayMedium.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            displaySmall = displaySmall.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            headlineLarge = headlineLarge.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            headlineMedium = headlineMedium.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            headlineSmall = headlineSmall.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            titleLarge = titleLarge.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            titleMedium = titleMedium.copy(
-                fontFamily = mainFont,
+                lineHeight = 36.sp,
                 fontWeight = FontWeight.Bold,
+                letterSpacing = (-0.5).sp
             ),
-            titleSmall = titleSmall.copy(
+
+            // "We'll send you a verification code"
+            bodyLarge = TextStyle(
+                fontSize = 17.sp,
                 fontFamily = mainFont,
-                fontWeight = FontWeight.Bold
-            ),
-            labelLarge = labelLarge.copy(
-                fontFamily = mainFont,
+                lineHeight = 24.sp,
                 fontWeight = FontWeight.Normal
             ),
-            labelMedium = labelMedium.copy(
+
+            // Placeholder: "tom@example.com"
+            headlineSmall = TextStyle(
+                fontSize = 20.sp,
                 fontFamily = mainFont,
+                lineHeight = 28.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontStyle = FontStyle.Normal,
+                letterSpacing = 0.3.sp
+            ),
+
+            // "Continue"
+            titleMedium = TextStyle(
+                fontSize = 18.sp,
+                fontFamily = mainFont,
+                lineHeight = 22.sp,
+                fontWeight = FontWeight.SemiBold
+            ),
+
+            // Terms & Privacy text
+            bodySmall = TextStyle(
+                fontSize = 14.sp,
+                fontFamily = mainFont,
+                lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             ),
-            labelSmall = labelSmall.copy(
+
+            // Top app bar action ("Use phone")
+            labelLarge = TextStyle(
+                fontSize = 17.sp,
                 fontFamily = mainFont,
-                fontWeight = FontWeight.Normal
-            ),
-            bodyLarge = bodyLarge.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Normal,
-            ),
-            bodyMedium = bodyMedium.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Normal
-            ),
-            bodySmall = bodySmall.copy(
-                fontFamily = mainFont,
-                fontWeight = FontWeight.Normal
-            ),
+                lineHeight = 22.sp,
+                fontWeight = FontWeight.Medium
+            )
         )
     }
-
 }
+
+val normalTextStyle
+    @Composable get() = MaterialTheme.typography.bodyLarge
+val titleTextStyle
+    @Composable get() = MaterialTheme.typography.displayLarge
+val fieldsTextStyle
+    @Composable get() = MaterialTheme.typography.headlineSmall
+val buttonTextStyle
+    @Composable get() = MaterialTheme.typography.titleMedium
+val notesTextStyle
+    @Composable get() = MaterialTheme.typography.bodySmall.copy(color = Color.Gray)
