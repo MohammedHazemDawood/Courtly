@@ -44,11 +44,20 @@ import com.mhd_07.courtly.core.presentation.ui.theme.fieldsTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.continue_sign
+import courtly.shared.generated.resources.email
+import courtly.shared.generated.resources.email_error
+import courtly.shared.generated.resources.email_placeholder
+import courtly.shared.generated.resources.pass
+import courtly.shared.generated.resources.pass_error
+import courtly.shared.generated.resources.pass_placeholder
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.AlertCircle
 import dev.seyfarth.tablericons.filled.Eye
 import dev.seyfarth.tablericons.outlined.EyeOff
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MailPasswordSignScreen(
@@ -69,9 +78,9 @@ fun MailPasswordSignScreen(
 
 
     val emailError =
-        if (mailRegex.matches(mail) || mail.isEmpty()) null else "Invalid Email"//TODO: Change to stringResource
+        if (mailRegex.matches(mail) || mail.isEmpty()) null else stringResource(Res.string.email_error)
     val passError =
-        if (passRegex.matches(password) || password.isEmpty()) null else "Password should be at least 8 digits"//TODO: Change to stringResource + check supabase for required digits
+        if (passRegex.matches(password) || password.isEmpty()) null else stringResource(Res.string.pass_error)
 
     val nextEnabled = when (pagerState.currentPage) {
         0 -> mail.isNotEmpty() && emailError == null
@@ -112,8 +121,8 @@ fun MailPasswordSignScreen(
                 0 -> {
                     SingleTextPage(
                         modifier = Modifier.fillMaxSize(),
-                        title = "Email",//TODO: Change to stringResource
-                        label = "Enter Email",//TODO: Change to stringResource
+                        title = stringResource(Res.string.email),
+                        label = stringResource(Res.string.email_placeholder),
                         value = mail,
                         onChange = onMailChange,
                         next = {
@@ -129,8 +138,8 @@ fun MailPasswordSignScreen(
                 1 -> {
                     SingleTextPage(
                         modifier = Modifier.fillMaxSize(),
-                        title = "Password", //TODO: Change to stringResource
-                        label = "Enter Password",//TODO: Change to stringResource
+                        title = stringResource(Res.string.pass),
+                        label = stringResource(Res.string.pass_placeholder),
                         value = password,
                         onChange = onPasswordChange,
                         next = { if (nextEnabled) onConfirm() },
@@ -159,7 +168,7 @@ fun MailPasswordSignScreen(
             else
                 onConfirm()
         }, enabled = nextEnabled) {
-            Text(if (pagerState.currentPage != pagerState.pageCount - 1) "Next" else "Start Game", style = buttonTextStyle) //TODO: Change to stringResource
+            Text(text = stringResource(Res.string.continue_sign), style = buttonTextStyle)
         }
     }
 }
@@ -227,7 +236,7 @@ fun SingleTextPage(
                         ) {
                             Icon(
                                 imageVector = TablerIcons.Filled.AlertCircle,
-                                contentDescription = "Error",//TODO: Change to stringResource
+                                contentDescription = null,
                                 tint = MaterialTheme.colorScheme.error
                             )
                             Text(

@@ -22,17 +22,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.bench
+import courtly.shared.generated.resources.playing
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowsUpDown
 import dev.seyfarth.tablericons.outlined.User
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun Players(
     teamLeft: Team,
-    teamRight: Team
+    teamRight: Team,
 ) {
     val dimensions = LocalDimensions.current
 
@@ -49,7 +54,7 @@ fun Players(
         verticalArrangement = Arrangement.spacedBy(dimensions.small)
     ) {
         item {
-            Text(text = "Active") //TODO: Add string Res
+            Text(text = stringResource(Res.string.playing))
         }
         items(
             count = maxOf(
@@ -84,7 +89,7 @@ fun Players(
             }
         }
         item {
-            Text(text = "Bench") //TODO: Add string Res
+            Text(text = stringResource(Res.string.bench))
         }
         items(
             count = maxOf(
@@ -240,19 +245,19 @@ fun PlayersPreview() {
         Players(
             teamLeft = Team.initial.copy(
                 players = listOf(
-                    com.mhd_07.courtly.core.domain.model.Player(
+                    Player(
                         name = "Alice",
                         avatar = null,
                         handle = "alice",
                         bench = false
                     ),
-                    com.mhd_07.courtly.core.domain.model.Player(
+                    Player(
                         name = "Bob",
                         avatar = null,
                         handle = "bob",
                         bench = false
                     ),
-                    com.mhd_07.courtly.core.domain.model.Player(
+                    Player(
                         name = "Eve",
                         avatar = null,
                         handle = "eve",
@@ -263,20 +268,20 @@ fun PlayersPreview() {
                 ),
             teamRight = Team.initial.copy(
                 players = listOf(
-                    com.mhd_07.courtly.core.domain.model.Player(
+                    Player(
                         name = "Charlie",
                         avatar = null,
                         handle = "charlie",
                         bench = false
                     ),
-                    com.mhd_07.courtly.core.domain.model.Player(
+                    Player(
                         name = "Dana",
                         avatar = null,
                         handle = "dana",
                         bench = true
                     )
                 )
-            )
+            ),
         )
     }
 }

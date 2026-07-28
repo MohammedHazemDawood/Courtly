@@ -1,0 +1,80 @@
+<resources>
+    <!-- App & Navigation -->
+    <string name="app_name">كورتلي</string>
+    <string name="live">مباشر دلوقتي</string>
+    <string name="upcoming">لسة جاي</string>
+    <string name="finished">خلص</string>
+    <string name="undo">رجع</string>
+    <string name="redo">قدم تاني</string>
+    <string name="back">ارجع يا كابتن</string>
+
+    <!-- General Actions & Feed -->
+    <string name="logout">تسجيل خروج</string>
+    <string name="new_game">ماتش جديد</string>
+    <string name="profile">الملف الشخصي</string>
+    <string name="empty_feed">مفيش ماتشات لسه.. الملعب فاضي!</string>
+
+    <!-- Match Tracking -->
+    <string name="playing">في الملعب</string>
+    <string name="bench">على الدكة</string>
+    <string name="sub">تبديل</string>
+    <string name="sub_in">نزول</string>
+    <string name="sub_out">خروج</string>
+    <string name="won_game">%1$s كسب الجيم</string>
+    <string name="won_match">%1$s كسب الماتش</string>
+    <string name="set">المجموعة</string>
+    <string name="ensure_quit">رايح فين؟ هتسيب الماتش وتخلع؟</string>
+    <string name="quit">اه، اخلع</string>
+    <string name="cancel">لا، كمل لعب</string>
+
+    <string name="next">كمل</string>
+    <string name="start_match">ابدأ الماتش</string>
+
+    <string name="single">فردي</string>
+    <string name="double">زوجي</string>
+
+    <string name="mode_professional">رسمي</string>
+    <string name="mode_freestyle">ودي</string>
+    
+    <string name="timeline">الأحداث</string>
+    <string name="players">اللاعيبة</string>
+
+    <string name="point">نقطة لـ %1$s</string>
+
+    <!-- Match Setup -->
+    <string name="setup">جهز الماتش</string>
+    <string name="team_left_name">اسم الفريق الأول</string>
+    <string name="team_left_name_placeholder">اكتب اسم الفريق الأول (اللي على الشمال)</string>
+    <string name="team_right_name">اسم الفريق التاني</string>
+    <string name="team_right_name_placeholder">اكتب اسم الفريق التاني (اللي على اليمين)</string>
+    <string name="location">المكان</string>
+    <string name="location_placeholder">هتلعبوا فين؟</string>
+    <string name="mode">نظام اللعب</string>
+    <string name="professional_description">زي البطولات، كل مجموعة 6 جيمات</string>
+    <string name="freestyle_description">حجز ودي على السريع (السيت من جيم واحد)</string>
+    <string name="type">نوع الماتش</string>
+    <string name="type_description">فردي (لاعبين) ولا زوجي (4 لاعيبة)؟</string>
+    <string name="system">نظام المجموعات</string>
+    <string name="best_of">الأفضل من</string>
+    <string name="best_of_3">أفضل 3 مجموعات</string>
+    <string name="best_of_5">أفضل 5 مجموعات</string>
+    <string name="best_of_3_description">اللي يكسب مجموعتين ياخد الماتش</string>
+    <string name="best_of_5_description">اللي يكسب 3 مجموعات ياخد الماتش</string>
+    <string name="drop">افتح القايمة</string>
+
+    <!-- Auth & Validation -->
+    <string name="email_error">الإيميل ده فيه حاجة غلط، راجعه تاني</string>
+    <string name="pass_error">الباسورد لازم تكون 8 خانات على الأقل وفيها رقم واحد</string>
+    <string name="email">الإيميل</string>
+    <string name="email_placeholder">اكتب إيميلك</string>
+    <string name="pass">الباسورد</string>
+    <string name="pass_placeholder">اكتب الباسورد بتاعك (وماتنساهوش)</string>
+    <string name="continue_sign">يلا بينا</string>
+
+    <!-- Onboarding / Login -->
+    <string name="welcome">منور في Courtly!</string>
+    <string name="with_google">كمل بـ Google</string>
+    <string name="with_facebook">كمل بـ Facebook</string>
+    <string name="or">أو</string>
+    <string name="email_password">كمل بالإيميل</string>
+</resources>

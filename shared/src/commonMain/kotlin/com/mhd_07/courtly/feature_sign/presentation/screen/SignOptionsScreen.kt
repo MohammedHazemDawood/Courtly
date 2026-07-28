@@ -24,9 +24,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.email_password
+import courtly.shared.generated.resources.or
+import courtly.shared.generated.resources.welcome
+import courtly.shared.generated.resources.with_facebook
+import courtly.shared.generated.resources.with_google
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.filled.BrandFacebook
 import dev.seyfarth.tablericons.filled.BrandGoogle
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SignOptionsScreen(googleSignIn: () -> Unit, navToEmailSign: () -> Unit) {
@@ -38,7 +45,7 @@ fun SignOptionsScreen(googleSignIn: () -> Unit, navToEmailSign: () -> Unit) {
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         //TODO: Add App Icon Later
-        Text(text = "Welcome To Courtly", style = MaterialTheme.typography.titleLarge)
+        Text(text = stringResource(Res.string.welcome), style = MaterialTheme.typography.titleLarge)
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -63,8 +70,8 @@ fun SignOptionsScreen(googleSignIn: () -> Unit, navToEmailSign: () -> Unit) {
                 ) {
                     Icon(
                         imageVector = TablerIcons.Filled.BrandGoogle,
-                        contentDescription = "Sign With Google"
-                    )//TODO: use string resource instead
+                        contentDescription = stringResource(Res.string.with_google)
+                    )
                 }
                 IconButton(
                     modifier = Modifier./*size(dimensions.large).*/border(
@@ -77,8 +84,8 @@ fun SignOptionsScreen(googleSignIn: () -> Unit, navToEmailSign: () -> Unit) {
                 ) {
                     Icon(
                         imageVector = TablerIcons.Filled.BrandFacebook,
-                        contentDescription = "Sign With Facebook"
-                    )//TODO: use string resource instead
+                        contentDescription = stringResource(Res.string.with_facebook)
+                    )
                 }
             }
             Row(
@@ -87,15 +94,15 @@ fun SignOptionsScreen(googleSignIn: () -> Unit, navToEmailSign: () -> Unit) {
             ) {
                 HorizontalDivider(modifier = Modifier.weight(1f))
                 Text(
-                    text = "OR",
+                    text = stringResource(Res.string.or),
                     style = MaterialTheme.typography.labelMedium,
                     color = Color.Gray,
                     modifier = Modifier.padding(horizontal = dimensions.xSmall)
-                )//Todo: use string resource instead
+                )
                 HorizontalDivider(modifier = Modifier.weight(1f))
             }
             Button(onClick = navToEmailSign, modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Sign With Email")//Todo: use string resource instead
+                Text(text = stringResource(Res.string.email_password))
             }
         }
     }

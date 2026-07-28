@@ -10,9 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.mhd_07.courtly.core.presentation.components.ActionIcon
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.empty_feed
+import courtly.shared.generated.resources.new_game
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Plus
 import dev.seyfarth.tablericons.outlined.UserCircle
+import org.jetbrains.compose.resources.stringResource
 import kotlin.collections.listOf
 
 @Composable
@@ -23,17 +27,17 @@ fun HomeScreen(navToGameSetup: () -> Unit, navToProfileScreen: () -> Unit) {
             actions = arrayOf(
                 ActionIcon(
                     icon = TablerIcons.Outlined.Plus,
-                    contentDescription = "Add", //TODO: Change to stringResource
+                    contentDescription = stringResource(Res.string.new_game),
                     action = navToGameSetup
                 )
             ),
             startingIcon = TablerIcons.Outlined.UserCircle,
             startingDescription = "Profile",
             onStartingIconClick = navToProfileScreen
-        )//TODO: Change to stringResource
+        )
     }) {
         Box(modifier = Modifier.fillMaxSize().padding(it), contentAlignment = Alignment.Center) {
-            Text("No Saved Games") //TODO: Change to stringResource
+            Text(stringResource(Res.string.empty_feed))
         }
     }
 }

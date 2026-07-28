@@ -19,7 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
@@ -40,6 +42,9 @@ import com.mhd_07.courtly.feature_match_record.presentation.component.Tables
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchIntent
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchViewModel
 import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.cancel
+import courtly.shared.generated.resources.ensure_quit
+import courtly.shared.generated.resources.quit
 import courtly.shared.generated.resources.redo
 import courtly.shared.generated.resources.undo
 import dev.seyfarth.tablericons.TablerIcons
@@ -59,6 +64,7 @@ fun MatchScreen(
     navBack: () -> Unit
 ) {
     var quitDialog by remember { mutableStateOf(false) }
+    val direction = LocalLayoutDirection.current
     BackHandler {
         quitDialog = true
 //        navBack()
@@ -74,13 +80,13 @@ fun MatchScreen(
                 onBackClick = { quitDialog = true },
                 actions = arrayOf(
                     ActionIcon(
-                        TablerIcons.Outlined.ArrowBackUp,
+                        if (direction == LayoutDirection.Ltr) TablerIcons.Outlined.ArrowBackUp else TablerIcons.Outlined.ArrowForwardUp,
                         contentDescription = stringResource(Res.string.undo),
                         action = onUndo,
                         enabled = undoAvailable
                     ),
                     ActionIcon(
-                        TablerIcons.Outlined.ArrowForwardUp,
+                        if (direction == LayoutDirection.Ltr) TablerIcons.Outlined.ArrowForwardUp else TablerIcons.Outlined.ArrowBackUp,
                         contentDescription = stringResource(Res.string.redo),
                         action = onRedo,
                         enabled = redoAvailable
@@ -95,7 +101,7 @@ fun MatchScreen(
                 onDismissRequest = { quitDialog = false },
                 title = {
                     Text(
-                        text = "You really wanna quit?", //TODO: Change to stringResource
+                        text = stringResource(Res.string.ensure_quit),
                         style = MaterialTheme.typography.headlineSmall
                     )
                 },
@@ -105,15 +111,15 @@ fun MatchScreen(
 //                        enabled = state.status == MatchStatus.Finished
                     ) {
                         Text(
-                            text = "Quit", //TODO: Change to stringResource
+                            text = stringResource(Res.string.quit),
                             style = MaterialTheme.typography.labelLarge
                         )
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { }) {
+                    Button(onClick = { quitDialog = false }) {
                         Text(
-                            text = "Cancel", //TODO: Change to stringResource
+                            text = stringResource(Res.string.cancel),
                             style = MaterialTheme.typography.labelLarge
                         )
                     }

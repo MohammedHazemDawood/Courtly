@@ -14,8 +14,11 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.logout
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
+import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -42,7 +45,7 @@ fun CoreUI(navToGameSetup: () -> Unit) {
                 //TODO: Setup Profile Setting Screen
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Button(onClick = { viewmodel.logOut() }) {
-                        Text("Logout") //TODO: Change to stringResource
+                        Text(stringResource(Res.string.logout))
                     }
                 }
             }

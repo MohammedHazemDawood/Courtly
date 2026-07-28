@@ -23,9 +23,12 @@ import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.point
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlinx.datetime.until
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -54,7 +57,7 @@ fun Point(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Point for ${if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name}")
+            Text(text = stringResource(Res.string.point,if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name))
             Text(text = "${startingTime.until(action.time, DateTimeUnit.MINUTE)}'")
         }
         Spacer(modifier = Modifier.size(dimension.xxSmall))

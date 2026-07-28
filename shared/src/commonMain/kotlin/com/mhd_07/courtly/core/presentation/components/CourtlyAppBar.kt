@@ -18,9 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.back
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ChevronLeft
+import dev.seyfarth.tablericons.outlined.ChevronRight
+import org.jetbrains.compose.resources.stringResource
 
 //add imports
 
@@ -35,6 +41,7 @@ fun CourtlyAppBar(
     vararg actions: ActionIcon
 ) {
     val dimensions = LocalDimensions.current
+    val direction = LocalLayoutDirection.current
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
@@ -57,8 +64,8 @@ fun CourtlyAppBar(
             if (backVisible) {
                 IconButton(onClick = onBackClick) {
                     Icon(
-                        imageVector = TablerIcons.Outlined.ChevronLeft,
-                        contentDescription = "Back" //TODO: Change to stringResource
+                        imageVector = if (direction == LayoutDirection.Ltr) TablerIcons.Outlined.ChevronLeft else TablerIcons.Outlined.ChevronRight,
+                        contentDescription = stringResource(Res.string.back)
                     )
                 }
             }
@@ -115,12 +122,12 @@ fun CourtlyAppBar(
             }
         },
         navigationIcon = {
-                IconButton(onClick = onStartingIconClick) {
-                    Icon(
-                        imageVector = startingIcon,
-                        contentDescription = startingDescription
-                    )
-                }
+            IconButton(onClick = onStartingIconClick) {
+                Icon(
+                    imageVector = startingIcon,
+                    contentDescription = startingDescription
+                )
+            }
         },
         actions = {
             actions.forEach {

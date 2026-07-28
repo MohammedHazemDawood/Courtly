@@ -18,9 +18,12 @@ import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.won_match
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlinx.datetime.until
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -47,7 +50,7 @@ fun WinMatch(
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f))
             Text(
-                text = "${if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name} won the match",
+                text = stringResource(Res.string.won_match,if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name),
                 modifier = Modifier.padding(horizontal = dimension.xSmall)
             )
             HorizontalDivider(modifier = Modifier.weight(1f))

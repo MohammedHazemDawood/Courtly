@@ -1,6 +1,5 @@
 package com.mhd_07.courtly.feature_match_record.presentation.screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,28 +41,44 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigationevent.NavigationEventInfo
-import androidx.navigationevent.compose.NavigationBackHandler
-import androidx.navigationevent.compose.rememberNavigationEventState
 import com.mhd_07.courtly.core.domain.model.Match
 import com.mhd_07.courtly.core.domain.model.MatchMode
 import com.mhd_07.courtly.core.domain.model.MatchType
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.fieldsTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match_record.domain.model.SetupStep
-import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchIntent
-import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchViewModel
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.best_of
+import courtly.shared.generated.resources.best_of_3
+import courtly.shared.generated.resources.best_of_3_description
+import courtly.shared.generated.resources.best_of_5
+import courtly.shared.generated.resources.best_of_5_description
+import courtly.shared.generated.resources.drop
+import courtly.shared.generated.resources.freestyle_description
+import courtly.shared.generated.resources.location
+import courtly.shared.generated.resources.location_placeholder
+import courtly.shared.generated.resources.mode
+import courtly.shared.generated.resources.next
+import courtly.shared.generated.resources.professional_description
+import courtly.shared.generated.resources.setup
+import courtly.shared.generated.resources.start_match
+import courtly.shared.generated.resources.system
+import courtly.shared.generated.resources.team_left_name
+import courtly.shared.generated.resources.team_left_name_placeholder
+import courtly.shared.generated.resources.team_right_name
+import courtly.shared.generated.resources.team_right_name_placeholder
+import courtly.shared.generated.resources.type
+import courtly.shared.generated.resources.type_description
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ChevronDown
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.koin.compose.viewmodel.koinViewModel
+import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun MatchSetupScreen(
@@ -125,7 +140,7 @@ fun MatchSetupScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CourtlyAppBar(
-                title = "Setup Match", //TODO: Change to stringResource
+                title = stringResource(Res.string.setup),
                 titleColor = MaterialTheme.colorScheme.onBackground,
                 backVisible = true,
                 onBackClick = {
@@ -156,8 +171,8 @@ fun MatchSetupScreen(
                     SetupStep.TeamLeft -> {
                         SingleTextPage(
                             modifier = Modifier.fillMaxSize(),
-                            title = "Team Left Name", //TODO: Change to stringResource
-                            label = "Enter Team Left Name",//TODO: Change to stringResource
+                            title = stringResource(Res.string.team_left_name),
+                            label = stringResource(Res.string.team_left_name_placeholder),
                             value = state.teamLeft.name,
                             onChange = { name -> onChangeName(Side.TeamLeft, name) },
                             next = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
@@ -168,8 +183,8 @@ fun MatchSetupScreen(
                     SetupStep.TeamRight -> {
                         SingleTextPage(
                             modifier = Modifier.fillMaxSize(),
-                            title = "Team Right Name", //TODO: Change to stringResource
-                            label = "Enter Team Right Name",//TODO: Change to stringResource
+                            title = stringResource(Res.string.team_right_name),
+                            label = stringResource(Res.string.team_right_name_placeholder),
                             value = state.teamRight.name,
                             onChange = { side -> onChangeName(Side.TeamRight, side) },
                             next = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
@@ -180,8 +195,8 @@ fun MatchSetupScreen(
                     SetupStep.Location -> {
                         SingleTextPage(
                             modifier = Modifier.fillMaxSize(),
-                            title = "Location", //TODO: Change to stringResource
-                            label = "Enter Location",//TODO: Change to stringResource
+                            title = stringResource(Res.string.location),
+                            label = stringResource(Res.string.location_placeholder),
                             value = state.location,
                             onChange = onEditLocation,
                             next = { scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } },
@@ -213,8 +228,11 @@ fun MatchSetupScreen(
                     navToGameRecord()
                 }
 //                nextEnabled = false
-            }, enabled = nextEnabled) {
-                Text(if (pagerState.currentPage != pagerState.pageCount - 1) "Next" else "Start Game")
+            }, enabled = nextEnabled, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    stringResource(if (pagerState.currentPage != pagerState.pageCount - 1) Res.string.next else Res.string.start_match),
+                    style = buttonTextStyle
+                )
             }
         }
     }
@@ -330,8 +348,8 @@ fun OptionSelector(
                     IconButton(onClick = { dropped = !dropped }) {
                         Icon(
                             imageVector = TablerIcons.Outlined.ChevronDown,
-                            contentDescription = "Dropdown"
-                        ) //TODO: Change to stringResource
+                            contentDescription = stringResource(Res.string.drop),
+                        )
 
                         DropdownMenu(
 //                        modifier = Modifier.fillMaxWidth(),
@@ -366,15 +384,15 @@ fun ModeSelectionField(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalDimensions.current.xSmall)
     ) {
-        Text("Mode", style = titleTextStyle) //TODO: Change to stringResource
+        Text(stringResource(Res.string.mode), style = titleTextStyle)
         OptionSelector(
             modifier = Modifier.fillMaxWidth(),
             onSelected = { onSelected(MatchMode.entries[it]) },
-            selected = selected.display,
-            options = MatchMode.entries.map { it.display }
+            selected = stringResource(selected.display),
+            options = MatchMode.entries.map { stringResource(it.display) }
         )
         Text(
-            if (selected == MatchMode.Professional) "Playing Like Competitions where set is a 6 games" else "Playing Like Community Games where set is a 1 games", //TODO: Change to stringResource
+            stringResource(if (selected == MatchMode.Professional) Res.string.professional_description else Res.string.freestyle_description),
             style = notesTextStyle
         )
     }
@@ -390,15 +408,15 @@ fun TypeSelectionField(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(LocalDimensions.current.xSmall)
     ) {
-        Text("Type", style = titleTextStyle) //TODO: Change to stringResource
+        Text(stringResource(Res.string.type), style = titleTextStyle)
         OptionSelector(
             modifier = Modifier.fillMaxWidth(),
             onSelected = { onSelected(MatchType.entries[it]) },
-            selected = selected.display,
-            options = MatchType.entries.map { it.display }
+            selected = stringResource(selected.display),
+            options = MatchType.entries.map { stringResource(it.display) }
         )
         Text(
-            "Play with 4 person or 2", //TODO: Change to stringResource
+            stringResource(Res.string.type_description),
             style = notesTextStyle
         )
     }
@@ -416,24 +434,27 @@ fun BestOfSelectionField(
     ) {
         val dimensions = LocalDimensions.current
         Text(
-            "System",
+            stringResource(Res.string.system),
             style = titleTextStyle
-        ) //TODO: Change to stringResource
+        )
         Row(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
-            Text("Best Of", style = fieldsTextStyle)
+            Text(stringResource(Res.string.best_of), style = fieldsTextStyle)
             OptionSelector(
                 modifier = Modifier.fillMaxWidth(),
                 selected = selected.toString(),
-                options = listOf("Best Of 3", "Best Of 5"),
+                options = listOf(
+                    stringResource(Res.string.best_of_3),
+                    stringResource(Res.string.best_of_5)
+                ),
                 onSelected = { onSelected(if (it == 0) 3 else 5) },
                 textAlign = TextAlign.Center
             )
         }
         Text(
-            "Win Game After 2 or 3 matches", //TODO: Change to stringResource
+            stringResource(if (selected == 3) Res.string.best_of_3_description else Res.string.best_of_5_description),
             style = notesTextStyle
         )
 

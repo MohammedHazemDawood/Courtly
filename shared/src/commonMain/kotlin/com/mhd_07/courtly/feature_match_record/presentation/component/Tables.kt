@@ -33,6 +33,10 @@ import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.players
+import courtly.shared.generated.resources.timeline
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -46,8 +50,8 @@ fun Tables(
 ) {
     val dimension = LocalDimensions.current
     val tabs = listOf(
-        "Timeline",
-        "Players",
+        stringResource(Res.string.timeline),
+        stringResource(Res.string.players),
 //        "Comments"
     )
     val tabContents = listOf<@Composable () -> Unit>(
@@ -62,7 +66,7 @@ fun Tables(
         {
             Players(
                 teamLeft = teamLeft,
-                teamRight = teamRight
+                teamRight = teamRight,
             )
         },
 //        { Comments() }

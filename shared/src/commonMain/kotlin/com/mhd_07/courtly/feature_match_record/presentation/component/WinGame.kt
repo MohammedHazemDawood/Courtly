@@ -24,9 +24,13 @@ import com.mhd_07.courtly.core.domain.model.Team
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.set
+import courtly.shared.generated.resources.won_game
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlinx.datetime.until
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -54,7 +58,7 @@ fun WinGame(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Game won by ${if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name}")
+            Text(text = stringResource(Res.string.won_game, if (action.side == Side.TeamLeft) teamLeft.name else teamRight.name))
             Text(text = "${startingTime.until(action.time, DateTimeUnit.MINUTE)}'")
         }
         Spacer(modifier = Modifier.size(dimension.xxSmall))
@@ -75,7 +79,7 @@ fun WinGame(
         }
         Spacer(modifier = Modifier.size(dimension.xSmall))
         Box(modifier = Modifier.fillMaxWidth()) {
-            Text(text = "Set", modifier = Modifier.align(Alignment.Center))
+            Text(text = stringResource(Res.string.set), modifier = Modifier.align(Alignment.Center))
         }
         Spacer(modifier = Modifier.size(dimension.xSmall))
         Row(

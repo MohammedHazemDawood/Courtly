@@ -28,12 +28,17 @@ import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.enter
 import com.mhd_07.courtly.core.presentation.ui.theme.exit
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.sub
+import courtly.shared.generated.resources.sub_in
+import courtly.shared.generated.resources.sub_out
 import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowsUpDown
 import dev.seyfarth.tablericons.outlined.User
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlinx.datetime.until
+import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -70,7 +75,7 @@ fun Transfer(
                     contentDescription = null,
                     modifier = Modifier.size(dimension.small),
                 )
-                Text(text = "Substitution") //TODO: Add string Res
+                Text(text = stringResource(Res.string.sub))
 
             }
             Text(text = "${startingTime.until(action.time, DateTimeUnit.MINUTE)}'")
@@ -90,10 +95,10 @@ fun Transfer(
         ) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
-                    text = "In",
+                    text = stringResource(Res.string.sub_in),
                     style = MaterialTheme.typography.labelSmall,
                     color = enter
-                ) //Todo: Add string Res
+                )
                 Spacer(modifier = Modifier.size(dimension.xxSmall))
                 Text(text = action.player1.name)
                 Text(
@@ -123,10 +128,10 @@ fun Transfer(
         ) {
             Column(horizontalAlignment = Alignment.Start) {
                 Text(
-                    text = "Out",
+                    text = stringResource(Res.string.sub_out),
                     style = MaterialTheme.typography.labelSmall,
                     color = exit
-                ) //Todo: Add string Res
+                )
                 Spacer(modifier = Modifier.size(dimension.xxSmall))
 //                Text(text = if (action.from == Side.TeamLeft) teamRight.players[action.indexTo].name else teamLeft.players[action.indexTo].name)
                 Text(
