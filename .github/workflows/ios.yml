@@ -19,7 +19,7 @@ jobs:
         run: |
           echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
           echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
-
+          echo "google.auth.client.supabase=123342532432" >> local.properties
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
