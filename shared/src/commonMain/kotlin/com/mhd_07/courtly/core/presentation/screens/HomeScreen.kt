@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.mhd_07.courtly.core.presentation.components.ActionIcon
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
+import com.mhd_07.courtly.core.presentation.components.Loading
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.empty_feed
 import courtly.shared.generated.resources.new_game
@@ -17,7 +18,6 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Plus
 import dev.seyfarth.tablericons.outlined.UserCircle
 import org.jetbrains.compose.resources.stringResource
-import kotlin.collections.listOf
 
 @Composable
 fun HomeScreen(navToGameSetup: () -> Unit, navToProfileScreen: () -> Unit) {
@@ -36,6 +36,7 @@ fun HomeScreen(navToGameSetup: () -> Unit, navToProfileScreen: () -> Unit) {
             onStartingIconClick = navToProfileScreen
         )
     }) {
+//        Loading()
         Box(modifier = Modifier.fillMaxSize().padding(it), contentAlignment = Alignment.Center) {
             Text(stringResource(Res.string.empty_feed))
         }

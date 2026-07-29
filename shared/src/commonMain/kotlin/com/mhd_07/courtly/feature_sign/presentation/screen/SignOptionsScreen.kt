@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.email_password
 import courtly.shared.generated.resources.or
@@ -102,7 +103,7 @@ fun SignOptionsScreen(googleSignIn: () -> Unit, navToEmailSign: () -> Unit) {
                 HorizontalDivider(modifier = Modifier.weight(1f))
             }
             Button(onClick = navToEmailSign, modifier = Modifier.fillMaxWidth()) {
-                Text(text = stringResource(Res.string.email_password))
+                Text(text = stringResource(Res.string.email_password), style = buttonTextStyle)
             }
         }
     }

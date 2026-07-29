@@ -108,7 +108,6 @@ fun MailPasswordSignScreen(
 
     Column(
         modifier = Modifier.fillMaxSize()
-            .padding(WindowInsets.ime.asPaddingValues())
             .padding(vertical = dimensions.large, horizontal = dimensions.small),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

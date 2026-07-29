@@ -77,4 +77,9 @@
     <string name="with_facebook">كمل بـ Facebook</string>
     <string name="or">أو</string>
     <string name="email_password">كمل بالإيميل</string>
+
+    <string name="otp_title">اكتب الكود اللي بعتناهولك</string>
+    <string name="otp_description">بعتنالك الميل على %1$s عشان نتأكد إن ده أنت</string>
+
+    <string name="loading">اصبر</string>
 </resources>

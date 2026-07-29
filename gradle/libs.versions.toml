@@ -10,6 +10,7 @@ androidx-espresso = "3.7.0"
 androidx-lifecycle = "2.11.0"
 androidx-testExt = "1.3.0"
 composeMultiplatform = "1.11.1"
+compottieNetwork = "2.2.4"
 constraintlayoutComposeMultiplatform = "0.8.0"
 #iconsaxCompose = "0.0.5"
 junit = "4.13.2"
@@ -32,6 +33,9 @@ buildkonfig = "0.22.0"
 [libraries]
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottieNetwork" }
+compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottieNetwork" }
+compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottieNetwork" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
 
 
@@ -69,6 +73,7 @@ ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref="ktor_
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref="ktor_v" }
 ktor-client-websockets = { module = "io.ktor:ktor-client-websockets", version.ref="ktor_v" }
 realtime-kt = { module = "io.github.jan-tennert.supabase:realtime-kt" }
+functions-kt = { module = "io.github.jan-tennert.supabase:functions-kt" }
 postgrest-kt = { module = "io.github.jan-tennert.supabase:postgrest-kt" }
 tabler-icons-kmp = { module = "dev.seyfarth:tabler-icons-kmp", version.ref = "tablerIconsKmp" }
 jetbrains-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "multiplatform-nav3-ui" }

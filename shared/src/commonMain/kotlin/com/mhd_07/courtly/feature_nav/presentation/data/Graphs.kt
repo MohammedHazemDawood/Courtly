@@ -12,6 +12,8 @@ sealed interface Graphs : NavKey {
         data object SignOptions : Graphs, NavKey
         @Serializable
         data object MailPasswordSign : Graphs, NavKey
+        @Serializable
+        data object OTP : Graphs, NavKey
     }
 
     @Serializable

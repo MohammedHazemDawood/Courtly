@@ -2,6 +2,7 @@ package com.mhd_07.courtly.feature_sign.presentation.module
 
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.app_name
+import io.github.jan.supabase.auth.exception.AuthErrorCode
 import org.jetbrains.compose.resources.StringResource
 
 sealed interface SignResult {
@@ -14,6 +15,7 @@ sealed interface SignResult {
 
 enum class SignError(val message: StringResource) {
     AccountExist(message = Res.string.app_name),
+    InvalidCredentials(message = Res.string.app_name),
     NotConfirmed(message = Res.string.app_name),
     TooManyRequest(message = Res.string.app_name),
     SamePassword(message = Res.string.app_name),
@@ -26,13 +28,14 @@ enum class SignError(val message: StringResource) {
 
 private val messages = mapOf(
     //TODO: To be change all string res
-    "email_exists" to SignError.AccountExist,
-    "email_not_confirmed" to SignError.NotConfirmed,
-    "over_email_send_rate_limit" to SignError.TooManyRequest,
-    "over_request_rate_limit" to SignError.TooManyRequest,
-    "same_password" to SignError.SamePassword,
-    "user_banned" to SignError.UserPanned,
-    "weak_password" to SignError.WeakPassword,
+    AuthErrorCode.EmailNotConfirmed to SignError.NotConfirmed,
+    AuthErrorCode.InvalidCredentials to SignError.InvalidCredentials,
+    AuthErrorCode.EmailExists to SignError.AccountExist,
+    AuthErrorCode.WeakPassword to SignError.WeakPassword,
+    AuthErrorCode.UserBanned to SignError.UserPanned,
+    AuthErrorCode.SamePassword to SignError.SamePassword,
+    AuthErrorCode.OverRequestRateLimit to SignError.TooManyRequest,
+
 )
 
-fun getError(error: String) = messages[error] ?: SignError.Unknown
+fun getError(error: AuthErrorCode?) = messages[error] ?: SignError.Unknown

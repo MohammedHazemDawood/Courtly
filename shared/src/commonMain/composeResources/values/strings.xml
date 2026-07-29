@@ -77,4 +77,9 @@
     <string name="with_facebook">Continue with Facebook</string>
     <string name="or">or</string>
     <string name="email_password">Continue with Email</string>
+
+    <string name="otp_title">Enter the code we sent you</string>
+    <string name="otp_description">We just sent it to %1$s to verify</string>
+
+    <string name="loading">Wait for a sec</string>
 </resources>

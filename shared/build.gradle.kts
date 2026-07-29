@@ -116,6 +116,12 @@ kotlin {
             implementation(libs.auth.kt)
             implementation(libs.auth.compose)
             implementation(libs.realtime.kt)
+            implementation(libs.functions.kt)
+
+            implementation(libs.compottie)
+            implementation(libs.compottie.dot)
+            implementation(libs.compottie.network)
+
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
