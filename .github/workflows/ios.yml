@@ -1,5 +1,4 @@
 name: Build iOS Simulator
-
 on:
   workflow_dispatch:
   push:
@@ -13,6 +12,10 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Create local.properties
+        run: |
+          echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
+          echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
       - name: Checkout
         uses: actions/checkout@v4
 
