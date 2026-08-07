@@ -1,7 +1,17 @@
 package com.mhd_07.courtly.feature_sign.presentation.module
 
 import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.account_exist
 import courtly.shared.generated.resources.app_name
+import courtly.shared.generated.resources.canceled
+import courtly.shared.generated.resources.invalid_credentials
+import courtly.shared.generated.resources.network_error
+import courtly.shared.generated.resources.not_confirmed
+import courtly.shared.generated.resources.same_password
+import courtly.shared.generated.resources.too_many_request
+import courtly.shared.generated.resources.unknown
+import courtly.shared.generated.resources.user_banned
+import courtly.shared.generated.resources.weak_password
 import io.github.jan.supabase.auth.exception.AuthErrorCode
 import org.jetbrains.compose.resources.StringResource
 
@@ -14,16 +24,16 @@ sealed interface SignResult {
 }
 
 enum class SignError(val message: StringResource) {
-    AccountExist(message = Res.string.app_name),
-    InvalidCredentials(message = Res.string.app_name),
-    NotConfirmed(message = Res.string.app_name),
-    TooManyRequest(message = Res.string.app_name),
-    SamePassword(message = Res.string.app_name),
-    UserPanned(message = Res.string.app_name),
-    WeakPassword(message = Res.string.app_name),
-    NetworkError(message = Res.string.app_name),
-    Canceled(message = Res.string.app_name),
-    Unknown(message = Res.string.app_name)
+    AccountExist(message = Res.string.account_exist),
+    InvalidCredentials(message = Res.string.invalid_credentials),
+    NotConfirmed(message = Res.string.not_confirmed),
+    TooManyRequest(message = Res.string.too_many_request),
+    SamePassword(message = Res.string.same_password),
+    UserPanned(message = Res.string.user_banned),
+    WeakPassword(message = Res.string.weak_password),
+    NetworkError(message = Res.string.network_error),
+    Canceled(message = Res.string.canceled),
+    Unknown(message = Res.string.unknown)
 }
 
 private val messages = mapOf(

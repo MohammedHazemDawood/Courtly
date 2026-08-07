@@ -112,9 +112,13 @@ fun SignUI() {
                         googleSignIn = { googleClient.startFlow() },
                         navToEmailSign = { backStack.add(Graphs.Sign.MailPasswordSign) })
                 }
+                //TODO: add Forgot Password Screen
                 entry<Graphs.Sign.OTP> {
                     OTPScreen(
-                        done = { viewmodel.handleIntent(SignIntent.VerifyOTP) },
+                        done = {
+                            viewmodel.handleIntent(SignIntent.VerifyOTP)
+                            viewmodel.handleIntent(SignIntent.EditOTP(""))
+                        },
                         email = state.email,
                         otp = state.otp,
                         onOtpChange = {

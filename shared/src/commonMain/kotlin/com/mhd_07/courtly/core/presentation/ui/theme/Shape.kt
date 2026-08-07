@@ -8,5 +8,5 @@ val courtlyShapes = Shapes(
     extraSmall = RoundedCornerShape(10.dp),
     small = RoundedCornerShape(12.dp),
     medium = RoundedCornerShape(15.dp),
-    large = RoundedCornerShape(20.dp)
+    large = RoundedCornerShape(25.dp)
 )

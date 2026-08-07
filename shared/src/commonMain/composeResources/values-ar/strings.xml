@@ -82,4 +82,15 @@
     <string name="otp_description">بعتنالك الميل على %1$s عشان نتأكد إن ده أنت</string>
 
     <string name="loading">اصبر</string>
+
+    <string name="invalid_credentials">الإيميل أو الباسورد غلط</string>
+    <string name="not_confirmed">أكد إيميلك الأول</string>
+    <string name="account_exist">فيه حساب بالإيميل ده بالفعل</string>
+    <string name="weak_password">الباسورد ضعيف</string>
+    <string name="user_banned">حسابك موقوف</string>
+    <string name="same_password">لازم الباسورد الجديد يكون مختلف عن الحالي</string>
+    <string name="too_many_request">محاولات كتير جدًا. جرّب تاني بعد شوية</string>
+    <string name="network_error">في مشكلة في الاتصال. اتأكد من الإنترنت</string>
+    <string name="canceled">تم الإلغاء</string>
+    <string name="unknown">حصلت مشكلة. حاول تاني</string>
 </resources>

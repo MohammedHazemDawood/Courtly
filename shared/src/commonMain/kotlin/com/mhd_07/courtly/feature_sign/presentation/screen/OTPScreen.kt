@@ -46,7 +46,7 @@ fun OTPScreen(done: () -> Unit, email: String, otp: String, onOtpChange: (String
     val dimensions = LocalDimensions.current
     val focusManager = LocalFocusManager.current
     LaunchedEffect(otp) {
-        if (otp.length == 8)
+        if (otp.length == 6)
             focusManager.clearFocus()
     }
     Column(
@@ -83,7 +83,7 @@ fun OtpField(
     otp: String,
     onOtpChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    length: Int = 8
+    length: Int = 6
 ) {
     BasicTextField(
         modifier = modifier,
