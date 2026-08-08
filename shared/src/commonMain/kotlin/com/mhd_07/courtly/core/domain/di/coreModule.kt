@@ -2,6 +2,7 @@ package com.mhd_07.courtly.core.domain.di
 
 import com.mhd_07.courtly.core.data.repo.CoreRepositoryImpl
 import com.mhd_07.courtly.core.domain.repo.CoreRepository
+import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
 import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
 import com.mhd_07.courtly.shared.BuildKonfig
@@ -33,5 +34,6 @@ val coreModule = module {
     }
     single<CoreRepository> { CoreRepositoryImpl(get()) }
     single { LogoutUseCase(get()) }
-    viewModel<CoreViewmodel>{ CoreViewmodel(get()) }
+    single { GetProfileUseCase(get()) }
+    viewModel<CoreViewmodel>{ CoreViewmodel(get(), get()) }
 }

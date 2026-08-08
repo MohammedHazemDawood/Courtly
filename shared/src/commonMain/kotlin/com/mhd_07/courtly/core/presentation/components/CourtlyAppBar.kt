@@ -1,6 +1,7 @@
 package com.mhd_07.courtly.core.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,8 +19,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.VectorPainter
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.back
@@ -126,6 +132,69 @@ fun CourtlyAppBar(
                 Icon(
                     imageVector = startingIcon,
                     contentDescription = startingDescription
+                )
+            }
+        },
+        actions = {
+            actions.forEach {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                ) {
+                    IconButton(
+                        onClick = it.action,
+                        enabled = it.enabled
+                    ) {
+                        Icon(
+                            imageVector = it.icon,
+                            contentDescription = it.contentDescription,
+                        )
+                    }
+                }
+            }
+        }
+    )
+}
+
+
+@Composable
+fun CourtlyAppBar(
+    title: String,
+    titleColor: Color = MaterialTheme.colorScheme.onBackground,
+    startingIcon: Any?,
+    placeHolder: ImageVector,
+    onStartingIconClick: () -> Unit = {},
+    startingDescription: String,
+    dotVisible: Boolean = false,
+    vararg actions: ActionIcon,
+) {
+    val dimensions = LocalDimensions.current
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+            ) {
+                Text(text = title, color = titleColor)
+                if (dotVisible)
+                    Box(
+                        modifier = Modifier.clip(CircleShape).size(dimensions.small)
+                            .background(color = titleColor)
+                    )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onStartingIconClick) {
+                AsyncImage(
+                    model = startingIcon,
+                    contentDescription = startingDescription,
+                    placeholder = rememberVectorPainter(placeHolder),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.clip(CircleShape).border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
                 )
             }
         },

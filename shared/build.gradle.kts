@@ -118,12 +118,14 @@ kotlin {
             implementation(libs.realtime.kt)
             implementation(libs.functions.kt)
 
+            implementation(libs.coil.compose)
+            implementation(libs.coil.network.ktor3)
+
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(libs.compottie.network)
-
         }
-        iosMain.dependencies {
+        appleMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
         commonTest.dependencies {

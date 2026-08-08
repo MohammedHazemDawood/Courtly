@@ -1,96 +1,109 @@
 <resources>
     <!-- App & Navigation -->
-    <string name="app_name">كورتلي</string>
-    <string name="live">مباشر دلوقتي</string>
-    <string name="upcoming">لسة جاي</string>
-    <string name="finished">خلص</string>
-    <string name="undo">رجع</string>
-    <string name="redo">قدم تاني</string>
-    <string name="back">ارجع يا كابتن</string>
+    <string name="app_name">Courtly</string>
+    <string name="live">شغّال دلوقتي</string>
+    <string name="upcoming">اللي جاي</string>
+    <string name="finished">خلصت على كده</string>
+    <string name="undo">لأ، رجّعها زي ما كانت</string>
+    <string name="redo">لا استنى، اعملها تاني</string>
+    <string name="back">ارجع خطوة</string>
 
     <!-- General Actions & Feed -->
-    <string name="logout">تسجيل خروج</string>
-    <string name="new_game">ماتش جديد</string>
+    <string name="feed">feed</string>
+    <string name="my_games">مبارياتي</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="new_game">يلا نبدأ الماتش</string>
     <string name="profile">الملف الشخصي</string>
-    <string name="empty_feed">مفيش ماتشات لسه.. الملعب فاضي!</string>
+    <string name="notification">الإشعارات</string>
+    <string name="privacy">الخصوصية</string>
+    <string name="edit_profile">تعديل الملف الشخصي</string>
+    <string name="settings">الإعدادات</string>
+    <string name="empty_feed">مفيش حد هنا… لسه مفيش ماتشات</string>
 
     <!-- Match Tracking -->
     <string name="playing">في الملعب</string>
     <string name="bench">على الدكة</string>
     <string name="sub">تبديل</string>
-    <string name="sub_in">نزول</string>
-    <string name="sub_out">خروج</string>
+    <string name="sub_in">داخل</string>
+    <string name="sub_out">خارج</string>
     <string name="won_game">%1$s كسب الجيم</string>
-    <string name="won_match">%1$s كسب الماتش</string>
-    <string name="set">المجموعة</string>
-    <string name="ensure_quit">رايح فين؟ هتسيب الماتش وتخلع؟</string>
-    <string name="quit">اه، اخلع</string>
-    <string name="cancel">لا، كمل لعب</string>
+    <string name="won_match">%1$s كسب الماتش كله!</string>
+    <string name="set">سيت</string>
+    <string name="ensure_quit">بجد؟ هتنسحب دلوقتي؟</string>
+    <string name="quit">أيوه، أنا ماشي</string>
+    <string name="cancel">إلغاء</string>
 
-    <string name="next">كمل</string>
-    <string name="start_match">ابدأ الماتش</string>
+    <string name="next">التالي</string>
+    <string name="start_match">يلا نلعب</string>
 
     <string name="single">فردي</string>
     <string name="double">زوجي</string>
 
-    <string name="mode_professional">رسمي</string>
-    <string name="mode_freestyle">ودي</string>
-    
-    <string name="timeline">الأحداث</string>
-    <string name="players">اللاعيبة</string>
-
-    <string name="point">نقطة لـ %1$s</string>
+    <string name="mode_professional">وضع المحترفين</string>
+    <string name="mode_freestyle">للتسلية وبس</string>
 
     <!-- Match Setup -->
-    <string name="setup">جهز الماتش</string>
-    <string name="team_left_name">اسم الفريق الأول</string>
-    <string name="team_left_name_placeholder">اكتب اسم الفريق الأول (اللي على الشمال)</string>
-    <string name="team_right_name">اسم الفريق التاني</string>
-    <string name="team_right_name_placeholder">اكتب اسم الفريق التاني (اللي على اليمين)</string>
-    <string name="location">المكان</string>
-    <string name="location_placeholder">هتلعبوا فين؟</string>
-    <string name="mode">نظام اللعب</string>
-    <string name="professional_description">زي البطولات، كل مجموعة 6 جيمات</string>
-    <string name="freestyle_description">حجز ودي على السريع (السيت من جيم واحد)</string>
-    <string name="type">نوع الماتش</string>
-    <string name="type_description">فردي (لاعبين) ولا زوجي (4 لاعيبة)؟</string>
-    <string name="system">نظام المجموعات</string>
+    <string name="setup">ظبّط الماتش</string>
+    <string name="team_left_name">الفريق اللي على الشمال</string>
+    <string name="team_left_name_placeholder">سمّي أبطال الناحية الشمال</string>
+    <string name="team_right_name">الفريق اللي على اليمين</string>
+    <string name="team_right_name_placeholder">سمّي أبطال الناحية اليمين</string>
+    <string name="location">الماتش فين؟</string>
+    <string name="location_placeholder">اكتب مكان الملعب</string>
+    <string name="mode">ستايل الماتش</string>
+    <string name="professional_description">شغل جد (6 جيمات في كل سيت)</string>
+    <string name="freestyle_description">جو الويك إند الرايق (جيم واحد في كل سيت)</string>
+    <string name="type">عدد اللاعبين</string>
+    <string name="type_description">إنتوا الاتنين بس (فردي) أو هات معاك شريك (زوجي)</string>
+    <string name="system">مدة الماتش</string>
     <string name="best_of">الأفضل من</string>
-    <string name="best_of_3">أفضل 3 مجموعات</string>
-    <string name="best_of_5">أفضل 5 مجموعات</string>
-    <string name="best_of_3_description">اللي يكسب مجموعتين ياخد الماتش</string>
-    <string name="best_of_5_description">اللي يكسب 3 مجموعات ياخد الماتش</string>
-    <string name="drop">افتح القايمة</string>
+    <string name="best_of_3">3</string>
+    <string name="best_of_5">5</string>
+    <string name="best_of_3_description">أول واحد يكسب سيتين يكسب الماتش كله</string>
+    <string name="best_of_5_description">أول واحد يكسب 3 سيتات ياخد اللقب</string>
+    <string name="drop">اضغط لمزيد من الاختيارات</string>
+
+    <string name="timeline">الماتش لحظة بلحظة</string>
+    <string name="players">مين بيلعب؟</string>
+
+    <string name="point">النقطة لـ %1$s!</string>
 
     <!-- Auth & Validation -->
-    <string name="email_error">الإيميل ده فيه حاجة غلط، راجعه تاني</string>
-    <string name="pass_error">الباسورد لازم تكون 8 خانات على الأقل وفيها رقم واحد</string>
+    <string name="email_title">إيميلك إيه؟</string>
+    <string name="email_description">اكتب الإيميل المرتبط بحسابك</string>
+    <string name="password_title">اكتب الباسورد</string>
+    <string name="change_email">تغيير</string>
+    <string name="password_forgot">نسيت الباسورد؟</string>
+    <string name="email_error">الإيميل ده شكله مش مظبوط</string>
+    <string name="pass_error">8 حروف أو أكتر، وفيه رقم واحد على الأقل - إنت قدّها</string>
     <string name="email">الإيميل</string>
-    <string name="email_placeholder">اكتب إيميلك</string>
+    <string name="email_placeholder">you@example.com</string>
     <string name="pass">الباسورد</string>
-    <string name="pass_placeholder">اكتب الباسورد بتاعك (وماتنساهوش)</string>
+    <string name="pass_placeholder">ششش، سرّ</string>
     <string name="continue_sign">يلا بينا</string>
+    <string name="use_another_email">استخدم إيميل آخر</string>
 
     <!-- Onboarding / Login -->
-    <string name="welcome">منور في Courtly!</string>
-    <string name="with_google">كمل بـ Google</string>
-    <string name="with_facebook">كمل بـ Facebook</string>
+    <string name="welcome">أهلاً بيك في Courtly!</string>
+    <string name="welcome_description">سجّل دخول عشان تكمّل اللعب</string>
+    <string name="with_google">المتابعة باستخدام Google</string>
+    <string name="with_x">المتابعة باستخدام X</string>
     <string name="or">أو</string>
-    <string name="email_password">كمل بالإيميل</string>
+    <string name="email_password">المتابعة بالإيميل</string>
 
-    <string name="otp_title">اكتب الكود اللي بعتناهولك</string>
-    <string name="otp_description">بعتنالك الميل على %1$s عشان نتأكد إن ده أنت</string>
+    <string name="otp_title">بص في إيميلك</string>
+    <string name="otp_description">بعتنالك كود على %1$s</string>
 
-    <string name="loading">اصبر</string>
+    <string name="loading">استنى علينا…</string>
 
-    <string name="invalid_credentials">الإيميل أو الباسورد غلط</string>
-    <string name="not_confirmed">أكد إيميلك الأول</string>
-    <string name="account_exist">فيه حساب بالإيميل ده بالفعل</string>
-    <string name="weak_password">الباسورد ضعيف</string>
-    <string name="user_banned">حسابك موقوف</string>
-    <string name="same_password">لازم الباسورد الجديد يكون مختلف عن الحالي</string>
-    <string name="too_many_request">محاولات كتير جدًا. جرّب تاني بعد شوية</string>
-    <string name="network_error">في مشكلة في الاتصال. اتأكد من الإنترنت</string>
-    <string name="canceled">تم الإلغاء</string>
-    <string name="unknown">حصلت مشكلة. حاول تاني</string>
+    <string name="invalid_credentials">هممم، الإيميل أو الباسورد مش مألوفين لينا</string>
+    <string name="not_confirmed">بص في إيميلك وأكّد إيميلك الأول</string>
+    <string name="account_exist">شكلك واحد مننا أصلاً</string>
+    <string name="weak_password">الباسورد ده محتاج ينزل الجيم</string>
+    <string name="user_banned">إنت متحطوط على الدكة في Courtly</string>
+    <string name="same_password">هات حاجة جديدة، مش الباسورد القديم</string>
+    <string name="too_many_request">إهدى شوية يا نجم. جرّب كمان شوية</string>
+    <string name="network_error">الإشارة راحت - اتأكد من النت</string>
+    <string name="canceled">اتلغى</string>
+    <string name="unknown">أوبس، حاجة باظت. نجرب تاني</string>
 </resources>

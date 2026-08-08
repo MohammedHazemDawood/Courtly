@@ -42,7 +42,7 @@ fun Sets(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
-            playedSets = (prevSets).map { it.first } + currentSet.first,
+            playedSets = (prevSets).map { it.first }.apply { if (!finished) plus(currentSet.first) },
             bestOf = bestOf,
             finished = finished,
             winner = winner == Side.TeamLeft
@@ -53,7 +53,7 @@ fun Sets(
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 },
-            playedSets = prevSets.map { it.second } + currentSet.second,
+            playedSets = (prevSets).map { it.second }.apply { if (!finished) plus(currentSet.second) },
             bestOf = bestOf,
             finished = finished,
             winner = winner == Side.TeamRight

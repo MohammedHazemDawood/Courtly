@@ -9,11 +9,16 @@
     <string name="back">Back It Up</string><!-- the same of undo-->
 
     <!-- General Actions & Feed -->
+    <string name="feed">Feed</string>
+    <string name="my_games">My Games</string>
     <string name="logout">Logout</string><!-- text of signout button-->
     <string name="new_game">Let's Get This Match Started</string> <!--the same of redo and undo-->
-    <string name="profile">That's Me</string><!--the same for undo and redo-->
+    <string name="profile">Profile</string><!--the same for undo and redo-->
+    <string name="settings">Settings</string>
+    <string name="notification">Notifications</string>
+    <string name="privacy">Privacy</string>
+    <string name="edit_profile">Edit Profile</string> <!--the same for undo and redo-->
     <string name="empty_feed">Tumbleweeds… no matches yet</string> <!--will be shown on screen when no saved matchs or no games from server-->
-
     <!-- Match Tracking -->
     <string name="playing">On Court</string>
     <string name="bench">Benched</string>
@@ -63,6 +68,11 @@
     <string name="point">Point goes to %1$s!</string>
 
     <!-- Auth & Validation -->
+    <string name="email_title">What's your email?</string>
+    <string name="email_description">Enter the email connected to your account</string>
+    <string name="password_title">Enter your password</string>
+    <string name="change_email">Change</string>
+    <string name="password_forgot">Forget Password?</string>
     <string name="email_error">That email looks a little off</string>
     <string name="pass_error">8+ characters, at least one number - you got this</string>
     <string name="email">Email</string>
@@ -70,11 +80,13 @@
     <string name="pass">Password</string>
     <string name="pass_placeholder">Shh, it's a secret</string>
     <string name="continue_sign">Let's Go</string>
+    <string name="use_another_email">Use another email</string>
 
     <!-- Onboarding / Login -->
     <string name="welcome">Welcome to Courtly!</string>
+    <string name="welcome_description">Sign in to continue playing</string>
     <string name="with_google">Continue with Google</string>
-    <string name="with_facebook">Continue with Facebook</string>
+    <string name="with_x">Continue with X</string>
     <string name="or">or</string>
     <string name="email_password">Continue with Email</string>
 

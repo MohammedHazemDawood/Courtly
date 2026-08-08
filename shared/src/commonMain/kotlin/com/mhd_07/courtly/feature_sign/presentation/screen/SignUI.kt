@@ -123,6 +123,9 @@ fun SignUI() {
                         otp = state.otp,
                         onOtpChange = {
                             viewmodel.handleIntent(SignIntent.EditOTP(it))
+                        }, navBack = {
+                            if (backStack.size > 1)
+                                backStack.removeLast()
                         })
                 }
             })

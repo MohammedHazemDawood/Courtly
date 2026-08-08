@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
@@ -32,6 +34,7 @@ fun CoreUI(navToGameSetup: () -> Unit) {
         }
     }, Graphs.Core.Home)
     val viewmodel = koinViewModel<CoreViewmodel>()
+    val profile by viewmodel.profile.collectAsStateWithLifecycle()
     NavDisplay(
         backStack = backStack,
         modifier = Modifier.fillMaxSize(),
@@ -39,15 +42,20 @@ fun CoreUI(navToGameSetup: () -> Unit) {
             entry<Graphs.Core.Home> {
                 HomeScreen(
                     navToGameSetup = navToGameSetup,
-                    navToProfileScreen = { backStack.add(Graphs.Core.Settings) })
+                    navToProfileScreen = { backStack.add(Graphs.Core.Settings) },
+                    userPFP = profile?.avatar
+                )
             }
             entry<Graphs.Core.Settings> {
-                //TODO: Setup Profile Setting Screen
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Button(onClick = { viewmodel.logOut() }) {
-                        Text(stringResource(Res.string.logout))
-                    }
-                }
+                SettingsScreen(
+                    navBack = {
+                        if (backStack.size > 1)
+                            backStack.removeLast()
+                    },
+                    profile = profile ?: return@entry,
+                    logout = { viewmodel.logOut() }
+                )
             }
-        })
+        }
+    )
 }

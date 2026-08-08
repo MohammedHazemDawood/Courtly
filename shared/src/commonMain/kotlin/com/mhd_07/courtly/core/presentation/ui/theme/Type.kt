@@ -28,6 +28,9 @@ fun CourtlyTypography(): Typography {
                 letterSpacing = (-0.5).sp
             ),
 
+            displaySmall = displaySmall.copy(fontFamily = mainFont),
+            displayMedium = displayMedium.copy(fontFamily = mainFont),
+
             // "We'll send you a verification code"
             bodyLarge = TextStyle(
                 fontSize = 17.sp,
@@ -35,6 +38,8 @@ fun CourtlyTypography(): Typography {
                 lineHeight = 24.sp,
                 fontWeight = FontWeight.Normal
             ),
+
+            bodyMedium = bodyMedium.copy(fontFamily = mainFont),
 
             // Placeholder: "tom@example.com"
             headlineSmall = TextStyle(
@@ -45,6 +50,11 @@ fun CourtlyTypography(): Typography {
                 fontStyle = FontStyle.Normal,
                 letterSpacing = 0.3.sp
             ),
+            headlineMedium = headlineMedium.copy(fontFamily = mainFont),
+            headlineLarge = headlineLarge.copy(fontFamily = mainFont),
+
+            titleLarge = titleLarge.copy(fontFamily = mainFont),
+            titleSmall = titleSmall.copy(fontFamily = mainFont),
 
             // "Continue"
             titleMedium = TextStyle(
@@ -68,7 +78,9 @@ fun CourtlyTypography(): Typography {
                 fontFamily = mainFont,
                 lineHeight = 22.sp,
                 fontWeight = FontWeight.Medium
-            )
+            ),
+            labelMedium = labelMedium.copy(fontFamily = mainFont),
+            labelSmall = labelSmall.copy(fontFamily = mainFont)
         )
     }
 }
