@@ -1,5 +1,11 @@
 package com.mhd_07.courtly.feature_nav.presentation
 
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,8 +17,12 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.mhd_07.courtly.core.presentation.screens.CoreUI
+import com.mhd_07.courtly.core.presentation.ui.theme.popTransform
+import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
+import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchUI
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
@@ -32,9 +42,10 @@ fun AppNavigator(deepsLink: String? = null) {
                 subclass(Graphs.Core::class, Graphs.Core.serializer())
                 subclass(Graphs.Sign::class, Graphs.Sign.serializer())
                 subclass(Graphs.Match::class, Graphs.Match.serializer())
+                subclass(Graphs.Splash::class, Graphs.Splash.serializer())
             }
         }
-    }, Graphs.Sign)
+    }, Graphs.Splash)
 
     val viewModel: NavViewModel = koinViewModel()
     val authState = viewModel.status.collectAsStateWithLifecycle()
@@ -42,20 +53,20 @@ fun AppNavigator(deepsLink: String? = null) {
 
     LaunchedEffect(authState.value) {
         println("AuthState: ${authState.value}")
-        when (authState.value) {
-            is SessionStatus.Authenticated -> {
-                println("Accepted")
+        if (authState.value is SessionStatus.Authenticated) {
+            println("Accepted")
+            backStack.clear()
+            backStack.add(Graphs.Core)
+        } else if (authState.value is SessionStatus.NotAuthenticated) {
+            if (backStack.lastOrNull() != Graphs.Sign) {
                 backStack.clear()
-                backStack.add(Graphs.Core)
-            }
-
-            else -> {
-                if (backStack.lastOrNull() != Graphs.Sign) {
-                    backStack.clear()
-                    backStack.add(Graphs.Sign)
-                }
+                backStack.add(Graphs.Sign)
             }
         }
+//        else {
+//                backStack.clear()
+//                backStack.add(Graphs.Splash)
+//        }
     }
 
     LaunchedEffect(deepsLink) {
@@ -73,6 +84,7 @@ fun AppNavigator(deepsLink: String? = null) {
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
+        transitionSpec = { pushTransform }, popTransitionSpec = { popTransform }, predictivePopTransitionSpec = {predictiveTransform},
         entryProvider = entryProvider {
             entry<Graphs.Sign> {
                 SignUI()
@@ -87,6 +99,9 @@ fun AppNavigator(deepsLink: String? = null) {
                         backStack.add(Graphs.Core)
                     }
                 }
+            }
+            entry<Graphs.Splash> {
+                SplashScreen()
             }
         })
 }

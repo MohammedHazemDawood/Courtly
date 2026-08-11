@@ -93,12 +93,12 @@ fun PointPreview() {
             ),
             teamLeft = Team.initial.copy(
                 players = listOf(
-                    Player(name = "Player 1", avatar = null, handle = null, bench = false)
+//                    Player(name = "Player 1", avatar = null, handle = null, bench = false)
                 )
             ),
             teamRight = Team.initial.copy(
                 players = listOf(
-                    Player(name = "Player 2", avatar = null, handle = null, bench = false)
+//                    Player(name = "Player 2", avatar = null, handle = null, bench = false, id= "")
                 )
             ),
             startingTime = Clock.System.now().minus(10, DateTimeUnit.MINUTE)

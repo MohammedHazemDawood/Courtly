@@ -11,26 +11,71 @@ import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.opposite
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction.*
+import com.mhd_07.courtly.feature_match_record.domain.usecase.SearchUserUseCase
+import io.github.jan.supabase.postgrest.exception.PostgrestRestException
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
-class MatchViewModel : ViewModel() {
+class MatchViewModel(
+    private val searchUserUseCase: SearchUserUseCase
+) : ViewModel() {
     private val _state = MutableStateFlow(Match())
     private val _undoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
     private val _redoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
 
-    val state = combine(_state, _undoStack) { state, undoStack ->
-        state.copy(timeline = undoStack)
+    private val searchQuery = MutableStateFlow("")
+
+    val state = combine(_state, _undoStack, searchQuery) { state, undoStack, query ->
+        state.copy(timeline = undoStack, searchText = query)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
-        initialValue = _state.value
+        initialValue = _state.value,
     )
 
+//    private var searchJob: Job? = null
+
+    init {
+        viewModelScope.launch {
+            searchQuery
+                .debounce(500.milliseconds)
+                .collectLatest { query ->
+
+                    val query = query.trim()
+
+                    if (query.isBlank()) {
+                        _state.update {
+                            it.copy(searchResults = emptyList())
+                        }
+                        println("None")
+                        return@collectLatest
+                    }
+
+                    try {
+                        val result = searchUserUseCase(query)
+
+                        _state.update {
+                            it.copy(searchResults = result)
+                        }
+
+                    } catch (e: PostgrestRestException) {
+                        _state.update {
+                            it.copy(searchResults = emptyList())
+                        }
+                    }
+                }
+        }
+    }
     override fun onCleared() {
         super.onCleared()
         _undoStack.update { ArrayDeque() }
@@ -147,17 +192,26 @@ class MatchViewModel : ViewModel() {
                     status = MatchStatus.Live,
                     ballTeam = intent.startingTeam,
                     ballHalf = HCourtSide.Right
-                )
+                ).handlePlayers()
             }
 
             is MatchIntent.EditLocation -> _state.update { it.copy(location = intent.newLocation) }
             is MatchIntent.EditMode -> _state.update { it.copy(mode = intent.mode) }
             is MatchIntent.EditType -> _state.update { it.copy(type = intent.type) }
-        }
-    }
+            is MatchIntent.AddPlayer -> _state.update {
+                if (intent.side == Side.TeamLeft)
+                    it.copy(teamLeft = it.teamLeft.copy(players = it.teamLeft.players + intent.player))
+                else it.copy(teamRight = it.teamRight.copy(players = it.teamRight.players + intent.player))
+            }
 
-    fun clearVM() {
-        onCleared()
+            is MatchIntent.RemovePlayer -> _state.update {
+                if (intent.side == Side.TeamLeft)
+                    it.copy(teamLeft = it.teamLeft.copy(players = it.teamLeft.players - intent.player))
+                else it.copy(teamRight = it.teamRight.copy(players = it.teamRight.players - intent.player))
+            }
+
+            is MatchIntent.SearchPlayers -> searchQuery.update { intent.query }
+        }
     }
 
     private fun addTimelineAction(timelineAction: TimelineAction) {

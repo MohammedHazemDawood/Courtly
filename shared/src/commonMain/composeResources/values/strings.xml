@@ -7,7 +7,7 @@
     <string name="undo">Nope, Undo That</string><!--will be readen by accisibility tools in mobile (for undo button/won't be shown in screen)-->
     <string name="redo">Actually, Redo That</string> <!--the same of undo-->
     <string name="back">Back It Up</string><!-- the same of undo-->
-
+    <string name="setup_account">Setup Account</string>
     <!-- General Actions & Feed -->
     <string name="feed">Feed</string>
     <string name="my_games">My Games</string>
@@ -18,7 +18,17 @@
     <string name="notification">Notifications</string>
     <string name="privacy">Privacy</string>
     <string name="edit_profile">Edit Profile</string> <!--the same for undo and redo-->
+    <string name="edit_avatar">Edit Avatar</string>
     <string name="empty_feed">Tumbleweeds… no matches yet</string> <!--will be shown on screen when no saved matchs or no games from server-->
+    <string name="save">Save</string>
+    <string name="name">Name</string>
+    <string name="handle">Handle</string>
+    <string name="bio">Bio</string>
+    <string name="name_error">Name cannot be empty</string>
+    <string name="camera">Camera</string>
+    <string name="gallery">Gallery</string>
+    <string name="select_source">Select Source</string>
+    <string name="handle_error">This Handle Ain't Available</string>
     <!-- Match Tracking -->
     <string name="playing">On Court</string>
     <string name="bench">Benched</string>
@@ -32,6 +42,7 @@
     <string name="quit">Yep, I'm Out</string>
     <string name="cancel">Cancel</string>
 
+    <string name="step">Step %1$s out of %1$s</string>
     <string name="next">Next</string>
     <string name="start_match">Let's Play</string>
 
@@ -43,21 +54,31 @@
 
     <!-- Match Setup -->
     <string name="setup">Set the Stage</string>
+    <string name="teams_names">Teams Name</string>
     <string name="team_left_name">Team on the Left</string>
     <string name="team_left_name_placeholder">Name your left-side legends</string>
     <string name="team_right_name">Team on the Right</string>
     <string name="team_right_name_placeholder">Name your right-side legends</string>
+    <string name="team_left_players">Team Left Players</string>
+    <string name="team_left_players_placeholder">Add players for %1$s</string>
+    <string name="team_right_players">Team Right Players</string>
+    <string name="team_right_players_placeholder">Add Players for %1$s</string>
+    <string name="remove_player">Remove Player</string>
+    <string name="add_player">Add Player</string>
+
     <string name="location">Where's the Action?</string>
     <string name="location_placeholder">Drop the court location</string>
     <string name="mode">Match Vibe</string>
+    <string name="mode_type">Mode &amp; Type</string>
     <string name="professional_description">Serious business (6 games per set)</string>
     <string name="freestyle_description">Chill weekend energy (1 game per set)</string>
     <string name="type">Squad Size</string>
     <string name="type_description">Just you two (Singles) or bring a partner (Doubles)</string>
-    <string name="system">Match Length</string>
-    <string name="best_of">Best of</string>
-    <string name="best_of_3">3</string>
-    <string name="best_of_5">5</string>
+    <string name="system">System</string>
+    <string name="system_description">Choose Match Length</string>
+    <string name="best_of">Best of %1$s</string>
+<!--    <string name="best_of_3">3</string>-->
+<!--    <string name="best_of_5">5</string>-->
     <string name="best_of_3_description">First to 2 sets wins it all</string>
     <string name="best_of_5_description">First to 3 sets takes the crown</string>
     <string name="drop">Tap for more options</string>

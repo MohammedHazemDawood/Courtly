@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,11 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
-import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.Team
-import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.enter
 import com.mhd_07.courtly.core.presentation.ui.theme.exit
@@ -36,10 +32,8 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.ArrowsUpDown
 import dev.seyfarth.tablericons.outlined.User
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.minus
 import kotlinx.datetime.until
 import org.jetbrains.compose.resources.stringResource
-import kotlin.time.Clock
 import kotlin.time.Instant
 
 @Composable

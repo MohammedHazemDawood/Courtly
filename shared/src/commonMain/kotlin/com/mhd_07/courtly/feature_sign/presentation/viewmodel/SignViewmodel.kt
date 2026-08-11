@@ -9,12 +9,11 @@ import com.mhd_07.courtly.feature_sign.domain.usecase.RegisterUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.ResendEmailUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.SignWithGoogleUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.VerifyEmailUseCase
-import com.mhd_07.courtly.feature_sign.presentation.module.SignError
-import com.mhd_07.courtly.feature_sign.presentation.module.SignIntent
-import com.mhd_07.courtly.feature_sign.presentation.module.SignResult
-import com.mhd_07.courtly.feature_sign.presentation.module.SignResult.*
-import com.mhd_07.courtly.feature_sign.presentation.module.SignState
-import com.mhd_07.courtly.feature_sign.presentation.module.getError
+import com.mhd_07.courtly.core.presentation.model.RemoteError
+import com.mhd_07.courtly.feature_sign.presentation.model.SignIntent
+import com.mhd_07.courtly.core.presentation.model.RemoteResult.*
+import com.mhd_07.courtly.feature_sign.presentation.model.SignState
+import com.mhd_07.courtly.core.presentation.model.getAuthError
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,17 +35,17 @@ class SignViewmodel(
     val google
         @Composable get() = signWithGoogle { res ->
             when (res) {
-                is NativeSignInResult.Success -> _state.update { it.copy(result = SignResult.Success) }
+                is NativeSignInResult.Success -> _state.update { it.copy(result = Success) }
                 is NativeSignInResult.Error -> _state.update {
-                    it.copy(result = SignResult.Error(SignError.Unknown))
+                    it.copy(result = Error(RemoteError.Unknown))
                 }
 
                 is NativeSignInResult.NetworkError -> _state.update {
-                    it.copy(result = SignResult.Error(SignError.NetworkError))
+                    it.copy(result = Error(RemoteError.NetworkError))
                 }
 
                 NativeSignInResult.ClosedByUser -> _state.update {
-                    it.copy(result = SignResult.Error(SignError.Canceled))
+                    it.copy(result = Error(RemoteError.Canceled))
                 }
             }
         }
@@ -68,10 +67,10 @@ class SignViewmodel(
                     _state.update { it.copy(result = Success) }
                 } catch (e: AuthRestException) {
                     println("error: ${e.message}")
-                    _state.update { it.copy(result = Error(getError(e.errorCode))) }
+                    _state.update { it.copy(result = Error(getAuthError(e.errorCode))) }
                 } catch (e: Exception) {
                     println("error: ${e.message}")
-                    _state.update { it.copy(result = Error(SignError.Unknown)) }
+                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }
                 }
             }
 
@@ -85,10 +84,10 @@ class SignViewmodel(
                     _state.update { it.copy(result = Success) }
                 } catch (e: AuthRestException) {
                     println("error: ${e.message}")
-                    _state.update { it.copy(result = Error(getError(e.errorCode))) }
+                    _state.update { it.copy(result = Error(getAuthError(e.errorCode))) }
                 } catch (e: Exception) {
                     println("error: ${e.message}")
-                    _state.update { it.copy(result = Error(SignError.Unknown)) }
+                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }
                 }
             }
 
@@ -99,10 +98,10 @@ class SignViewmodel(
                     _state.update { it.copy(result = Success) }
                 } catch (e: AuthRestException) {
                     println("error: ${e.message}")
-                    _state.update { it.copy(result = Error(getError(e.errorCode))) }
+                    _state.update { it.copy(result = Error(getAuthError(e.errorCode))) }
                 } catch (e: Exception) {
                     println("error: ${e.message}")
-                    _state.update { it.copy(result = Error(SignError.Unknown)) }
+                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }
                 }
             }
         }

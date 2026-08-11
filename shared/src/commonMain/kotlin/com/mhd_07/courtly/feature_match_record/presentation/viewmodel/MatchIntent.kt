@@ -12,6 +12,10 @@ sealed interface MatchIntent {
     data class Transfer(val from: Side, val player1: Player, val player2: Player?) : MatchIntent
     data class Sub(val side: Side, val player1: Player, val player2: Player) : MatchIntent
 
+    data class AddPlayer(val player: Player, val side: Side) : MatchIntent
+    data class RemovePlayer(val player: Player, val side: Side) : MatchIntent
+    data class SearchPlayers(val query: String) : MatchIntent
+
     data class EditTeamName(val side: Side, val newName: String) : MatchIntent
     data class EditPlayerName(val side: Side, val index: Int, val newName: String) : MatchIntent
 

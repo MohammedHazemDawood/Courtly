@@ -17,9 +17,19 @@
     <string name="notification">الإشعارات</string>
     <string name="privacy">الخصوصية</string>
     <string name="edit_profile">تعديل الملف الشخصي</string>
+    <string name="edit_avatar">تعديل الصورة</string>
     <string name="settings">الإعدادات</string>
     <string name="empty_feed">مفيش حد هنا… لسه مفيش ماتشات</string>
-
+    <string name="save">حفظ</string>
+    <string name="name">الاسم</string>
+    <string name="handle">الهاندل</string>
+    <string name="bio">البايو</string>
+    <string name="name_error">الاسم لا يمكن أن يكون فارغًا</string>
+    <string name="camera">الكاميرا</string>
+    <string name="gallery">المعرض</string>
+    <string name="select_source">اختيار المصدر</string>
+    <string name="handle_error">غير متاح</string>
+    <string name="setup_account">إعداد الحساب</string>
     <!-- Match Tracking -->
     <string name="playing">في الملعب</string>
     <string name="bench">على الدكة</string>
@@ -33,6 +43,7 @@
     <string name="quit">أيوه، أنا ماشي</string>
     <string name="cancel">إلغاء</string>
 
+    <string name="step">خطوة %1$s من %1$s</string>
     <string name="next">التالي</string>
     <string name="start_match">يلا نلعب</string>
 
@@ -44,19 +55,29 @@
 
     <!-- Match Setup -->
     <string name="setup">ظبّط الماتش</string>
+    <string name="teams_names">أسامي الفرق</string>
     <string name="team_left_name">الفريق اللي على الشمال</string>
     <string name="team_left_name_placeholder">سمّي أبطال الناحية الشمال</string>
     <string name="team_right_name">الفريق اللي على اليمين</string>
     <string name="team_right_name_placeholder">سمّي أبطال الناحية اليمين</string>
+    <string name="team_left_players">Team Left Players</string>
+    <string name="team_left_players_placeholder">Add players for %1$s</string>
+    <string name="team_right_players">Team Right Players</string>
+    <string name="team_right_players_placeholder">Add Players for %1$s</string>
+    <string name="remove_player">Remove Player</string>
+    <string name="add_player">Add Player</string>
+
     <string name="location">الماتش فين؟</string>
     <string name="location_placeholder">اكتب مكان الملعب</string>
     <string name="mode">ستايل الماتش</string>
+    <string name="mode_type">Mode &amp; Type</string>
     <string name="professional_description">شغل جد (6 جيمات في كل سيت)</string>
     <string name="freestyle_description">جو الويك إند الرايق (جيم واحد في كل سيت)</string>
     <string name="type">عدد اللاعبين</string>
     <string name="type_description">إنتوا الاتنين بس (فردي) أو هات معاك شريك (زوجي)</string>
-    <string name="system">مدة الماتش</string>
-    <string name="best_of">الأفضل من</string>
+    <string name="system">System</string>
+    <string name="system_description">Choose Match Length</string>
+    <string name="best_of">أحسن %1$s</string>
     <string name="best_of_3">3</string>
     <string name="best_of_5">5</string>
     <string name="best_of_3_description">أول واحد يكسب سيتين يكسب الماتش كله</string>

@@ -1,11 +1,8 @@
 package com.mhd_07.courtly.feature_sign.domain.repo
 
 import androidx.compose.runtime.Composable
-import com.mhd_07.courtly.feature_sign.data.module.Request
-import com.mhd_07.courtly.feature_sign.presentation.module.SignResult
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composable.NativeSignInState
-import kotlinx.coroutines.flow.Flow
 
 interface SignRepository {
 

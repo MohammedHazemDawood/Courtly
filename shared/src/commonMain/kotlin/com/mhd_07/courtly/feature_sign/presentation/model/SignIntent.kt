@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.feature_sign.presentation.module
+package com.mhd_07.courtly.feature_sign.presentation.model
 
 sealed interface SignIntent {
     data object Sign : SignIntent

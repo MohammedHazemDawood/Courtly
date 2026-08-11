@@ -2,22 +2,24 @@ package com.mhd_07.courtly.feature_sign.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -28,7 +30,7 @@ import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_sign.presentation.components.EmailPage
-import com.mhd_07.courtly.feature_sign.presentation.components.PagerIndicator
+import com.mhd_07.courtly.feature_sign.presentation.components.NumericPagerIndicator
 import com.mhd_07.courtly.feature_sign.presentation.components.PasswordPage
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.continue_sign
@@ -45,6 +47,7 @@ fun MailPasswordSignScreen(
     onMailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirm: () -> Unit,
+    snackbarHostState : SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState { 2 }
@@ -86,16 +89,17 @@ fun MailPasswordSignScreen(
             else
                 navBack()
         })
-    }) {
+    }, snackbarHost = { SnackbarHost(snackbarHostState) }) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(it)
+                .padding(WindowInsets.ime.asPaddingValues())
                 .padding(bottom = dimensions.large)
                 .padding(horizontal = dimensions.medium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.medium)
         ) {
-            PagerIndicator(
+            NumericPagerIndicator(
                 modifier = Modifier.fillMaxWidth(0.5f),
                 stepsCount = pagerState.pageCount,
                 currentStep = pagerState.currentPage
@@ -159,7 +163,8 @@ fun MailPasswordSignScreen() {
             password = "",
             onMailChange = {},
             onPasswordChange = {},
-            onConfirm = {}
+            onConfirm = {},
+            snackbarHostState = SnackbarHostState()
         )
     }
 }

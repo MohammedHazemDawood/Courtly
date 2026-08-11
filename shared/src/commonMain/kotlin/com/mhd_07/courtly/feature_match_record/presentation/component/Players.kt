@@ -249,19 +249,25 @@ fun PlayersPreview() {
                         name = "Alice",
                         avatar = null,
                         handle = "alice",
-                        bench = false
+                        bench = false,
+                        bio = "",
+                        avatarVersion = 0
                     ),
                     Player(
                         name = "Bob",
                         avatar = null,
                         handle = "bob",
-                        bench = false
+                        bench = false,
+                        bio = "",
+                        avatarVersion = 0
                     ),
                     Player(
                         name = "Eve",
                         avatar = null,
                         handle = "eve",
-                        bench = true
+                        bench = true,
+                        bio = "",
+                        avatarVersion = 0
                     )
                 ),
 
@@ -272,13 +278,17 @@ fun PlayersPreview() {
                         name = "Charlie",
                         avatar = null,
                         handle = "charlie",
-                        bench = false
+                        bench = false,
+                        bio = "",
+                        avatarVersion = 0
                     ),
                     Player(
                         name = "Dana",
                         avatar = null,
                         handle = "dana",
-                        bench = true
+                        bench = true,
+                        bio = "",
+                        avatarVersion = 0
                     )
                 )
             ),

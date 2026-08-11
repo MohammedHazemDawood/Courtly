@@ -1,5 +1,7 @@
 package com.mhd_07.courtly
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
@@ -12,8 +14,10 @@ import com.mhd_07.courtly.feature_nav.presentation.AppNavigator
 @Preview
 fun App(deepsLink: String? = null) {
     CourtlyTheme {
-        CompositionLocalProvider(LocalDimensions provides Dimensions()) {
-            AppNavigator(deepsLink)
+        Surface(color = MaterialTheme.colorScheme.background){
+            CompositionLocalProvider(LocalDimensions provides Dimensions()) {
+                AppNavigator(deepsLink)
+            }
         }
     }
 }

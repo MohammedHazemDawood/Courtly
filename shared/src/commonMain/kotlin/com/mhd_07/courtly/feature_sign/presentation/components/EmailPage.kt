@@ -1,10 +1,14 @@
 package com.mhd_07.courtly.feature_sign.presentation.components
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -37,7 +41,7 @@ fun EmailPage(
 ) {
     val dimensions = LocalDimensions.current
     Column(
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
 //        horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(dimensions.medium)
     ) {

@@ -37,15 +37,15 @@ fun SettingsGroup(
         if (title.isNotEmpty())
             Text(text = title, style = MaterialTheme.typography.titleMedium)
         Column(
-            modifier = Modifier.fillMaxSize().border(
+            modifier = Modifier.fillMaxWidth().border(
                 dimensions.xxSmall,
                 MaterialTheme.colorScheme.surface,
                 MaterialTheme.shapes.extraSmall
             ),
-            verticalArrangement = Arrangement.spacedBy(dimensions.small),
+//            verticalArrangement = Arrangement.spacedBy(dimensions.small),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier)
+//            Spacer(modifier = Modifier)
             items.forEach {
                 it()
                 if (it != items.last())
@@ -55,7 +55,7 @@ fun SettingsGroup(
                         modifier = Modifier.padding(horizontal = dimensions.small)
                     )
             }
-            Spacer(modifier = Modifier)
+//            Spacer(modifier = Modifier)
         }
     }
 }
@@ -73,12 +73,13 @@ fun SettingsGroupItem(
 ) {
     val dimensions = LocalDimensions.current
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = dimensions.small)
+        modifier = Modifier.fillMaxWidth()
             .clickable(onClick = action),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
+            modifier = Modifier.padding(dimensions.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {

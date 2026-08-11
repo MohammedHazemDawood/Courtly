@@ -7,8 +7,9 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,7 +21,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
-import com.mhd_07.courtly.core.domain.model.Profile
+import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.components.SettingsGroup
 import com.mhd_07.courtly.core.presentation.components.SettingsGroupItem
@@ -45,7 +46,7 @@ import dev.seyfarth.tablericons.outlined.Shield
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SettingsScreen(navBack: () -> Unit, profile: Profile, logout: () -> Unit) {
+fun SettingsScreen(navBack: () -> Unit, profile: Player, logout: () -> Unit, navToEditProfile: () -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CourtlyAppBar(
             title = stringResource(Res.string.profile),
@@ -54,81 +55,75 @@ fun SettingsScreen(navBack: () -> Unit, profile: Profile, logout: () -> Unit) {
         )
     }) {
         val dimensions = LocalDimensions.current
-        LazyColumn(
+        Column(
             modifier = Modifier.fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
                 .padding(horizontal = dimensions.medium, vertical = dimensions.small).padding(it),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.small)
         ) {
-            item {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
-                ) {
-                    AsyncImage(
-                        model = profile.avatar,
-                        contentDescription = stringResource(Res.string.profile),
-                        placeholder = rememberVectorPainter(TablerIcons.Filled.User),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(1f).clip(CircleShape).border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+            ) {
+                AsyncImage(
+                    model = profile.avatar + "?v=" + profile.avatarVersion,
+                    contentDescription = stringResource(Res.string.profile),
+                    placeholder = rememberVectorPainter(TablerIcons.Filled.User),
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(1f).clip(CircleShape)
+                        .border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
+                )
+                Text(text = profile.name)
+                Text(text = "@${profile.handle}", style = notesTextStyle)
+            }
+            SettingsGroup(Modifier.fillMaxWidth(), "", {
+                SettingsGroupItem(
+                    leadingIcon = TablerIcons.Outlined.Edit,
+                    title = stringResource(Res.string.edit_profile),
+                    trailingIcon = TablerIcons.Outlined.ChevronRight,
+                    action = navToEditProfile
+                )
+            }, {
+                SettingsGroupItem(
+                    leadingIcon = TablerIcons.Filled.Settings,
+                    title = stringResource(Res.string.settings),
+                    trailingIcon = TablerIcons.Outlined.ChevronRight,
+                    action = {/*TODO: Imlement Screens*/ }
+                )
+            })
+            SettingsGroup(
+                Modifier.fillMaxWidth(),
+                "",
+                {
+                    SettingsGroupItem(
+                        leadingIcon = TablerIcons.Outlined.Notification,
+                        title = stringResource(Res.string.notification),
+                        trailingIcon = TablerIcons.Outlined.ChevronRight,
+                        action = {/*TODO: Imlement Screens*/ }
                     )
-                    Text(text = profile.name ?: "")
-                    Text(text = "@${profile.handle ?: ""}", style = notesTextStyle)
+                },
+                {
+                    SettingsGroupItem(
+                        leadingIcon = TablerIcons.Outlined.Shield,
+                        title = stringResource(Res.string.privacy),
+                        trailingIcon = TablerIcons.Outlined.ChevronRight,
+                        action = {/*TODO: Imlement Screens*/ }
+                    )
                 }
-            }
-            item {
-                SettingsGroup(Modifier.fillMaxWidth(), "", {
+            )
+            SettingsGroup(
+                Modifier.fillMaxWidth(),
+                "",
+                {
                     SettingsGroupItem(
-                        leadingIcon = TablerIcons.Outlined.Edit,
-                        title = stringResource(Res.string.edit_profile),
-                        trailingIcon = TablerIcons.Outlined.ChevronRight,
-                        action = {/*TODO: Imlement Screens*/ }
+                        leadingIcon = TablerIcons.Outlined.Logout,
+                        title = stringResource(Res.string.logout),
+                        color = MaterialTheme.colorScheme.error,
+                        action = logout
                     )
-                }, {
-                    SettingsGroupItem(
-                        leadingIcon = TablerIcons.Filled.Settings,
-                        title = stringResource(Res.string.settings),
-                        trailingIcon = TablerIcons.Outlined.ChevronRight,
-                        action = {/*TODO: Imlement Screens*/ }
-                    )
-                })
-            }
-            item {
-                SettingsGroup(
-                    Modifier.fillMaxWidth(),
-                    "",
-                    {
-                        SettingsGroupItem(
-                            leadingIcon = TablerIcons.Outlined.Notification,
-                            title = stringResource(Res.string.notification),
-                            trailingIcon = TablerIcons.Outlined.ChevronRight,
-                            action = {/*TODO: Imlement Screens*/ }
-                        )
-                    },
-                    {
-                        SettingsGroupItem(
-                            leadingIcon = TablerIcons.Outlined.Shield,
-                            title = stringResource(Res.string.privacy),
-                            trailingIcon = TablerIcons.Outlined.ChevronRight,
-                            action = {/*TODO: Imlement Screens*/ }
-                        )
-                    }
-                )
-            }
-            item {
-                SettingsGroup(
-                    Modifier.fillMaxWidth(),
-                    "",
-                    {
-                        SettingsGroupItem(
-                            leadingIcon = TablerIcons.Outlined.Logout,
-                            title = stringResource(Res.string.logout),
-                            color = MaterialTheme.colorScheme.error,
-                            action = logout
-                        )
-                    }
-                )
-            }
+                }
+            )
         }
     }
 }
@@ -139,7 +134,8 @@ fun SettingsPreview() {
     CourtlyTheme(darkTheme = true) {
         SettingsScreen(
             {},
-            Profile("", "_mhd_07", "Mohamed", ""),
+            Player("", "_mhd_07", "Mohamed", "", "",0),
+            {},
             {}
         )
     }

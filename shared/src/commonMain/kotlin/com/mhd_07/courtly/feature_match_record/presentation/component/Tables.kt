@@ -192,14 +192,14 @@ fun TablesPreview() {
             ),*/
             teamLeft = Team.initial.copy(
                 players = listOf(
-                    Player(name = "Alice", avatar = null, handle = "alice", bench = false),
-                    Player(name = "Bob", avatar = null, handle = "sbob", bench = false),
+//                    Player(name = "Alice", avatar = null, handle = "alice", bench = false),
+//                    Player(name = "Bob", avatar = null, handle = "sbob", bench = false),
                 )
             ),
             teamRight = Team.initial.copy(
                 players = listOf(
-                    Player(name = "Charlie", avatar = null, handle = "charlie", bench = false),
-                    Player(name = "Dana", avatar = null, handle = "dana", bench = true)
+//                    Player(name = "Charlie", avatar = null, handle = "charlie", bench = false),
+//                    Player(name = "Dana", avatar = null, handle = "dana", bench = true)
                 )
             ),
             startingTime = Clock.System.now()

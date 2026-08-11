@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.feature_sign.data.module
+package com.mhd_07.courtly.feature_sign.data.model
 
 import kotlinx.serialization.Serializable
 

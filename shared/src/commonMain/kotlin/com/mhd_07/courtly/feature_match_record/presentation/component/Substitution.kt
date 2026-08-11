@@ -160,19 +160,37 @@ fun Substitution(
 @Composable
 fun SubPreview() {
     CourtlyTheme(darkTheme = true) {
-            Substitution(
-                action = TimelineAction.Sub(side = Side.TeamLeft, player1 = Player(name = "Player 1", avatar = null, handle = null, bench = false), player2 = Player(name = "Player 2", avatar = null, handle = null, bench = false)),
-                teamLeft = Team.initial.copy(
-                    players = listOf(
-                        Player(name = "Player 1", avatar = null, handle = null, bench = false)
-                    )
+        Substitution(
+            action = TimelineAction.Sub(
+                side = Side.TeamLeft,
+                player1 = Player(
+                    name = "Player 1",
+                    avatar = null,
+                    handle = null,
+                    bench = false,
+                    avatarVersion = 0,
+                    bio = ""
                 ),
-                teamRight = Team.initial.copy(
-                    players = listOf(
-                        Player(name = "Player 2", avatar = null, handle = null, bench = false)
-                    )
-                ),
-                startingTime = Clock.System.now().minus(10, DateTimeUnit.MINUTE)
-            )
+                player2 = Player(
+                    name = "Player 2",
+                    avatar = null,
+                    handle = null,
+                    bench = false,
+                    bio = "",
+                    avatarVersion = 0
+                )
+            ),
+            teamLeft = Team.initial.copy(
+                players = listOf(
+//                        Player(name = "Player 1", avatar = null, handle = null, bench = false)
+                )
+            ),
+            teamRight = Team.initial.copy(
+                players = listOf(
+//                        Player(name = "Player 2", avatar = null, handle = null, bench = false)
+                )
+            ),
+            startingTime = Clock.System.now().minus(10, DateTimeUnit.MINUTE)
+        )
     }
 }

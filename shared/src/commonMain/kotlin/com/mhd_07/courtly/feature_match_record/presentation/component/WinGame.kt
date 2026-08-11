@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.mhd_07.courtly.core.domain.model.HCourtSide
-import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.model.Score
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.Team
@@ -111,12 +110,12 @@ fun WinGamePreview() {
             ),
             teamLeft = Team.initial.copy(
                 players = listOf(
-                    Player(name = "Player 1", avatar = null, handle = null, bench = false)
+//                    Player(name = "Player 1", avatar = null, handle = null, bench = false)
                 )
             ),
             teamRight = Team.initial.copy(
                 players = listOf(
-                    Player(name = "Player 2", avatar = null, handle = null, bench = false)
+//                    Player(name = "Player 2", avatar = null, handle = null, bench = false)
                 )
             ),
             startingTime = Clock.System.now().minus(10, DateTimeUnit.MINUTE)

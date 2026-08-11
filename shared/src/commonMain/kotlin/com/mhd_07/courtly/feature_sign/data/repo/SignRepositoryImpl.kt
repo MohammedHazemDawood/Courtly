@@ -2,8 +2,8 @@ package com.mhd_07.courtly.feature_sign.data.repo
 
 import com.mhd_07.courtly.feature_sign.domain.repo.SignRepository
 import androidx.compose.runtime.Composable
-import com.mhd_07.courtly.feature_sign.data.module.Request
-import com.mhd_07.courtly.feature_sign.data.module.Response
+import com.mhd_07.courtly.feature_sign.data.model.Request
+import com.mhd_07.courtly.feature_sign.data.model.Response
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.OtpType
 import io.github.jan.supabase.auth.auth

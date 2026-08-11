@@ -86,7 +86,7 @@ kotlin {
             implementation(libs.googleid)
             implementation(libs.ktor.client.okhttp)
 
-
+            implementation(libs.accompanist.permissions)
         }
         commonMain.dependencies {
             implementation(libs.compose.runtime)
@@ -117,6 +117,7 @@ kotlin {
             implementation(libs.auth.compose)
             implementation(libs.realtime.kt)
             implementation(libs.functions.kt)
+            implementation(libs.storage.kt)
 
             implementation(libs.coil.compose)
             implementation(libs.coil.network.ktor3)
@@ -124,6 +125,8 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(libs.compottie.network)
+
+//            implementation("io.github.ismoy:imagepickerkmp:1.0.22")
         }
         appleMain.dependencies {
             implementation(libs.ktor.client.darwin)

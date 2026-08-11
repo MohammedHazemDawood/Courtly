@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -26,6 +28,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.back
@@ -44,7 +47,8 @@ fun CourtlyAppBar(
     onBackClick: () -> Unit = {},
     backVisible: Boolean = false,
     dotVisible: Boolean = false,
-    vararg actions: ActionIcon
+    vararg actions: ActionIcon,
+    //contentPadding: PaddingValues = PaddingValues(horizontal = LocalDimensions.current.medium)
 ) {
     val dimensions = LocalDimensions.current
     val direction = LocalLayoutDirection.current
@@ -53,6 +57,7 @@ fun CourtlyAppBar(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground
         ),
+        //contentPadding = contentPadding,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -102,11 +107,58 @@ fun CourtlyAppBar(
 fun CourtlyAppBar(
     title: String,
     titleColor: Color = MaterialTheme.colorScheme.onBackground,
+    onBackClick: () -> Unit = {},
+    backVisible: Boolean = false,
+    dotVisible: Boolean = false,
+    trailing: @Composable RowScope.() -> Unit = {},
+    //contentPadding: PaddingValues = PaddingValues(horizontal = LocalDimensions.current.medium)
+) {
+    val dimensions = LocalDimensions.current
+    val direction = LocalLayoutDirection.current
+    CenterAlignedTopAppBar(
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.onBackground
+        ),
+        //contentPadding = contentPadding,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+            ) {
+                Text(text = title, color = titleColor)
+                if (dotVisible)
+                    Box(
+                        modifier = Modifier.clip(CircleShape).size(dimensions.small)
+                            .background(color = titleColor)
+                    )
+            }
+        },
+        navigationIcon = {
+            if (backVisible) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = if (direction == LayoutDirection.Ltr) TablerIcons.Outlined.ChevronLeft else TablerIcons.Outlined.ChevronRight,
+                        contentDescription = stringResource(Res.string.back)
+                    )
+                }
+            }
+        },
+        actions = trailing
+    )
+}
+
+
+@Composable
+fun CourtlyAppBar(
+    title: String,
+    titleColor: Color = MaterialTheme.colorScheme.onBackground,
     startingIcon: ImageVector,//TODO: Will Any? on implementing coil
     onStartingIconClick: () -> Unit = {},
     startingDescription: String,
     dotVisible: Boolean = false,
     vararg actions: ActionIcon,
+    //contentPadding: PaddingValues = PaddingValues(horizontal = LocalDimensions.current.medium)
 ) {
     val dimensions = LocalDimensions.current
     CenterAlignedTopAppBar(
@@ -114,6 +166,7 @@ fun CourtlyAppBar(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground
         ),
+        //contentPadding = contentPadding,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -167,6 +220,7 @@ fun CourtlyAppBar(
     startingDescription: String,
     dotVisible: Boolean = false,
     vararg actions: ActionIcon,
+    //contentPadding: PaddingValues = PaddingValues(horizontal = LocalDimensions.current.medium)
 ) {
     val dimensions = LocalDimensions.current
     CenterAlignedTopAppBar(
@@ -174,6 +228,7 @@ fun CourtlyAppBar(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground
         ),
+        //contentPadding = contentPadding,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -189,12 +244,20 @@ fun CourtlyAppBar(
         },
         navigationIcon = {
             IconButton(onClick = onStartingIconClick) {
-                AsyncImage(
+                SubcomposeAsyncImage(
                     model = startingIcon,
                     contentDescription = startingDescription,
-                    placeholder = rememberVectorPainter(placeHolder),
+//                    placeholder = rememberVectorPainter(placeHolder),
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier.clip(CircleShape).border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
+                    error = {
+                        Icon(
+                            imageVector = placeHolder,
+                            contentDescription = startingDescription,
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    },
+                    modifier = Modifier.clip(CircleShape)
+                        .border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
                 )
             }
         },

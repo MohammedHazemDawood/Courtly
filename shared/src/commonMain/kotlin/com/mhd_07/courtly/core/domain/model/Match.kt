@@ -13,6 +13,8 @@ data class Match(
     val dateTime: Instant = Clock.System.now(),
     val status: MatchStatus = MatchStatus.Coming,
     val timeline: List<TimelineAction> = emptyList(),
+    val searchText : String = "",
+    val searchResults : List<Player> = emptyList(),
     val bestOf: Int = 3,
     val winner: Side? = null,
     val mode: MatchMode = MatchMode.Professional,
@@ -22,33 +24,7 @@ data class Match(
     val currentSet: Pair<Int, Int> = 0 to 0,
     val prevSets : List<Pair<Int, Int>> = emptyList()
 ) {
-    companion object {
-        val dummy = Match(
-            teamLeft = Team.initial.copy(
-                name = "Left",
-                players = listOf(
-                    Player(name = "Alice", handle = "alice_12", avatar = null, bench = false),
-                    Player(name = "Bob", handle = "bob7", avatar = null, bench = false),
-                    Player(name = "Charlie", handle = "charlie_99", avatar = null, bench = true),
-                    Player(name = "Dana", handle = "dana_3", avatar = null, bench = true)
-                )
-            ),
-            teamRight = Team.initial.copy(
-                name = "Right",
-                players = listOf(
-                    Player(name = "Eve", handle = "eve01", avatar = null, bench = false),
-                    Player(name = "Frank", handle = "frank_22", avatar = null, bench = false),
-                    Player(name = "Grace", handle = "grace_5", avatar = null, bench = true)
-                )
-            ),
-            type = MatchType.Single,
-            location = "",
-            status = MatchStatus.Coming,
-            timeline = emptyList()
-        )
-    }
     //TODO: Remove this dummy data
-
     fun teamRightScore(): Match = when (currentScore.second) {
         Score.Advantage ->
             copy(currentScore = currentScore.copy(second = Score.Win))

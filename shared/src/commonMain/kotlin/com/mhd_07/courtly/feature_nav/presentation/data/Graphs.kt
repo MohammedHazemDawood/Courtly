@@ -5,6 +5,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface Graphs : NavKey {
+    @Serializable
+    data object Splash : Graphs, NavKey
 
     @Serializable
     data object Sign : Graphs, NavKey {
@@ -23,6 +25,10 @@ sealed interface Graphs : NavKey {
 
         @Serializable
         data object Settings : Graphs, NavKey
+        @Serializable
+        data object EditProfile : Graphs, NavKey
+        @Serializable
+        data object SetupAccount : Graphs, NavKey
     }
 
     @Serializable

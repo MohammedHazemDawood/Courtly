@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -22,7 +23,7 @@ import dev.seyfarth.tablericons.TablerIcons
 import dev.seyfarth.tablericons.outlined.Check
 
 @Composable
-fun PagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, currentStep: Int) {
+fun NumericPagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, currentStep: Int) {
     val dimensions = LocalDimensions.current
     Row(
         modifier = modifier.heightIn(max = dimensions.large),
@@ -56,6 +57,30 @@ fun PagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, currentStep: 
             }
             if (it != stepsCount - 1)
                 HorizontalDivider(modifier = Modifier.weight(1f), color = Color.Gray)
+        }
+    }
+}
+
+@Composable
+fun PagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, currentStep: Int) {
+    val dimensions = LocalDimensions.current
+    Row(
+        modifier = modifier/*.heightIn(max = dimensions.large)*/,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(
+            dimensions.xxSmall,
+            Alignment.CenterHorizontally
+        )
+    ) {
+        repeat(stepsCount) {
+            if (it != 0)
+                HorizontalDivider(modifier = Modifier.weight(1f), color = if (it <= currentStep) MaterialTheme.colorScheme.primary else Color.Gray)
+            Box(
+                modifier = Modifier.size(dimensions.small).aspectRatio(1f).background(
+                    if (it <= currentStep) MaterialTheme.colorScheme.primary else Color.Gray,
+                    CircleShape
+                ),
+            )
         }
     }
 }

@@ -11,6 +11,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -106,7 +107,7 @@ fun MatchScreen(
                     )
                 },
                 confirmButton = {
-                    Button(
+                    TextButton(
                         onClick = { navBack() },
 //                        enabled = state.status == MatchStatus.Finished
                     ) {
@@ -117,7 +118,7 @@ fun MatchScreen(
                     }
                 },
                 dismissButton = {
-                    Button(onClick = { quitDialog = false }) {
+                    TextButton(onClick = { quitDialog = false }) {
                         Text(
                             text = stringResource(Res.string.cancel),
                             style = MaterialTheme.typography.labelLarge

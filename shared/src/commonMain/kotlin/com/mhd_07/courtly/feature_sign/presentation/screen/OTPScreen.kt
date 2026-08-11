@@ -8,11 +8,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -21,6 +24,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -57,16 +62,18 @@ fun OTPScreen(
     email: String,
     otp: String,
     onOtpChange: (String) -> Unit,
-    navBack: () -> Unit
+    navBack: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     val dimensions = LocalDimensions.current
-    Scaffold(topBar = { CourtlyAppBar(title = "", backVisible = true, onBackClick = navBack) }) {
+    Scaffold(topBar = { CourtlyAppBar(title = "", backVisible = true, onBackClick = navBack) }, snackbarHost = { SnackbarHost(snackbarHostState) }) {
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(vertical = dimensions.large, horizontal = dimensions.medium)
+                .padding(WindowInsets.ime.asPaddingValues())
                 .padding(it),
 //        horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween//spacedBy(dimensions.medium)
+            verticalArrangement = Arrangement.SpaceBetween,//spacedBy(dimensions.medium)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -203,6 +210,6 @@ internal fun OTPDigit(
 @Composable
 fun OTPScreenPreview() {
     CourtlyTheme(darkTheme = true) {
-        OTPScreen(done = {}, email = "", otp = "", onOtpChange = {}, navBack = {})
+        OTPScreen(done = {}, email = "", otp = "", onOtpChange = {}, navBack = {}, snackbarHostState = SnackbarHostState())
     }
 }
