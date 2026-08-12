@@ -1,18 +1,6 @@
 package com.mhd_07.courtly.feature_sign.presentation.screen
 
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +13,6 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.mhd_07.courtly.core.presentation.components.Loading
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import com.mhd_07.courtly.core.presentation.model.RemoteError
 import com.mhd_07.courtly.feature_sign.presentation.model.SignIntent
@@ -58,7 +45,7 @@ fun SignUI() {
 
     val viewmodel = koinViewModel<SignViewmodel>()
     val state by viewmodel.state.collectAsStateWithLifecycle()
-    val googleClient = viewmodel.google
+    val nativeClient = viewmodel.native
 
     val hostState = remember { SnackbarHostState() }
 
@@ -93,9 +80,9 @@ fun SignUI() {
             }
             entry<Graphs.Sign.SignOptions> {
                 SignOptionsScreen(
-                    googleSignIn = { googleClient.startFlow() },
+                    sign = { nativeClient.startFlow() },
                     navToEmailSign = { backStack.add(Graphs.Sign.MailPasswordSign) },
-                    snackbarHostState = hostState
+                    snackbarHostState = hostState,
                 )
             }
             //TODO: add Forgot Password Screen

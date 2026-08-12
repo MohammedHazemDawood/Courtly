@@ -7,7 +7,7 @@ import com.mhd_07.courtly.feature_sign.domain.usecase.CheckEmailUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.LoginUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.RegisterUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.ResendEmailUseCase
-import com.mhd_07.courtly.feature_sign.domain.usecase.SignWithGoogleUseCase
+import com.mhd_07.courtly.feature_sign.domain.usecase.NativeSignInUseCase
 import com.mhd_07.courtly.feature_sign.domain.usecase.VerifyEmailUseCase
 import com.mhd_07.courtly.core.presentation.model.RemoteError
 import com.mhd_07.courtly.feature_sign.presentation.model.SignIntent
@@ -24,16 +24,16 @@ import kotlinx.coroutines.launch
 class SignViewmodel(
     private val register: RegisterUseCase,
     private val login: LoginUseCase,
-    private val signWithGoogle: SignWithGoogleUseCase,
+    private val nativeSignIn: NativeSignInUseCase,
     private val checkEmail: CheckEmailUseCase,
     private val resendEmail: ResendEmailUseCase,
-    private val verifyEmail: VerifyEmailUseCase
+    private val verifyEmail: VerifyEmailUseCase,
 ) : ViewModel() {
     private val _state = MutableStateFlow(SignState())
     val state = _state.asStateFlow()
 
-    val google
-        @Composable get() = signWithGoogle { res ->
+    val native
+        @Composable get() = nativeSignIn { res ->
             when (res) {
                 is NativeSignInResult.Success -> _state.update { it.copy(result = Success) }
                 is NativeSignInResult.Error -> _state.update {

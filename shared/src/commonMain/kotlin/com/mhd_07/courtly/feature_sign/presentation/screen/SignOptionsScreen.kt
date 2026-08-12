@@ -1,5 +1,6 @@
 package com.mhd_07.courtly.feature_sign.presentation.screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,10 +10,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -53,7 +57,7 @@ import org.jetbrains.compose.resources.stringResource
 
 @Composable
 fun SignOptionsScreen(
-    googleSignIn: () -> Unit,
+    sign: () -> Unit,
     navToEmailSign: () -> Unit,
     snackbarHostState: SnackbarHostState
 ) {
@@ -108,16 +112,13 @@ fun SignOptionsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
-                SignButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = painterResource(Res.drawable.google_brand),
-                    text = stringResource(Res.string.with_google),
-                    onClick = googleSignIn
-                )
+                NativeSignButton(modifier = Modifier.fillMaxWidth(), sign = sign)
                 SignButton(
                     modifier = Modifier.fillMaxWidth(),
                     icon = painterResource(Res.drawable.x_brand),
                     text = stringResource(Res.string.with_x),
+                    backgroundColor = Color.Black,
+                    tint = Color.White,
                     onClick = {/*TODO: Implement X Login*/ }
                 )
                 Row(
@@ -162,15 +163,26 @@ fun SignOptionsScreen(
     }
 }
 
+@Composable
+expect fun NativeSignButton(modifier: Modifier, sign: () -> Unit)
 
 @Composable
 fun SignButton(
     icon: Painter,
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    tint: Color? = null,
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    border: BorderStroke? = null
 ) {
-    Button(onClick = onClick, modifier = modifier, shape = MaterialTheme.shapes.medium) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        shape = MaterialTheme.shapes.medium,
+        colors = ButtonDefaults.buttonColors(containerColor = backgroundColor),
+        border = border
+    ) {
         BoxWithConstraints(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
@@ -183,11 +195,14 @@ fun SignButton(
             ) {
                 Icon(
                     painter = icon,
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = tint ?: LocalContentColor.current,
+                    modifier = Modifier.size(LocalDimensions.current.medium)
                 )
                 Text(
                     text = text,
-                    style = buttonTextStyle
+                    style = buttonTextStyle,
+                    color = tint ?: Color.Unspecified
                 )
             }
         }
@@ -197,5 +212,11 @@ fun SignButton(
 @Preview
 @Composable
 fun SignOptionsScreenPreview() {
-    CourtlyTheme(darkTheme = true) { SignOptionsScreen(googleSignIn = {}, navToEmailSign = {}, snackbarHostState = SnackbarHostState()) }
+    CourtlyTheme(darkTheme = true) {
+        SignOptionsScreen(
+            sign = {},
+            navToEmailSign = {},
+            snackbarHostState = SnackbarHostState()
+        )
+    }
 }

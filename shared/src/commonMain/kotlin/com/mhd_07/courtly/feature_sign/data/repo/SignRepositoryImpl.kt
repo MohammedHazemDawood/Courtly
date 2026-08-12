@@ -10,6 +10,7 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.compose.auth.composable.NativeSignInResult
 import io.github.jan.supabase.compose.auth.composable.NativeSignInState
+import io.github.jan.supabase.compose.auth.composable.rememberSignInWithApple
 import io.github.jan.supabase.compose.auth.composable.rememberSignInWithGoogle
 import io.github.jan.supabase.compose.auth.composeAuth
 import io.github.jan.supabase.functions.functions
@@ -20,6 +21,11 @@ class SignRepositoryImpl(private val client: SupabaseClient) : SignRepository {
     @Composable
     override fun signWithGoogle(onResult: (NativeSignInResult) -> Unit): NativeSignInState =
         client.composeAuth.rememberSignInWithGoogle()
+
+    @Composable
+    override fun signWithApple(onResult: (NativeSignInResult) -> Unit): NativeSignInState =
+        client.composeAuth.rememberSignInWithApple(onResult)
+
 
     override suspend fun register(email: String, password: String) {
         client.auth.signUpWith(Email) {

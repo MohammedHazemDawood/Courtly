@@ -115,6 +115,7 @@
     <string name="welcome_description">Sign in to continue playing</string>
     <string name="with_google">Continue with Google</string>
     <string name="with_x">Continue with X</string>
+    <string name="with_apple">Continue with Apple</string>
     <string name="or">or</string>
     <string name="email_password">Continue with Email</string>
 

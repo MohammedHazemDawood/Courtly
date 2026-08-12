@@ -115,6 +115,7 @@
     <string name="welcome">أهلاً بيك في Courtly!</string>
     <string name="welcome_description">سجّل دخول عشان تكمّل اللعب</string>
     <string name="with_google">المتابعة باستخدام Google</string>
+    <string name="with_apple">المتابعة باستخدام Apple</string>
     <string name="with_x">المتابعة باستخدام X</string>
     <string name="or">أو</string>
     <string name="email_password">المتابعة بالإيميل</string>

@@ -8,6 +8,8 @@ interface SignRepository {
 
     @Composable
     fun signWithGoogle(onResult : (NativeSignInResult) -> Unit) : NativeSignInState
+    @Composable
+    fun signWithApple(onResult : (NativeSignInResult) -> Unit) : NativeSignInState
 
     suspend fun register(email: String, password: String)
     suspend fun login(email: String, password: String)
