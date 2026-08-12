@@ -28,8 +28,10 @@ import courtly.shared.generated.resources.email
 import courtly.shared.generated.resources.email_description
 import courtly.shared.generated.resources.email_placeholder
 import courtly.shared.generated.resources.email_title
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.filled.Mail
+import courtly.shared.generated.resources.letter_outline
+import org.jetbrains.compose.resources.painterResource
+
+
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -75,7 +77,7 @@ fun EmailPage(
                 ),
                 leadingIcon = {
                     Icon(
-                        imageVector = TablerIcons.Filled.Mail,
+                        painter = painterResource(Res.drawable.letter_outline),
                         contentDescription = null
                     )
                 },

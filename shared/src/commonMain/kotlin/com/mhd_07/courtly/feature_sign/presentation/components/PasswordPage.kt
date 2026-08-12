@@ -34,13 +34,15 @@ import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.change_email
+import courtly.shared.generated.resources.eye_closed_outline
+import courtly.shared.generated.resources.eye_outline
 import courtly.shared.generated.resources.pass
 import courtly.shared.generated.resources.pass_placeholder
 import courtly.shared.generated.resources.password_forgot
 import courtly.shared.generated.resources.password_title
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.Eye
-import dev.seyfarth.tablericons.outlined.EyeClosed
+import org.jetbrains.compose.resources.painterResource
+
+
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -71,7 +73,10 @@ fun PasswordPage(
             )
             Row(
                 modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
-                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(
+                    dimensions.xSmall,
+                    Alignment.CenterHorizontally
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = email)
@@ -103,7 +108,7 @@ fun PasswordPage(
                 trailingIcon = {
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
                         Icon(
-                            imageVector = if (passwordVisible) TablerIcons.Outlined.EyeClosed else TablerIcons.Outlined.Eye,
+                            painter = painterResource(if (passwordVisible) Res.drawable.eye_outline else Res.drawable.eye_closed_outline),
                             contentDescription = null //TODO : add description
                         )
                     }

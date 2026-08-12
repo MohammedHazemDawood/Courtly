@@ -30,6 +30,13 @@
     <string name="select_source">اختيار المصدر</string>
     <string name="handle_error">غير متاح</string>
     <string name="setup_account">إعداد الحساب</string>
+    <string name="followers">يتابعك %1$s</string>
+    <string name="followings">تتابع %1$s</string>
+    <string name="read_more">Read More</string>
+    <string name="read_less">Read Less</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+
     <!-- Match Tracking -->
     <string name="playing">في الملعب</string>
     <string name="bench">على الدكة</string>

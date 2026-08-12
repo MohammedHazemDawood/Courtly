@@ -99,7 +99,7 @@ kotlin {
             implementation(libs.androidx.lifecycle.runtimeCompose)
             api(libs.androidx.lifecycle.viewmodel)
             implementation(libs.kotlinx.datetime)
-            implementation(libs.tabler.icons.kmp)
+//            implementation(libs.tabler.icons.kmp)
             api(libs.koin.core)
             api(libs.koin.core.viewmodel)
             implementation(libs.constraintlayout.compose.multiplatform)
@@ -126,6 +126,7 @@ kotlin {
             implementation(libs.compottie.dot)
             implementation(libs.compottie.network)
 
+//            implementation(libs.compose.aspect.ratio.reference)
 //            implementation("io.github.ismoy:imagepickerkmp:1.0.22")
         }
         appleMain.dependencies {

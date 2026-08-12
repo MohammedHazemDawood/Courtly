@@ -12,6 +12,7 @@ import com.mhd_07.courtly.core.domain.model.opposite
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction.*
 import com.mhd_07.courtly.feature_match_record.domain.usecase.SearchUserUseCase
+import com.mhd_07.courtly.feature_match_record.presentation.model.MatchState
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -29,7 +30,7 @@ import kotlin.time.Duration.Companion.milliseconds
 class MatchViewModel(
     private val searchUserUseCase: SearchUserUseCase
 ) : ViewModel() {
-    private val _state = MutableStateFlow(Match())
+    private val _state = MutableStateFlow(MatchState())
     private val _undoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
     private val _redoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
 
@@ -80,7 +81,7 @@ class MatchViewModel(
         super.onCleared()
         _undoStack.update { ArrayDeque() }
         _redoStack.update { ArrayDeque() }
-        _state.update { Match() }
+        _state.update { MatchState() }
     }
 
     val isUndoAvailable = _undoStack.map { it.isNotEmpty() }.stateIn(

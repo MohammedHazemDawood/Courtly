@@ -22,7 +22,6 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toFile
 import java.io.ByteArrayOutputStream
 import java.io.File
-
 actual class SharedImage(private val bimap: Bitmap?) {
     actual fun toByteArray(): ByteArray? = bimap?.let {
         val stream = ByteArrayOutputStream()

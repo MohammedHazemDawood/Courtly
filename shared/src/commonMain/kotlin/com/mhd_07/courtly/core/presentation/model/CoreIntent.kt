@@ -6,5 +6,6 @@ sealed interface CoreIntent {
     data class ChangeHandle(val handle: String) : CoreIntent
     data class ChangeAvatar(val avatar: ByteArray) : CoreIntent
     data object UpdateProfile : CoreIntent
+    data object Refresh : CoreIntent
     data object LogOut : CoreIntent
 }

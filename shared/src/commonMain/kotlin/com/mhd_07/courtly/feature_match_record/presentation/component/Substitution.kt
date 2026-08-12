@@ -31,12 +31,14 @@ import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.sub
 import courtly.shared.generated.resources.sub_in
 import courtly.shared.generated.resources.sub_out
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.ArrowsUpDown
-import dev.seyfarth.tablericons.outlined.User
+import courtly.shared.generated.resources.transfer_horizontal_outline
+import courtly.shared.generated.resources.user_outline
+
+
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.minus
 import kotlinx.datetime.until
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Instant
@@ -70,7 +72,7 @@ fun Substitution(
                 horizontalArrangement = Arrangement.spacedBy(dimension.xxSmall)
             ) {
                 Icon(
-                    imageVector = TablerIcons.Outlined.ArrowsUpDown,
+                    painter = painterResource(Res.drawable.transfer_horizontal_outline),
                     contentDescription = null,
                     modifier = Modifier.size(dimension.small),
                 )
@@ -113,7 +115,7 @@ fun Substitution(
             ) {
                 //TODO: Use Coil
                 Icon(
-                    imageVector = TablerIcons.Outlined.User,
+                    painter = painterResource(Res.drawable.user_outline),
                     contentDescription = null,
                     modifier = Modifier.padding(dimension.xSmall)
                 )
@@ -146,7 +148,7 @@ fun Substitution(
             ) {
                 //TODO: Use Coil
                 Icon(
-                    imageVector = TablerIcons.Outlined.User,
+                    painter = painterResource(Res.drawable.user_outline),
                     contentDescription = null,
                     modifier = Modifier.padding(dimension.xSmall)
                 )

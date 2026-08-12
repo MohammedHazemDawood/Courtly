@@ -12,4 +12,6 @@ data class Player(
     val bio : String,
     val avatarVersion : Int,
     val bench : Boolean = false,
+    val visibility: Visibility = Visibility.Public,
+    val location : String = "",
 )

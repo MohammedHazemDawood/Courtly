@@ -18,7 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 
@@ -43,7 +43,7 @@ fun SettingsGroup(
                 MaterialTheme.shapes.extraSmall
             ),
 //            verticalArrangement = Arrangement.spacedBy(dimensions.small),
-            horizontalAlignment = Alignment.CenterHorizontally
+//            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 //            Spacer(modifier = Modifier)
             items.forEach {
@@ -62,12 +62,12 @@ fun SettingsGroup(
 
 @Composable
 fun SettingsGroupItem(
-    leadingIcon: ImageVector? = null,
+    leadingIcon: Painter? = null,
     leadingIconContentDescription: String? = null,
     title: String,
     textStyle: TextStyle = LocalTextStyle.current,
     color: Color = Color.Unspecified,
-    trailingIcon: ImageVector? = null,
+    trailingIcon: Painter? = null,
     trailingIconContentDescription: String? = null,
     action: () -> Unit = {}
 ) {
@@ -79,13 +79,13 @@ fun SettingsGroupItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.padding(dimensions.small),
+            modifier = Modifier.padding(vertical = dimensions.small).padding(start = dimensions.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
             if (leadingIcon != null)
                 Icon(
-                    imageVector = leadingIcon,
+                    painter = leadingIcon,
                     contentDescription = leadingIconContentDescription,
                     tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.onBackground else color
                 )
@@ -93,9 +93,10 @@ fun SettingsGroupItem(
         }
         if (trailingIcon != null)
             Icon(
-                imageVector = trailingIcon,
+                painter = trailingIcon,
                 contentDescription = trailingIconContentDescription,
-                tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.onBackground else color
+                tint = if (color == Color.Unspecified) MaterialTheme.colorScheme.onBackground else color,
+                modifier = Modifier.padding(end = dimensions.small)
             )
     }
 }

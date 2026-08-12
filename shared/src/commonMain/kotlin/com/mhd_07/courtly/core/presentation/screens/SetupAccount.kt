@@ -70,23 +70,25 @@ import com.mhd_07.courtly.core.util.rememberPermissionManager
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.bio
 import courtly.shared.generated.resources.camera
+import courtly.shared.generated.resources.camera_outline
 import courtly.shared.generated.resources.edit_avatar
 import courtly.shared.generated.resources.edit_profile
 import courtly.shared.generated.resources.gallery
+import courtly.shared.generated.resources.gallery_wide_outline
 import courtly.shared.generated.resources.handle
 import courtly.shared.generated.resources.name
 import courtly.shared.generated.resources.name_error
+import courtly.shared.generated.resources.pen_new_square_outline
 import courtly.shared.generated.resources.profile
 import courtly.shared.generated.resources.save
 import courtly.shared.generated.resources.select_source
 import courtly.shared.generated.resources.setup_account
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.filled.Camera
-import dev.seyfarth.tablericons.filled.User
-import dev.seyfarth.tablericons.outlined.Edit
-import dev.seyfarth.tablericons.outlined.LibraryPhoto
+import courtly.shared.generated.resources.user_outline
+
+
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -200,7 +202,7 @@ fun SetupAccountScreen(
                         },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
-                        Icon(TablerIcons.Filled.Camera, contentDescription = null)
+                        Icon(painterResource(Res.drawable.camera_outline), contentDescription = null)
                         Text(text = stringResource(Res.string.camera))
                     }
                     Row(
@@ -212,7 +214,7 @@ fun SetupAccountScreen(
                         },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
-                        Icon(TablerIcons.Outlined.LibraryPhoto, contentDescription = null)
+                        Icon(painterResource(Res.drawable.gallery_wide_outline), contentDescription = null)
                         Text(text = stringResource(Res.string.gallery))
                     }
                 }
@@ -243,7 +245,7 @@ fun SetupAccountScreen(
                         contentScale = ContentScale.Crop,
                         error = {
                             Icon(
-                                TablerIcons.Filled.User,
+                                painterResource(Res.drawable.user_outline),
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onBackground,
                                 modifier = Modifier.fillMaxSize().padding(dimensions.xSmall)
@@ -265,7 +267,7 @@ fun SetupAccountScreen(
                         border = BorderStroke(dimensions.xxSmall, MaterialTheme.colorScheme.primary)
                     ) {
                         Icon(
-                            imageVector = TablerIcons.Outlined.Edit,
+                            painter = painterResource(Res.drawable.pen_new_square_outline),
                             contentDescription = stringResource(Res.string.edit_avatar),
                             modifier = Modifier.padding(dimensions.xSmall)
                         )

@@ -1,5 +1,6 @@
 package com.mhd_07.courtly.core.data.model
 
+import com.mhd_07.courtly.core.domain.model.Visibility
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,4 +11,6 @@ data class PlayerResponse(
     val avatar_path : String?,
     val bio : String?,
     val avatar_version : Int,
+    val visibility: Visibility,
+    val location : String?
 )

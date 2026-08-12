@@ -11,6 +11,7 @@ pluginManagement {
             }
         }
         mavenCentral()
+//        maven(url = "https://jitpack.io")
         gradlePluginPortal()
     }
 }
@@ -24,6 +25,7 @@ dependencyResolutionManagement {
                 includeGroupAndSubgroups("com.google")
             }
         }
+        maven(url = "https://jitpack.io")
         mavenCentral()
     }
 }

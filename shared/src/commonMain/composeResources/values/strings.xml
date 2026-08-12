@@ -29,6 +29,13 @@
     <string name="gallery">Gallery</string>
     <string name="select_source">Select Source</string>
     <string name="handle_error">This Handle Ain't Available</string>
+    <string name="followers">Followers</string>
+    <string name="followings">Following</string>
+    <string name="read_more">Read More</string>
+    <string name="read_less">Read Less</string>
+    <string name="follow">Follow</string>
+    <string name="unfollow">Unfollow</string>
+
     <!-- Match Tracking -->
     <string name="playing">On Court</string>
     <string name="bench">Benched</string>

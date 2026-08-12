@@ -19,7 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import coil3.compose.AsyncImage
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
@@ -29,24 +31,26 @@ import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.alt_arrow_left_outline
+import courtly.shared.generated.resources.alt_arrow_right_outline
+import courtly.shared.generated.resources.bell_outline
 import courtly.shared.generated.resources.edit_profile
 import courtly.shared.generated.resources.logout
+import courtly.shared.generated.resources.logout_2_outline
 import courtly.shared.generated.resources.notification
+import courtly.shared.generated.resources.pen_new_square_outline
 import courtly.shared.generated.resources.privacy
 import courtly.shared.generated.resources.profile
 import courtly.shared.generated.resources.settings
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.filled.Settings
-import dev.seyfarth.tablericons.filled.User
-import dev.seyfarth.tablericons.outlined.ChevronRight
-import dev.seyfarth.tablericons.outlined.Edit
-import dev.seyfarth.tablericons.outlined.Logout
-import dev.seyfarth.tablericons.outlined.Notification
-import dev.seyfarth.tablericons.outlined.Shield
+import courtly.shared.generated.resources.settings_outline
+import courtly.shared.generated.resources.shield_keyhole_outline
+import org.jetbrains.compose.resources.painterResource
+
+
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun SettingsScreen(navBack: () -> Unit, profile: Player, logout: () -> Unit, navToEditProfile: () -> Unit) {
+fun SettingsScreen(navBack: () -> Unit, logout: () -> Unit, navToEditProfile: () -> Unit) {
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         CourtlyAppBar(
             title = stringResource(Res.string.profile),
@@ -55,6 +59,7 @@ fun SettingsScreen(navBack: () -> Unit, profile: Player, logout: () -> Unit, nav
         )
     }) {
         val dimensions = LocalDimensions.current
+        val direction = LocalLayoutDirection.current
         Column(
             modifier = Modifier.fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
@@ -62,33 +67,18 @@ fun SettingsScreen(navBack: () -> Unit, profile: Player, logout: () -> Unit, nav
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.small)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
-            ) {
-                AsyncImage(
-                    model = profile.avatar + "?v=" + profile.avatarVersion,
-                    contentDescription = stringResource(Res.string.profile),
-                    placeholder = rememberVectorPainter(TablerIcons.Filled.User),
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(1f).clip(CircleShape)
-                        .border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
-                )
-                Text(text = profile.name)
-                Text(text = "@${profile.handle}", style = notesTextStyle)
-            }
             SettingsGroup(Modifier.fillMaxWidth(), "", {
                 SettingsGroupItem(
-                    leadingIcon = TablerIcons.Outlined.Edit,
+                    leadingIcon = painterResource(Res.drawable.pen_new_square_outline),
                     title = stringResource(Res.string.edit_profile),
-                    trailingIcon = TablerIcons.Outlined.ChevronRight,
+                    trailingIcon = painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.alt_arrow_right_outline else Res.drawable.alt_arrow_left_outline),
                     action = navToEditProfile
                 )
             }, {
                 SettingsGroupItem(
-                    leadingIcon = TablerIcons.Filled.Settings,
+                    leadingIcon = painterResource(Res.drawable.settings_outline),
                     title = stringResource(Res.string.settings),
-                    trailingIcon = TablerIcons.Outlined.ChevronRight,
+                    trailingIcon = painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.alt_arrow_right_outline else Res.drawable.alt_arrow_left_outline),
                     action = {/*TODO: Imlement Screens*/ }
                 )
             })
@@ -97,17 +87,17 @@ fun SettingsScreen(navBack: () -> Unit, profile: Player, logout: () -> Unit, nav
                 "",
                 {
                     SettingsGroupItem(
-                        leadingIcon = TablerIcons.Outlined.Notification,
+                        leadingIcon = painterResource(Res.drawable.bell_outline),
                         title = stringResource(Res.string.notification),
-                        trailingIcon = TablerIcons.Outlined.ChevronRight,
+                        trailingIcon = painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.alt_arrow_right_outline else Res.drawable.alt_arrow_left_outline),
                         action = {/*TODO: Imlement Screens*/ }
                     )
                 },
                 {
                     SettingsGroupItem(
-                        leadingIcon = TablerIcons.Outlined.Shield,
+                        leadingIcon = painterResource(Res.drawable.shield_keyhole_outline),
                         title = stringResource(Res.string.privacy),
-                        trailingIcon = TablerIcons.Outlined.ChevronRight,
+                        trailingIcon = painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.alt_arrow_right_outline else Res.drawable.alt_arrow_left_outline),
                         action = {/*TODO: Imlement Screens*/ }
                     )
                 }
@@ -117,7 +107,7 @@ fun SettingsScreen(navBack: () -> Unit, profile: Player, logout: () -> Unit, nav
                 "",
                 {
                     SettingsGroupItem(
-                        leadingIcon = TablerIcons.Outlined.Logout,
+                        leadingIcon = painterResource(Res.drawable.logout_2_outline),
                         title = stringResource(Res.string.logout),
                         color = MaterialTheme.colorScheme.error,
                         action = logout
@@ -134,7 +124,7 @@ fun SettingsPreview() {
     CourtlyTheme(darkTheme = true) {
         SettingsScreen(
             {},
-            Player("", "_mhd_07", "Mohamed", "", "",0),
+//            Player("", "_mhd_07", "Mohamed", "", "",0),
             {},
             {}
         )

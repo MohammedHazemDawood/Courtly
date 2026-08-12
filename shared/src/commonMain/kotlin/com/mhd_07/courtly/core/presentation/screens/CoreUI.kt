@@ -1,11 +1,5 @@
 package com.mhd_07.courtly.core.presentation.screens
 
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,7 +12,6 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.mhd_07.courtly.core.presentation.model.CoreIntent
-import com.mhd_07.courtly.core.presentation.model.RemoteResult
 import com.mhd_07.courtly.core.presentation.ui.theme.popTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
@@ -37,6 +30,7 @@ fun CoreUI(navToGameSetup: () -> Unit) {
         serializersModule = SerializersModule {
             polymorphic(NavKey::class) {
                 subclass(Graphs.Core.Home::class, Graphs.Core.Home.serializer())
+                subclass(Graphs.Core.Profile::class, Graphs.Core.Profile.serializer())
                 subclass(Graphs.Core.Settings::class, Graphs.Core.Settings.serializer())
                 subclass(Graphs.Core.EditProfile::class, Graphs.Core.EditProfile.serializer())
                 subclass(Graphs.Core.SetupAccount::class, Graphs.Core.SetupAccount.serializer())
@@ -64,8 +58,24 @@ fun CoreUI(navToGameSetup: () -> Unit) {
             entry<Graphs.Core.Home> {
                 HomeScreen(
                     navToGameSetup = navToGameSetup,
-                    navToProfileScreen = { backStack.add(Graphs.Core.Settings) },
+                    navToProfileScreen = { backStack.add(Graphs.Core.Profile) },
                     userPFP = state.avatarPath + "?v=" + state.avatarVersion
+                )
+            }
+            entry<Graphs.Core.Profile> {
+                ProfileScreen(
+                    navBack = {
+                        if (backStack.size > 1)
+                            backStack.removeLast()
+                    },
+                    profile = state.profile ?: return@entry,
+                    navToSettings = {
+                        backStack.add(Graphs.Core.Settings)
+                    },
+                    followers = state.followers,
+                    following = state.following,
+                    result = state.result,
+                    onRefresh = { viewmodel.handleIntent(CoreIntent.Refresh) }
                 )
             }
             entry<Graphs.Core.Settings> {
@@ -74,8 +84,9 @@ fun CoreUI(navToGameSetup: () -> Unit) {
                         if (backStack.size > 1)
                             backStack.removeLast()
                     },
-                    profile = state.profile ?: return@entry,
-                    logout = { viewmodel.handleIntent(CoreIntent.LogOut) },
+                    logout = {
+                        viewmodel.handleIntent(CoreIntent.LogOut)
+                    },
                     navToEditProfile = {
                         backStack.add(Graphs.Core.EditProfile)
                     }

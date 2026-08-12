@@ -48,11 +48,13 @@ import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.add_player
+import courtly.shared.generated.resources.add_square_outline
 import courtly.shared.generated.resources.remove_player
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.Plus
-import dev.seyfarth.tablericons.outlined.UserCircle
-import dev.seyfarth.tablericons.outlined.X
+import courtly.shared.generated.resources.user_outline
+import courtly.shared.generated.resources.x
+import org.jetbrains.compose.resources.painterResource
+
+
 import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,7 +127,7 @@ fun PlayersPage(
                             }
                         ) {
                             Icon(
-                                imageVector = TablerIcons.Outlined.X,
+                                painter = painterResource(Res.drawable.x),
                                 contentDescription = "Close search" // TODO: Add string resource
                             )
                         }
@@ -149,7 +151,7 @@ fun PlayersPage(
                                     horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                                 ) {
                                     Icon(
-                                        imageVector = TablerIcons.Outlined.UserCircle,
+                                        painter = painterResource(Res.drawable.user_outline),
                                         contentDescription = null,
                                         modifier = Modifier.size(dimensions.xxLarge).clip(CircleShape)
                                     )
@@ -223,7 +225,7 @@ fun PlayersPage(
                     horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                 ) {
                     Icon(
-                        imageVector = TablerIcons.Outlined.Plus,
+                        painter = painterResource(Res.drawable.add_square_outline),
                         contentDescription = null
                     )
                     Text(text = stringResource(Res.string.add_player))
@@ -260,7 +262,7 @@ private fun SelectedPlayerCard(
             PlayerRowContent(player = player)
             IconButton(onClick = onRemove) {
                 Icon(
-                    imageVector = TablerIcons.Outlined.X,
+                    painter = painterResource(Res.drawable.x),
                     contentDescription = stringResource(Res.string.remove_player)
                 )
             }
@@ -306,7 +308,7 @@ private fun PlayerAvatar(
             .clip(CircleShape),
         error = {
             Icon(
-                imageVector = TablerIcons.Outlined.UserCircle,
+                painter = painterResource(Res.drawable.user_outline),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize()
             )

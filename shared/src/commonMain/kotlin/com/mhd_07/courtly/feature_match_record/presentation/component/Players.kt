@@ -29,9 +29,11 @@ import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.bench
 import courtly.shared.generated.resources.playing
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.ArrowsUpDown
-import dev.seyfarth.tablericons.outlined.User
+import courtly.shared.generated.resources.transfer_horizontal_outline
+import courtly.shared.generated.resources.user_outline
+import org.jetbrains.compose.resources.painterResource
+
+
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -155,7 +157,7 @@ fun PlayerLeft(
             ) {
                 //TODO: Use Coil
                 Icon(
-                    imageVector = TablerIcons.Outlined.User,
+                    painter = painterResource(Res.drawable.user_outline),
                     contentDescription = null,
                     modifier = Modifier.padding(dimensions.xSmall)
                 )
@@ -172,7 +174,7 @@ fun PlayerLeft(
         }
         IconButton(onClick = {}) {
             Icon(
-                imageVector = TablerIcons.Outlined.ArrowsUpDown,
+                painter = painterResource(Res.drawable.transfer_horizontal_outline),
                 contentDescription = "Substitute",
                 modifier = Modifier.size(dimensions.small)
             )//Use String res
@@ -198,7 +200,7 @@ fun PlayerRight(
 //        if (index < activeLeft.size) {
         IconButton(onClick = {}) {
             Icon(
-                imageVector = TablerIcons.Outlined.ArrowsUpDown,
+                painter = painterResource(Res.drawable.transfer_horizontal_outline),
                 contentDescription = "Substitute",
                 modifier = Modifier.size(dimensions.small)
             )//Use String res
@@ -228,7 +230,7 @@ fun PlayerRight(
             ) {
                 //TODO: Use Coil
                 Icon(
-                    imageVector = TablerIcons.Outlined.User,
+                    painter = painterResource(Res.drawable.user_outline),
                     contentDescription = null,
                     modifier = Modifier.padding(dimensions.xSmall)
                 )

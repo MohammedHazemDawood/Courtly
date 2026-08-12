@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -31,10 +34,11 @@ import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.alt_arrow_left_outline
+import courtly.shared.generated.resources.alt_arrow_right_outline
 import courtly.shared.generated.resources.back
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.ChevronLeft
-import dev.seyfarth.tablericons.outlined.ChevronRight
+
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
 //add imports
@@ -75,7 +79,7 @@ fun CourtlyAppBar(
             if (backVisible) {
                 IconButton(onClick = onBackClick) {
                     Icon(
-                        imageVector = if (direction == LayoutDirection.Ltr) TablerIcons.Outlined.ChevronLeft else TablerIcons.Outlined.ChevronRight,
+                        painter = painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.alt_arrow_left_outline else Res.drawable.alt_arrow_right_outline),
                         contentDescription = stringResource(Res.string.back)
                     )
                 }
@@ -92,7 +96,7 @@ fun CourtlyAppBar(
                         enabled = it.enabled
                     ) {
                         Icon(
-                            imageVector = it.icon,
+                            it.icon,
                             contentDescription = it.contentDescription,
                         )
                     }
@@ -138,7 +142,7 @@ fun CourtlyAppBar(
             if (backVisible) {
                 IconButton(onClick = onBackClick) {
                     Icon(
-                        imageVector = if (direction == LayoutDirection.Ltr) TablerIcons.Outlined.ChevronLeft else TablerIcons.Outlined.ChevronRight,
+                        painter = painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.alt_arrow_left_outline else Res.drawable.alt_arrow_right_outline),
                         contentDescription = stringResource(Res.string.back)
                     )
                 }
@@ -183,7 +187,7 @@ fun CourtlyAppBar(
         navigationIcon = {
             IconButton(onClick = onStartingIconClick) {
                 Icon(
-                    imageVector = startingIcon,
+                    startingIcon,
                     contentDescription = startingDescription
                 )
             }
@@ -199,7 +203,7 @@ fun CourtlyAppBar(
                         enabled = it.enabled
                     ) {
                         Icon(
-                            imageVector = it.icon,
+                            it.icon,
                             contentDescription = it.contentDescription,
                         )
                     }
@@ -215,7 +219,7 @@ fun CourtlyAppBar(
     title: String,
     titleColor: Color = MaterialTheme.colorScheme.onBackground,
     startingIcon: Any?,
-    placeHolder: ImageVector,
+    placeHolder: Painter,
     onStartingIconClick: () -> Unit = {},
     startingDescription: String,
     dotVisible: Boolean = false,
@@ -251,9 +255,10 @@ fun CourtlyAppBar(
                     contentScale = ContentScale.Crop,
                     error = {
                         Icon(
-                            imageVector = placeHolder,
+                            placeHolder,
                             contentDescription = startingDescription,
-                            tint = MaterialTheme.colorScheme.onBackground
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.fillMaxSize().padding(dimensions.xSmall)
                         )
                     },
                     modifier = Modifier.clip(CircleShape)
@@ -272,7 +277,7 @@ fun CourtlyAppBar(
                         enabled = it.enabled
                     ) {
                         Icon(
-                            imageVector = it.icon,
+                             it.icon,
                             contentDescription = it.contentDescription,
                         )
                     }
@@ -283,7 +288,7 @@ fun CourtlyAppBar(
 }
 
 data class ActionIcon(
-    val icon: ImageVector,
+    val icon: Painter,
     val contentDescription: String,
     val action: () -> Unit,
     val enabled: Boolean = true

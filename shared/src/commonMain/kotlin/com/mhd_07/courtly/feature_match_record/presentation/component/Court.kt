@@ -11,15 +11,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.unit.Density
 import com.mhd_07.courtly.core.domain.model.HCourtSide
 import com.mhd_07.courtly.core.domain.model.Side
 
 @Composable
-fun Court(modifier: Modifier, fill: Color, stroke: Color, side: Side?, hCourtSide: HCourtSide, win: Boolean) {
+fun Court(
+    modifier: Modifier,
+    fill: Color,
+    stroke: Color,
+    side: Side?,
+    hCourtSide: HCourtSide,
+    win: Boolean
+) {
     var width by remember { mutableStateOf(0f) }
-    val topLeft by animateOffsetAsState(
+    val density = LocalDensity.current
+    val lineStart by animateOffsetAsState(
         targetValue = when {
             (side == Side.TeamLeft && hCourtSide == HCourtSide.Left) -> Offset(
                 0f,
@@ -32,12 +44,12 @@ fun Court(modifier: Modifier, fill: Color, stroke: Color, side: Side?, hCourtSid
             )
 
             (side == Side.TeamRight && hCourtSide == HCourtSide.Right) -> Offset(
-                width * 0.85f,
+                width,
                 0f
             )
 
             (side == Side.TeamRight && hCourtSide == HCourtSide.Left) -> Offset(
-                width * 0.85f,
+                width,
                 width * 0.25f
             )
 
@@ -96,11 +108,21 @@ fun Court(modifier: Modifier, fill: Color, stroke: Color, side: Side?, hCourtSid
         )
 
         if (side != null && !win)
-            drawRect(
+            drawLine(
                 color = fill,
-                style = Fill,
-                topLeft = topLeft,
-                size = Size(width = width * 0.15f, height = width * 0.25f)
+                strokeWidth = 5f,
+//                style = Fill,
+                start = lineStart,
+                end = lineStart + Offset(0f, width * 0.25f),
+//                size = Size(width = width * 0.15f, height = width * 0.25f)
             )
+        /* drawText(
+             textLayoutResult = TextMeasurer(
+                 defaultDensity = density,
+                 defaultFontFamilyResolver = LocalFontFamilyResolver.current,
+                 defaultLayoutDirection = TODO(),
+                 cacheSize = TODO(),
+             ).measure("Player Name")
+         ) *///TODO: Add Player Name
     }
 }

@@ -24,6 +24,8 @@ sealed interface Graphs : NavKey {
         data object Home : Graphs, NavKey
 
         @Serializable
+        data object Profile : Graphs, NavKey
+        @Serializable
         data object Settings : Graphs, NavKey
         @Serializable
         data object EditProfile : Graphs, NavKey

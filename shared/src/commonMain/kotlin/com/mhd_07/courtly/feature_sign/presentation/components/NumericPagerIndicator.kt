@@ -19,8 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.normalTextStyle
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.outlined.Check
+import com.mhd_07.courtly.core.util.AspectRatioReference
+import com.mhd_07.courtly.core.util.aspectRatioReference
+import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.check_read_outline
+import org.jetbrains.compose.resources.painterResource
+
 
 @Composable
 fun NumericPagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, currentStep: Int) {
@@ -35,7 +39,7 @@ fun NumericPagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, curren
     ) {
         repeat(stepsCount) {
             Box(
-                modifier = Modifier.aspectRatio(1f).background(
+                modifier = Modifier.aspectRatioReference(1f, 1f, AspectRatioReference.MIN_PARENT_WIDTH_PARENT_HEIGHT).background(
                     if (it <= currentStep) MaterialTheme.colorScheme.primary else Color.Gray,
                     CircleShape
                 ),
@@ -43,7 +47,7 @@ fun NumericPagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, curren
             ) {
                 if (it < currentStep)
                     Icon(
-                        imageVector = TablerIcons.Outlined.Check,
+                        painter = painterResource(Res.drawable.check_read_outline),
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
@@ -76,7 +80,7 @@ fun PagerIndicator(modifier: Modifier = Modifier, stepsCount: Int, currentStep: 
             if (it != 0)
                 HorizontalDivider(modifier = Modifier.weight(1f), color = if (it <= currentStep) MaterialTheme.colorScheme.primary else Color.Gray)
             Box(
-                modifier = Modifier.size(dimensions.small).aspectRatio(1f).background(
+                modifier = Modifier.size(dimensions.small).aspectRatioReference(1f, 1f, AspectRatioReference.MIN_PARENT_WIDTH_PARENT_HEIGHT).background(
                     if (it <= currentStep) MaterialTheme.colorScheme.primary else Color.Gray,
                     CircleShape
                 ),

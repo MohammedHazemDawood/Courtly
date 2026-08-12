@@ -9,5 +9,7 @@ fun PlayerResponse.toPlayer() = Player(
     name = display_name ?: "",
     avatar = avatar_path,
     bio = bio ?: "",
-    avatarVersion = avatar_version
+    avatarVersion = avatar_version,
+    visibility = visibility,
+    location = location ?: ""
 )

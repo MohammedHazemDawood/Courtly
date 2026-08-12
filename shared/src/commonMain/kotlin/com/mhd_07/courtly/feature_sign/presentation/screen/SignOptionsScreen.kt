@@ -22,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,16 +37,17 @@ import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.app_name
 import courtly.shared.generated.resources.email_password
+import courtly.shared.generated.resources.google_brand
 import courtly.shared.generated.resources.icon
+import courtly.shared.generated.resources.letter_outline
 import courtly.shared.generated.resources.or
 import courtly.shared.generated.resources.welcome
 import courtly.shared.generated.resources.welcome_description
 import courtly.shared.generated.resources.with_google
 import courtly.shared.generated.resources.with_x
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.filled.BrandGoogle
-import dev.seyfarth.tablericons.filled.BrandX
-import dev.seyfarth.tablericons.filled.Mail
+import courtly.shared.generated.resources.x_brand
+
+
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -108,13 +110,13 @@ fun SignOptionsScreen(
             ) {
                 SignButton(
                     modifier = Modifier.fillMaxWidth(),
-                    icon = TablerIcons.Filled.BrandGoogle,
+                    icon = painterResource(Res.drawable.google_brand),
                     text = stringResource(Res.string.with_google),
                     onClick = googleSignIn
                 )
                 SignButton(
                     modifier = Modifier.fillMaxWidth(),
-                    icon = TablerIcons.Filled.BrandX,
+                    icon = painterResource(Res.drawable.x_brand),
                     text = stringResource(Res.string.with_x),
                     onClick = {/*TODO: Implement X Login*/ }
                 )
@@ -129,7 +131,7 @@ fun SignOptionsScreen(
                 }
                 SignButton(
                     modifier = Modifier.fillMaxWidth(),
-                    icon = TablerIcons.Filled.Mail,
+                    icon = painterResource(Res.drawable.letter_outline),
                     text = stringResource(Res.string.email_password),
                     onClick = navToEmailSign
                 )
@@ -163,7 +165,7 @@ fun SignOptionsScreen(
 
 @Composable
 fun SignButton(
-    icon: ImageVector,
+    icon: Painter,
     text: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -180,7 +182,7 @@ fun SignButton(
                 horizontalArrangement = Arrangement.spacedBy(LocalDimensions.current.small)
             ) {
                 Icon(
-                    imageVector = icon,
+                    painter = icon,
                     contentDescription = null
                 )
                 Text(

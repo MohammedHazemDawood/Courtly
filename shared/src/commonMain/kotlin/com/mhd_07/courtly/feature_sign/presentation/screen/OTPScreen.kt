@@ -48,12 +48,14 @@ import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.continue_sign
+import courtly.shared.generated.resources.letter_unread_outline
 import courtly.shared.generated.resources.next
 import courtly.shared.generated.resources.otp_description
 import courtly.shared.generated.resources.otp_title
 import courtly.shared.generated.resources.use_another_email
-import dev.seyfarth.tablericons.TablerIcons
-import dev.seyfarth.tablericons.filled.Mail
+import org.jetbrains.compose.resources.painterResource
+
+
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -80,7 +82,7 @@ fun OTPScreen(
                 verticalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
                 Image(
-                    imageVector = TablerIcons.Filled.Mail,
+                    painter = painterResource(Res.drawable.letter_unread_outline),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                     modifier = Modifier.size(dimensions.large)
