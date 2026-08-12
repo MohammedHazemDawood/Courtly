@@ -65,8 +65,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
+          gradle-version: wrapper
           cache-read-only: ${{ github.event_name == 'pull_request' }}
-
+          
       - name: Create local.properties
         run: |
           echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
