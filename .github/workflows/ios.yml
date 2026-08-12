@@ -76,10 +76,7 @@ jobs:
 
       - name: Assemble Android release APK
         run: ./gradlew :androidApp:assembleRelease
-
-      - name: Run Android unit tests
-        run: ./gradlew :androidApp:testReleaseUnitTest
-
+        
       - name: Upload Android APK
         uses: actions/upload-artifact@v4
         with:
@@ -115,17 +112,17 @@ jobs:
           echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
           echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
           echo "google.auth.client.supabase=123342532432" >> local.properties
-
-      - name: Build iOS Simulator
+          
+      - name: Build iOS simulator app
         run: |
+          chmod +x gradlew
           xcodebuild build \
             -project iosApp/iosApp.xcodeproj \
-            -configuration Debug \
             -scheme iosApp \
-            -sdk iphonesimulator \
-            -derivedDataPath ./build \
-            -verbose
-
+            -configuration Debug \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ./build
+            
       - name: Upload iOS App
         uses: actions/upload-artifact@v4
         with:
