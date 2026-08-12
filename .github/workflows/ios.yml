@@ -1,45 +1,129 @@
-name: Build iOS Simulator
+name: CI
+
 on:
-  workflow_dispatch:
   push:
-    branches:
-      - master
-      - main
+    branches: [master]
   pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+env:
+  GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx4096M -Dorg.gradle.daemon=false -Dorg.gradle.parallel=true -Dorg.gradle.caching=true"
 
 jobs:
-  build-ios:
-    runs-on: macos-latest
+
+  # ─────────────────────────────────────────────
+  # 1. SETUP / COMMON TESTS
+  # ─────────────────────────────────────────────
+  setup:
+    name: Setup & Common Tests
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-    
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
       - name: Create local.properties
         run: |
           echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
           echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
           echo "google.auth.client.supabase=123342532432" >> local.properties
+
+      - name: Run common tests
+        run: ./gradlew :shared:jvmTest
+
+
+  # ─────────────────────────────────────────────
+  # 2. ANDROID
+  # ─────────────────────────────────────────────
+  android-build:
+    name: Android Build
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
+          java-version: '17'
           distribution: temurin
-          java-version: 21
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Build shared module
-        run: ./gradlew :shared:build
+      - name: Create local.properties
+        run: |
+          echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
+          echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
+          echo "google.auth.client.supabase=123342532432" >> local.properties
 
-      - name: Build iOS Simulator App
+      - name: Assemble Android release APK
+        run: ./gradlew :androidApp:assembleRelease
+
+      - name: Run Android unit tests
+        run: ./gradlew :androidApp:testReleaseUnitTest
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-apk
+          path: androidApp/build/outputs/apk/release/*.apk
+
+
+  # ─────────────────────────────────────────────
+  # 3. IOS SIMULATOR
+  # ─────────────────────────────────────────────
+  ios-build:
+    name: iOS Simulator Build
+    runs-on: macos-latest
+    needs: setup
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
+        with:
+          cache-read-only: ${{ github.event_name == 'pull_request' }}
+
+      - name: Create local.properties
+        run: |
+          echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
+          echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
+          echo "google.auth.client.supabase=123342532432" >> local.properties
+
+      - name: Build iOS Simulator
         run: |
           xcodebuild build \
             -project iosApp/iosApp.xcodeproj \
-            -scheme iosApp \
             -configuration Debug \
+            -scheme iosApp \
             -sdk iphonesimulator \
-            -derivedDataPath build
+            -derivedDataPath ./build \
+            -verbose
 
       - name: Upload iOS App
         uses: actions/upload-artifact@v4
