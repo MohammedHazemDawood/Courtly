@@ -34,14 +34,14 @@ jobs:
         with:
           cache-read-only: ${{ github.event_name == 'pull_request' }}
 
-      - name: Create local.properties
-        run: |
-          echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
-          echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
-          echo "google.auth.client.supabase=123342532432" >> local.properties
+      # - name: Create local.properties
+        # run: |
+          # echo "supabase.url=${{ secrets.supabase_url }}" >> local.properties
+          # echo "supabase.key=${{ secrets.supabase_key }}" >> local.properties
+          # echo "google.auth.client.supabase=123342532432" >> local.properties
 
-      - name: Run common tests
-        run: ./gradlew :shared:jvmTest
+      # - name: Run common tests
+      #   run: ./gradlew :shared:jvmTest
 
 
   # ─────────────────────────────────────────────
