@@ -159,8 +159,8 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(dimensions.small)
                 ) {
 
-                    Box(
-                        contentAlignment = Alignment.TopEnd,
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(dimensions.xSmall),
                         modifier = Modifier.align(Alignment.End)
                     ) {
                         IconButton(
@@ -172,7 +172,6 @@ fun ProfileScreen(
                                 contentDescription = stringResource(Res.string.settings)
                             )
                         }
-                        val color = MaterialTheme.colorScheme.surface
                         DropdownMenu(
                             expanded = openMenu,
                             onDismissRequest = { openMenu = false },

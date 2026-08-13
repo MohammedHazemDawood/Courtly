@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import courtly.shared.generated.resources.Res
-import courtly.shared.generated.resources.icon
+import courtly.shared.generated.resources.foreground_ico
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -17,7 +17,7 @@ fun SplashScreen() {
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Image(
-                painter = painterResource(Res.drawable.icon),
+                painter = painterResource(Res.drawable.foreground_ico),
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth(0.6f)
 //               modifier = Modifier.size(100.dp)

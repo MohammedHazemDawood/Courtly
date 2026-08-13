@@ -4,11 +4,11 @@ import com.mhd_07.courtly.core.data.mapper.toPlayer
 import com.mhd_07.courtly.core.data.model.PROFILES
 import com.mhd_07.courtly.core.data.model.PlayerResponse
 import com.mhd_07.courtly.core.domain.model.Player
-import com.mhd_07.courtly.feature_match_record.domain.repo.MatchRepository
+import com.mhd_07.courtly.feature_match_record.domain.repo.MatchSetupRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 
-class MatchRepositoryImpl(private val client: SupabaseClient) : MatchRepository {
+class MatchSetupRepositoryImpl(private val client: SupabaseClient) : MatchSetupRepository {
     override suspend fun searchUser(query: String): List<Player> {
         val query = query.trim('@', ' ')
         if (query.isEmpty()) return emptyList()

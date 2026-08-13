@@ -98,6 +98,8 @@ fun MatchSetupScreen(
             navBack()
     }
 
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -209,6 +211,7 @@ fun MatchSetupScreen(
 //            }
             Button(
                 onClick = {
+                    focusManager.clearFocus()
                     if (pagerState.currentPage != pagerState.pageCount - 1)
                         scope.launch {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)

@@ -1,9 +1,9 @@
 package com.mhd_07.courtly.feature_sign.presentation.screen
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -41,17 +40,13 @@ import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.app_name
 import courtly.shared.generated.resources.email_password
-import courtly.shared.generated.resources.google_brand
-import courtly.shared.generated.resources.icon
+import courtly.shared.generated.resources.foreground_ico
 import courtly.shared.generated.resources.letter_outline
 import courtly.shared.generated.resources.or
 import courtly.shared.generated.resources.welcome
 import courtly.shared.generated.resources.welcome_description
-import courtly.shared.generated.resources.with_google
 import courtly.shared.generated.resources.with_x
 import courtly.shared.generated.resources.x_brand
-
-
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -79,7 +74,7 @@ fun SignOptionsScreen(
                 verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
             ) {
                 Image(
-                    painter = painterResource(Res.drawable.icon),
+                    painter = painterResource(Res.drawable.foreground_ico),
                     contentDescription = null,
                     modifier = Modifier.fillMaxWidth(0.6f)
 //               modifier = Modifier.size(100.dp)

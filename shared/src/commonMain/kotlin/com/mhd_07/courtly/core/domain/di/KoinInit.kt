@@ -10,9 +10,9 @@ import org.koin.dsl.includes
 
 fun initKoin(config: KoinAppDeclaration? = null) = startKoin {
     includes(config)
+    modules(coreModule)
     modules(matchRecordModule)
 //    modules(authModule)
-    modules(coreModule)
     modules(navModule)
     modules(signModule)
 }
