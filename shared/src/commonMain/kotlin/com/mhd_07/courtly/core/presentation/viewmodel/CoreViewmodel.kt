@@ -39,7 +39,7 @@ class CoreViewmodel(
     val state = _state.asStateFlow()
 
     private var checkHandleJob: Job? = null
-    private var reloadJob : Job? = null
+    private var reloadJob: Job? = null
 
     init {
         loadProfile()
@@ -67,7 +67,7 @@ class CoreViewmodel(
                 val followings = loadFollowings()
                 _state.update { it.copy(following = followings, result = RemoteResult.Success) }
             }
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
             println("Load Followings Error: ${e.message}")
         }
@@ -203,11 +203,14 @@ class CoreViewmodel(
     }
 
     private fun checkSavedEnabled() = _state.value.let {
-        it.handle != it.profile?.handle ||
+        val handleChanged = it.handle != it.profile?.handle
+
+        if (handleChanged && !it.handleAvailable) return@let false
+
+        handleChanged ||
                 it.displayName.trim() != it.profile.name ||
                 it.bio.trim() != it.profile.bio ||
-                it.avatarPath != it.profile.avatar ||
-                it.handleAvailable
+                it.avatarPath != it.profile.avatar
     }
 }
 

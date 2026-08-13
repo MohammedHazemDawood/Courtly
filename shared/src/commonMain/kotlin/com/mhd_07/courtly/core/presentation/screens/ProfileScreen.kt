@@ -42,9 +42,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -274,77 +276,110 @@ fun ProfilePreview() {
 
 @Composable
 fun ReadMoreText(
-    modifier: Modifier = Modifier,
     text: String,
+    modifier: Modifier = Modifier,
     defaultMaxLines: Int = 3,
-    expandedMaxLines: Int = 6,
+    expandedMaxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
     readLess: String = stringResource(Res.string.read_less),
-    readMore: String = stringResource(Res.string.read_more)
+    readMore: String = stringResource(Res.string.read_more),
+    actionSpanStyle: SpanStyle = SpanStyle(
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.primary
+    )
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember(text) { mutableStateOf(false) }
+    var cutIndex by remember(text) { mutableStateOf<Int?>(null) }
 
-    var displayText by remember(text, expanded) {
-        mutableStateOf(
-            AnnotatedString(text)
-        )
+    val finalText = buildAnnotatedString {
+        if (expanded) {
+            append(text)
+            append(" ")
+
+            val start = length
+            append(readLess)
+
+            addStyle(
+                style = actionSpanStyle,
+                start = start,
+                end = length
+            )
+
+            addLink(
+                clickable = LinkAnnotation.Clickable(
+                    tag = "read_less",
+                    linkInteractionListener = {
+                        expanded = false
+                    }
+                ),
+                start = start,
+                end = length
+            )
+        } else if (cutIndex != null) {
+            append(text.substring(0, cutIndex!!).trimEnd())
+            append("… ")
+
+            val start = length
+            append(readMore)
+
+            addStyle(
+                style = actionSpanStyle,
+                start = start,
+                end = length
+            )
+
+            addLink(
+                clickable = LinkAnnotation.Clickable(
+                    tag = "read_more",
+                    linkInteractionListener = {
+                        expanded = true
+                    }
+                ),
+                start = start,
+                end = length
+            )
+        } else {
+            append(text)
+        }
     }
 
     Text(
+        text = finalText,
         modifier = modifier.animateContentSize(),
-        text = displayText,
         maxLines = if (expanded) expandedMaxLines else defaultMaxLines,
-        overflow = TextOverflow.Ellipsis,
         style = style,
-        onTextLayout = { result ->
+        onTextLayout = { layoutResult ->
 
-            if (expanded) {
-                displayText = buildAnnotatedString {
-                    append(text)
-                    append(" ...$readLess")
+            if (
+                !expanded &&
+                cutIndex == null &&
+                layoutResult.hasVisualOverflow
+            ) {
+                val lastLine = defaultMaxLines - 1
 
-                    addLink(
-                        clickable = LinkAnnotation.Clickable(
-                            tag = "read_less",
-                            linkInteractionListener = {
-                                expanded = false
-                            }
-                        ),
-                        start = text.length + 1,
-                        end = text.length + 1 + readLess.length + 3
-                    )
-                }
+                val lineStart = layoutResult.getLineStart(lastLine)
+                val lineEnd = layoutResult.getLineEnd(
+                    lineIndex = lastLine,
+                    visibleEnd = true
+                )
 
-                return@Text
-            }
+                // Keep some room for "... Read More"
+                val suffix = "… $readMore"
 
-            if (!result.hasVisualOverflow) {
-                displayText = AnnotatedString(text)
-                return@Text
-            }
+                // Start by removing enough characters for the suffix.
+                var candidate = (lineEnd - suffix.length)
+                    .coerceAtLeast(lineStart)
 
-            val lastLine = result.lineCount - 1
-            val lineStart = result.getLineStart(lastLine)
-            val lineEnd = result.getLineEnd(lastLine)
-
-            val availableText = text
-                .substring(0, lineEnd)
-                .trimEnd()
-
-            displayText = buildAnnotatedString {
-                append(availableText)
-                append("...")
-
-                withLink(
-                    LinkAnnotation.Clickable(
-                        tag = "read_more",
-                        linkInteractionListener = {
-                            expanded = true
-                        }
-                    )
+                // Make sure the candidate doesn't end in the middle
+                // of an awkward whitespace sequence.
+                while (
+                    candidate > lineStart &&
+                    text.getOrNull(candidate - 1)?.isWhitespace() == true
                 ) {
-                    append(readMore)
+                    candidate--
                 }
+
+                cutIndex = candidate
             }
         }
     )
