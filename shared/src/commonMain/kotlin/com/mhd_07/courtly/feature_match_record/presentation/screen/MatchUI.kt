@@ -14,7 +14,7 @@ import com.mhd_07.courtly.core.presentation.ui.theme.popTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchIntent
-import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchRecordViewModel
+import com.mhd_07.courtly.feature_match_record.presentation.viewmodel.MatchViewModel
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -30,7 +30,7 @@ fun MatchUI(navBack: () -> Unit) {
             }
         }
     }, Graphs.Match.Setup)
-    val viewmodel = koinViewModel<MatchRecordViewModel>()
+    val viewmodel = koinViewModel<MatchViewModel>()
     val state by viewmodel.state.collectAsStateWithLifecycle()
     val isUndoAvailable by viewmodel.isUndoAvailable.collectAsStateWithLifecycle()
     val isRedoAvailable by viewmodel.isRedoAvailable.collectAsStateWithLifecycle()
