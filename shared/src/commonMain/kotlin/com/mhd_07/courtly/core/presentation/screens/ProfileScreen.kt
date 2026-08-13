@@ -283,44 +283,69 @@ fun ReadMoreText(
     readMore: String = stringResource(Res.string.read_more)
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var finalText by remember { mutableStateOf(AnnotatedString(text)) }
-    var textResult by remember { mutableStateOf<TextLayoutResult?>(null) }
 
-    LaunchedEffect(textResult) {
-        if (textResult == null) return@LaunchedEffect
-        finalText = buildAnnotatedString {
-            append(text)
-            if (expanded) {
-                append(" ...$readLess")
-                addLink(
-                    clickable = LinkAnnotation.Clickable("see_btn", linkInteractionListener = {
-                        expanded = false
-                    }),
-                    start = text.length,
-                    end = text.length + 4 + readLess.length
-                )
-            } else if (!expanded && textResult?.hasVisualOverflow == true) {
-                append(" ...$readMore")
-                addLink(
-                    clickable = LinkAnnotation.Clickable("see_btn", linkInteractionListener = {
-                        expanded = true
-                    }),
-                    start = text.length,
-                    end = text.length + 4 + readMore.length
-                )
-            }
-        }
+    var displayText by remember(text, expanded) {
+        mutableStateOf(
+            AnnotatedString(text)
+        )
     }
-
 
     Text(
         modifier = modifier.animateContentSize(),
-        text = finalText,
+        text = displayText,
         maxLines = if (expanded) expandedMaxLines else defaultMaxLines,
         overflow = TextOverflow.Ellipsis,
         style = style,
-        onTextLayout = {
-            textResult = it
+        onTextLayout = { result ->
+
+            if (expanded) {
+                displayText = buildAnnotatedString {
+                    append(text)
+                    append(" ...$readLess")
+
+                    addLink(
+                        clickable = LinkAnnotation.Clickable(
+                            tag = "read_less",
+                            linkInteractionListener = {
+                                expanded = false
+                            }
+                        ),
+                        start = text.length + 1,
+                        end = text.length + 1 + readLess.length + 3
+                    )
+                }
+
+                return@Text
+            }
+
+            if (!result.hasVisualOverflow) {
+                displayText = AnnotatedString(text)
+                return@Text
+            }
+
+            val lastLine = result.lineCount - 1
+            val lineStart = result.getLineStart(lastLine)
+            val lineEnd = result.getLineEnd(lastLine)
+
+            val availableText = text
+                .substring(0, lineEnd)
+                .trimEnd()
+
+            displayText = buildAnnotatedString {
+                append(availableText)
+                append("...")
+
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = "read_more",
+                        linkInteractionListener = {
+                            expanded = true
+                        }
+                    )
+                ) {
+                    append(readMore)
+                }
+            }
         }
     )
 }

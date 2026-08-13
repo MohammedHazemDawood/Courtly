@@ -126,6 +126,9 @@ kotlin {
             implementation(libs.compottie.dot)
             implementation(libs.compottie.network)
 
+//            implementation(libs.animation)
+
+
 //            implementation(libs.compose.aspect.ratio.reference)
 //            implementation("io.github.ismoy:imagepickerkmp:1.0.22")
         }

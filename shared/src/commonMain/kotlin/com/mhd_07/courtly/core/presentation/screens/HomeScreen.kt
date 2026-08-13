@@ -65,7 +65,7 @@ fun HomeScreen(navToGameSetup: () -> Unit, navToProfileScreen: () -> Unit, userP
         ) {
             Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)) {
                 Row(
-                    modifier = Modifier.padding(dimensions.xxSmall),
+//                    modifier = Modifier.padding(dimensions.xxSmall),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(dimensions.small)
                 ) {

@@ -216,6 +216,8 @@ fun CourtlyAppBar(
 
 @Composable
 fun CourtlyAppBar(
+    modifier: Modifier = Modifier,
+    startingModifier: Modifier = Modifier,
     title: String,
     titleColor: Color = MaterialTheme.colorScheme.onBackground,
     startingIcon: Any?,
@@ -228,6 +230,7 @@ fun CourtlyAppBar(
 ) {
     val dimensions = LocalDimensions.current
     CenterAlignedTopAppBar(
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.onBackground
@@ -247,7 +250,7 @@ fun CourtlyAppBar(
             }
         },
         navigationIcon = {
-            IconButton(onClick = onStartingIconClick) {
+            IconButton(onClick = onStartingIconClick, modifier = modifier) {
                 SubcomposeAsyncImage(
                     model = startingIcon,
                     contentDescription = startingDescription,

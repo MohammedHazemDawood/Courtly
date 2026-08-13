@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.foreground_ico
 import org.jetbrains.compose.resources.painterResource
@@ -19,9 +20,15 @@ fun SplashScreen() {
             Image(
                 painter = painterResource(Res.drawable.foreground_ico),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth(0.6f)
+                modifier = Modifier.fillMaxWidth(0.4f)
 //               modifier = Modifier.size(100.dp)
             )
         }
     }
+}
+
+@Composable
+@Preview
+fun SplashScreenPreview() {
+    SplashScreen()
 }
