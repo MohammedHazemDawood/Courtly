@@ -1,34 +1,29 @@
-package com.mhd_07.courtly.feature_match_record.presentation.screen
+package com.mhd_07.courtly.feature_match_setup.presentation.screens
 
-import androidx.compose.animation.core.EaseOut
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInHorizontally
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import com.mhd_07.courtly.core.domain.model.MatchMode
@@ -36,25 +31,30 @@ import com.mhd_07.courtly.core.domain.model.MatchType
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
+import com.mhd_07.courtly.core.presentation.model.RemoteResult
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
-import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
-import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match_record.domain.model.SetupStep
+import com.mhd_07.courtly.feature_match_setup.presentation.components.LocationPage
+import com.mhd_07.courtly.feature_match_setup.presentation.components.ModeTypePage
+import com.mhd_07.courtly.feature_match_setup.presentation.components.PlayersPage
+import com.mhd_07.courtly.feature_match_setup.presentation.components.SystemPage
+import com.mhd_07.courtly.feature_match_setup.presentation.components.TeamsNamesPage
 import com.mhd_07.courtly.feature_sign.presentation.components.PagerIndicator
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.cancel
 import courtly.shared.generated.resources.next
 import courtly.shared.generated.resources.setup
 import courtly.shared.generated.resources.start_match
-import courtly.shared.generated.resources.step
 import courtly.shared.generated.resources.team_left_players
 import courtly.shared.generated.resources.team_left_players_placeholder
 import courtly.shared.generated.resources.team_right_players
 import courtly.shared.generated.resources.team_right_players_placeholder
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.abs
 
 @Composable
 fun MatchSetupScreen(
@@ -65,20 +65,24 @@ fun MatchSetupScreen(
     searchText: String,
     onSearch: (String) -> Unit,
     searchResults: List<Player>,
-    addPlayer: (Player, Side) -> Unit,
-    removePlayer: (Player, Side) -> Unit,
+    addTeamLeftPlayer: (Player) -> Unit,
+    addTeamRightPlayer: (Player) -> Unit,
+    removeTeamLeftPlayer: (Player) -> Unit,
+    removeTeamRightPlayer: (Player) -> Unit,
     location: String,
     type: MatchType,
     mode: MatchMode,
     bestOf: Int,
     navToGameRecord: () -> Unit,
     navBack: () -> Unit,
-    onChangeName: (Side, String) -> Unit,
+    onChangeTeamLeftName: (String) -> Unit,
+    onChangeTeamRightName: (String) -> Unit,
     onEditLocation: (String) -> Unit,
     onModeChange: (MatchMode) -> Unit,
     onBestOfChange: (Int) -> Unit,
     onTypeChange: (MatchType) -> Unit,
-    startGame: (Side) -> Unit
+    startGame: (Side) -> Unit,
+    result: RemoteResult?,
 ) {
     val pages = listOf(
         SetupStep.Teams,
@@ -106,10 +110,30 @@ fun MatchSetupScreen(
             navBack()
     }
 
+
     val focusManager = LocalFocusManager.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+
+    LaunchedEffect(result) {
+        if (result is RemoteResult.Error)
+            snackbarHostState.showSnackbar(message = getString(result.error.message))
+    }
+
+
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackbarHostState,
+             ){
+                Snackbar(
+                    snackbarData = it,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                )
+            }
+        },
         topBar = {
             CourtlyAppBar(
                 title = stringResource(Res.string.setup),
@@ -164,7 +188,7 @@ fun MatchSetupScreen(
                     (pagerState.currentPage - page) +
                             pagerState.currentPageOffsetFraction
 
-                val absOffset = kotlin.math.abs(pageOffset)
+                val absOffset = abs(pageOffset)
 
                 val progress = 1f - absOffset.coerceIn(0f, 1f)
 
@@ -180,8 +204,8 @@ fun MatchSetupScreen(
                         SetupStep.Teams -> TeamsNamesPage(
                             teamRightName = teamRightName,
                             teamLeftName = teamLeftName,
-                            onTeamRightNameChange = { onChangeName(Side.TeamRight, it) },
-                            onTeamLeftNameChange = { onChangeName(Side.TeamLeft, it) }
+                            onTeamLeftNameChange = { onChangeTeamLeftName(it) },
+                            onTeamRightNameChange = { onChangeTeamRightName(it) }
                         )
 
                         SetupStep.TeamLeftPlayers -> PlayersPage(
@@ -198,8 +222,8 @@ fun MatchSetupScreen(
                                     it
                                 )
                             },
-                            onAddPlayer = { addPlayer(it, Side.TeamLeft) },
-                            onRemovePlayer = { removePlayer(it, Side.TeamLeft) },
+                            onAddPlayer = { addTeamLeftPlayer(it) },
+                            onRemovePlayer = { removeTeamLeftPlayer(it) },
                             isVisible = page == pagerState.currentPage
                         )
 
@@ -217,8 +241,8 @@ fun MatchSetupScreen(
                                     it
                                 )
                             },
-                            onAddPlayer = { addPlayer(it, Side.TeamRight) },
-                            onRemovePlayer = { removePlayer(it, Side.TeamRight) },
+                            onAddPlayer = { addTeamRightPlayer(it) },
+                            onRemovePlayer = { removeTeamRightPlayer(it) },
                             isVisible = page == pagerState.currentPage
                         )
 
@@ -251,7 +275,8 @@ fun MatchSetupScreen(
                         }
                     else {
                         startGame(Side.TeamLeft)
-                        navToGameRecord()
+                        if (result is RemoteResult.Success)
+                            navToGameRecord()
                     }
 //                nextEnabled = false
                 },

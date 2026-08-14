@@ -30,8 +30,8 @@ data class MatchState(
     val currentScore: Pair<Score, Score> = Score.Zero to Score.Zero,
     val currentSet: Pair<Int, Int> = 0 to 0,
     val prevSets : List<Pair<Int, Int>> = emptyList(),
-    val searchText: String = "",
-    val searchResults: List<Player> = emptyList()
+//    val searchText: String = "",
+//    val searchResults: List<Player> = emptyList()
 ){
     fun teamRightScore(): MatchState = when (currentScore.second) {
         Score.Advantage ->

@@ -3,7 +3,6 @@ package com.mhd_07.courtly.feature_match_record.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mhd_07.courtly.core.domain.model.HCourtSide
-import com.mhd_07.courtly.core.domain.model.Match
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.model.Score
@@ -11,11 +10,8 @@ import com.mhd_07.courtly.core.domain.model.Side
 import com.mhd_07.courtly.core.domain.model.opposite
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction
 import com.mhd_07.courtly.feature_match_record.domain.model.TimelineAction.*
-import com.mhd_07.courtly.feature_match_record.domain.usecase.SearchUserUseCase
 import com.mhd_07.courtly.feature_match_record.presentation.model.MatchState
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -28,16 +24,15 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 class MatchViewModel(
-    private val searchUserUseCase: SearchUserUseCase
+//    private val searchUserUseCase: SearchUserUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(MatchState())
     private val _undoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
     private val _redoStack = MutableStateFlow<ArrayDeque<TimelineAction>>(ArrayDeque())
 
-    private val searchQuery = MutableStateFlow("")
 
-    val state = combine(_state, _undoStack, searchQuery) { state, undoStack, query ->
-        state.copy(timeline = undoStack, searchText = query)
+    val state = combine(_state, _undoStack, ) { state, undoStack, ->
+        state.copy(timeline = undoStack)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -46,37 +41,6 @@ class MatchViewModel(
 
 //    private var searchJob: Job? = null
 
-    init {
-        viewModelScope.launch {
-            searchQuery
-                .debounce(500.milliseconds)
-                .collectLatest { query ->
-
-                    val query = query.trim()
-
-                    if (query.isBlank()) {
-                        _state.update {
-                            it.copy(searchResults = emptyList())
-                        }
-                        println("None")
-                        return@collectLatest
-                    }
-
-                    try {
-                        val result = searchUserUseCase(query)
-
-                        _state.update {
-                            it.copy(searchResults = result)
-                        }
-
-                    } catch (e: PostgrestRestException) {
-                        _state.update {
-                            it.copy(searchResults = emptyList())
-                        }
-                    }
-                }
-        }
-    }
     override fun onCleared() {
         super.onCleared()
         _undoStack.update { ArrayDeque() }
@@ -145,73 +109,11 @@ class MatchViewModel(
                 )
             }
 
-            is MatchIntent.EditBestOf -> _state.update { it.copy(bestOf = intent.newBestOf) }
             is MatchIntent.EditBallPlayer -> _state.update {
                 it.copy(ballPlayer = intent.newBallPlayer)
             }
 
-            is MatchIntent.EditPlayerName -> _state.update {
-                if (intent.side == Side.TeamLeft) it.copy(
-                    teamLeft = it.teamLeft.copy(
-                        players = it.teamLeft.players.toMutableList().apply {
-                            set(
-                                intent.index,
-                                it.teamLeft.players[intent.index].copy(name = intent.newName)
-                            )
-                        }
-                    )
-                ) else it.copy(
-                    teamRight = it.teamRight.copy(
-                        players = it.teamRight.players.toMutableList().apply {
-                            set(
-                                intent.index,
-                                it.teamRight.players[intent.index].copy(name = intent.newName)
-                            )
-                        }
-                    )
-                )
-            }
-
-            is MatchIntent.EditTeamColor -> _state.update {
-                if (intent.side == Side.TeamLeft) it.copy(
-                    teamLeft = it.teamLeft.copy(color = intent.newColor)
-                ) else it.copy(
-                    teamRight = it.teamRight.copy(color = intent.newColor)
-                )
-            }
-
-            is MatchIntent.EditTeamName -> _state.update {
-                if (intent.side == Side.TeamLeft) it.copy(
-                    teamLeft = it.teamLeft.copy(name = intent.newName)
-                ) else it.copy(
-                    teamRight = it.teamRight.copy(name = intent.newName)
-                )
-            }
-
-            is MatchIntent.StartGame -> _state.update {
-                it.copy(
-                    status = MatchStatus.Live,
-                    ballTeam = intent.startingTeam,
-                    ballHalf = HCourtSide.Right
-                ).handlePlayers()
-            }
-
-            is MatchIntent.EditLocation -> _state.update { it.copy(location = intent.newLocation) }
-            is MatchIntent.EditMode -> _state.update { it.copy(mode = intent.mode) }
-            is MatchIntent.EditType -> _state.update { it.copy(type = intent.type) }
-            is MatchIntent.AddPlayer -> _state.update {
-                if (intent.side == Side.TeamLeft)
-                    it.copy(teamLeft = it.teamLeft.copy(players = it.teamLeft.players + intent.player))
-                else it.copy(teamRight = it.teamRight.copy(players = it.teamRight.players + intent.player))
-            }
-
-            is MatchIntent.RemovePlayer -> _state.update {
-                if (intent.side == Side.TeamLeft)
-                    it.copy(teamLeft = it.teamLeft.copy(players = it.teamLeft.players - intent.player))
-                else it.copy(teamRight = it.teamRight.copy(players = it.teamRight.players - intent.player))
-            }
-
-            is MatchIntent.SearchPlayers -> searchQuery.update { intent.query }
+            is MatchIntent.StartGame -> TODO()
         }
     }
 

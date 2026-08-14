@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 sealed interface Graphs : NavKey {
 
     @Serializable
-    data class ProfilePreview(val id : String) : Graphs, NavKey
+    data class ProfilePreview(val id: String) : Graphs, NavKey
 
     @Serializable
     data object Splash : Graphs, NavKey
@@ -16,8 +16,10 @@ sealed interface Graphs : NavKey {
     data object Sign : Graphs, NavKey {
         @Serializable
         data object SignOptions : Graphs, NavKey
+
         @Serializable
         data object MailPasswordSign : Graphs, NavKey
+
         @Serializable
         data object OTP : Graphs, NavKey
     }
@@ -29,19 +31,26 @@ sealed interface Graphs : NavKey {
 
         @Serializable
         data object Profile : Graphs, NavKey
+
         @Serializable
         data object Settings : Graphs, NavKey
+
         @Serializable
         data object EditProfile : Graphs, NavKey
+
         @Serializable
         data object SetupAccount : Graphs, NavKey
-        }
+    }
+
+    @Serializable
+    data object Setup : Graphs, NavKey
+
+
+    @Serializable
+    data object MatchSetup : Graphs, NavKey
 
     @Serializable
     data object Match : Graphs, NavKey {
-        @Serializable
-        data object Setup : Graphs, NavKey
-
         @Serializable
         data object Record : Graphs, NavKey
     }

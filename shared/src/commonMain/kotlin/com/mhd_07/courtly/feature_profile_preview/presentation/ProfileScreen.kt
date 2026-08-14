@@ -50,14 +50,19 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.LinkAnnotation
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.domain.model.Player
@@ -66,10 +71,10 @@ import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
+import com.mhd_07.courtly.core.presentation.ui.theme.normalTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
-import com.mhd_07.courtly.feature_match_record.presentation.screen.PlayerAvatar
-import com.valentinilk.shimmer.rememberShimmer
+import com.mhd_07.courtly.feature_match_setup.presentation.components.PlayerAvatar
 import com.valentinilk.shimmer.shimmer
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.follow
@@ -297,17 +302,21 @@ fun ProfileScreen(
                             Text(
                                 text = profile?.name ?: "",
                                 style = titleTextStyle,
-                                modifier = Modifier.fillMaxWidth(0.75f).shimmerable(profile == null),
+                                modifier = Modifier.fillMaxWidth(0.75f)
+                                    .shimmerable(profile == null),
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
                                 text = profile?.let { "@${it.handle}" } ?: "",
                                 style = notesTextStyle,
-                                modifier = Modifier.fillMaxWidth(0.75f).shimmerable(profile == null, paddingValues = PaddingValues(vertical = dimensions.xSmall)),
+                                modifier = Modifier.fillMaxWidth(0.75f).shimmerable(
+                                    profile == null,
+                                    paddingValues = PaddingValues(vertical = dimensions.xSmall)
+                                ),
                                 overflow = TextOverflow.Ellipsis
                             )
                         }
-                        ReadMoreText(
+                        ExpandableText(
                             text = profile?.bio ?: "",
                             modifier = Modifier.fillMaxWidth()
                                 .shimmerable(profile == null)
@@ -424,94 +433,81 @@ private fun PlayerListBottomSheet(
 }
 
 @Composable
-fun ReadMoreText(
+fun ExpandableText(
     text: String,
     modifier: Modifier = Modifier,
-    defaultMaxLines: Int = 3,
-    expandedMaxLines: Int = Int.MAX_VALUE,
+    color: Color = Color.Unspecified,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    fontStyle: FontStyle? = null,
+    textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = TextAlign.Justify,
+    overflow: TextOverflow = TextOverflow.Clip,
+    softWrap: Boolean = true,
+    collapseMaxLines: Int = 3,
+    expandMaxLines: Int = Int.MAX_VALUE,
     style: TextStyle = LocalTextStyle.current,
-    readLess: String = stringResource(Res.string.read_less),
-    readMore: String = stringResource(Res.string.read_more),
-    actionSpanStyle: SpanStyle = SpanStyle(
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.primary
-    )
+    showMoreText: String = stringResource(Res.string.read_more),
+    showLessText: String = stringResource(Res.string.read_less)
 ) {
-    var expanded by remember(text) { mutableStateOf(false) }
-    var cutIndex by remember(text) { mutableStateOf<Int?>(null) }
-
-    val finalText = buildAnnotatedString {
-        if (expanded) {
-            append(text)
-            append(" ")
-
-            val start = length
-            append(readLess)
-
-            addStyle(
-                style = actionSpanStyle,
-                start = start,
-                end = length
-            )
-
-            addLink(
-                clickable = LinkAnnotation.Clickable(
-                    tag = "read_less",
-                    linkInteractionListener = { expanded = false }
-                ),
-                start = start,
-                end = length
-            )
-        } else if (cutIndex != null) {
-            append(text.substring(0, cutIndex!!).trimEnd())
-            append("… ")
-
-            val start = length
-            append(readMore)
-
-            addStyle(
-                style = actionSpanStyle,
-                start = start,
-                end = length
-            )
-
-            addLink(
-                clickable = LinkAnnotation.Clickable(
-                    tag = "read_more",
-                    linkInteractionListener = { expanded = true }
-                ),
-                start = start,
-                end = length
-            )
-        } else {
-            append(text)
-        }
-    }
+    var expanded by remember { mutableStateOf(false) }
+    var expandable by remember { mutableStateOf(false) }
+    var lastVisibleIndex by remember { mutableStateOf(0) }
 
     Text(
-        text = finalText,
-        modifier = modifier.animateContentSize(),
-        maxLines = if (expanded) expandedMaxLines else defaultMaxLines,
-        style = style,
-        onTextLayout = { layoutResult ->
-            if (!expanded && cutIndex == null && layoutResult.hasVisualOverflow) {
-                val lastLine = defaultMaxLines - 1
-                val lineStart = layoutResult.getLineStart(lastLine)
-                val lineEnd = layoutResult.getLineEnd(
-                    lineIndex = lastLine,
-                    visibleEnd = true
-                )
-
-                val suffix = "… $readMore"
-                var candidate = (lineEnd - suffix.length).coerceAtLeast(lineStart)
-
-                while (candidate > lineStart && text.getOrNull(candidate - 1)
-                        ?.isWhitespace() == true
-                ) {
-                    candidate--
+        text = buildAnnotatedString {
+            if (expandable) {
+                if (expanded) {
+                    append(text.trim())
+                    append(" ")
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = "show_less",
+                            styles = TextLinkStyles(
+                                style = normalTextStyle.copy(
+//                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                ).toSpanStyle()
+                            )
+                        ) {
+                            expanded = false
+                        }) { append(showLessText) }
+                } else {
+                    append(
+                        text.substring(
+                            startIndex = 0,
+                            endIndex = lastVisibleIndex - (showMoreText.length + "... ".length)
+                        ).trim().trim('.')
+                    )
+                    append("... ")
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = "show_more",
+                            styles = TextLinkStyles(
+                                style = normalTextStyle.copy(
+//                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Bold
+                                ).toSpanStyle()
+                            )
+                        ) {
+                            expanded = true
+                        }) { append(showMoreText) }
                 }
-
-                cutIndex = candidate
+            } else append(text.trim())
+        },
+        modifier = modifier.animateContentSize(),
+        color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
+        textDecoration = textDecoration,
+        textAlign = textAlign,
+        overflow = overflow,
+        softWrap = softWrap,
+        maxLines = if (expanded) expandMaxLines else collapseMaxLines,
+        style = style,
+        onTextLayout = {
+            if (!expanded && it.hasVisualOverflow) {
+                expandable = true
+                lastVisibleIndex = it.getLineEnd(collapseMaxLines - 1)
             }
         }
     )
@@ -614,7 +610,7 @@ fun Modifier.shimmerable(
         .padding(paddingValues)
         .shimmer()
         .background(color = color, shape = shape)
-        .drawWithContent{
+        .drawWithContent {
 
         }
 }

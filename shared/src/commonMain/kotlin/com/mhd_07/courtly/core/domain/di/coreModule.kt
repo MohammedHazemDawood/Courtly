@@ -22,9 +22,6 @@ import org.koin.dsl.module
 
 val coreModule = module {
     single {
-        println("========== SUPABASE ==========")
-        println("URL: ${BuildKonfig.SUPABASE_URL}")
-        println("==============================")
         createSupabaseClient(
             supabaseUrl = BuildKonfig.SUPABASE_URL,
             supabaseKey = BuildKonfig.SUPABASE_KEY

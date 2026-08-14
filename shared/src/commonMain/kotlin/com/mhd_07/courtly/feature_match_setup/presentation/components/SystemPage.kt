@@ -1,7 +1,5 @@
-package com.mhd_07.courtly.feature_match_record.presentation.screen
+package com.mhd_07.courtly.feature_match_setup.presentation.components
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,14 +12,12 @@ import androidx.compose.ui.Modifier
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
-import com.mhd_07.courtly.feature_match_record.presentation.screen.components.OptionSelector
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.best_of
 import courtly.shared.generated.resources.best_of_3_description
 import courtly.shared.generated.resources.best_of_5_description
 import courtly.shared.generated.resources.system
 import courtly.shared.generated.resources.system_description
-import io.github.jan.supabase.realtime.Column
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

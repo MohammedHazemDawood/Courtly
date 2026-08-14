@@ -1,7 +1,5 @@
-package com.mhd_07.courtly.feature_match_record.presentation.screen
+package com.mhd_07.courtly.feature_match_setup.presentation.components
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

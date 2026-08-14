@@ -1,8 +1,6 @@
-package com.mhd_07.courtly.feature_match_record.presentation.screen
+package com.mhd_07.courtly.feature_match_setup.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.border
@@ -10,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,10 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
@@ -48,7 +43,6 @@ import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
-import com.mhd_07.courtly.core.util.BackHandler
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.add_player
 import courtly.shared.generated.resources.add_square_outline

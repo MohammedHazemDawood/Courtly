@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.feature_match_record.presentation.screen.components
+package com.mhd_07.courtly.feature_match_setup.presentation.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement

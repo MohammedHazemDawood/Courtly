@@ -24,6 +24,7 @@ import com.mhd_07.courtly.core.presentation.ui.theme.popTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchUI
+import com.mhd_07.courtly.feature_match_setup.presentation.screens.MatchSetupUI
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
 import com.mhd_07.courtly.feature_profile_preview.presentation.ProfilePreviewUI
@@ -44,6 +45,7 @@ fun AppNavigator(deepsLink: String? = null) {
                 subclass(Graphs.Sign::class, Graphs.Sign.serializer())
                 subclass(Graphs.Match::class, Graphs.Match.serializer())
                 subclass(Graphs.Splash::class, Graphs.Splash.serializer())
+                subclass(Graphs.MatchSetup::class, Graphs.MatchSetup.serializer())
                 subclass(Graphs.ProfilePreview::class, Graphs.ProfilePreview.serializer())
             }
         }
@@ -82,7 +84,7 @@ fun AppNavigator(deepsLink: String? = null) {
                 SignUI()
             }
             entry<Graphs.Core> {
-                CoreUI({ backStack.add(Graphs.Match) }) {
+                CoreUI({ backStack.add(Graphs.MatchSetup) }) {
                     backStack.add(Graphs.ProfilePreview(it))
                 }
             }
@@ -97,9 +99,18 @@ fun AppNavigator(deepsLink: String? = null) {
             entry<Graphs.Splash> {
                 SplashScreen()
             }
-            entry<Graphs.ProfilePreview>(
+            entry<Graphs.MatchSetup> {
+                MatchSetupUI(
+                    navBack = {
+                        if (backStack.size > 1)
+                            backStack.removeLast()
+                    },
+                    navToGameRecord = { id ->
 
-            ) { key ->
+                    }
+                )
+            }
+            entry<Graphs.ProfilePreview> { key ->
                 ProfilePreviewUI(
                     id = key.id,
                     navBack = {
@@ -111,5 +122,6 @@ fun AppNavigator(deepsLink: String? = null) {
                     }
                 )
             }
-        })
+        }
+    )
 }

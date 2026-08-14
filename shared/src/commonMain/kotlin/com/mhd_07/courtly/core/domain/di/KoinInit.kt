@@ -3,6 +3,7 @@ package com.mhd_07.courtly.core.domain.di
 //import com.mhd_07.courtly.feature_auth.domain.di.authModule
 import com.mhd_07.courtly.feature_sign.domain.di.signModule
 import com.mhd_07.courtly.feature_match_record.domain.di.matchRecordModule
+import com.mhd_07.courtly.feature_match_setup.domain.di.matchSetupModule
 import com.mhd_07.courtly.feature_nav.domain.di.navModule
 import com.mhd_07.courtly.feature_profile_preview.domain.di.profilePreviewModule
 import org.koin.core.context.startKoin
@@ -16,5 +17,6 @@ fun initKoin(config: KoinAppDeclaration? = null) = startKoin {
 //    modules(authModule)
     modules(navModule)
     modules(signModule)
+    modules(matchSetupModule)
     modules(profilePreviewModule)
 }
