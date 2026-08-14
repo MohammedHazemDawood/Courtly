@@ -8,6 +8,7 @@ import com.mhd_07.courtly.core.data.model.CheckHandleResponse
 import com.mhd_07.courtly.core.data.model.FOLLOWED
 import com.mhd_07.courtly.core.data.model.FOLLOWER
 import com.mhd_07.courtly.core.data.model.FOLLOWS
+import com.mhd_07.courtly.core.data.model.FollowRequest
 import com.mhd_07.courtly.core.data.model.FollowerResponse
 import com.mhd_07.courtly.core.data.model.FollowingResponse
 import com.mhd_07.courtly.core.data.model.PROFILES
@@ -146,5 +147,24 @@ class CoreRepositoryImpl(private val client: SupabaseClient) : CoreRepository {
             }
             .decodeList<PlayerResponse>()
             .map { it.toPlayer() }
+    }
+
+    override suspend fun follow(id: String) {
+        val userId = client.auth.currentUserOrNull() ?: return
+        val follow = FollowRequest(follower = userId.id, followed = id)
+        client.postgrest.from(FOLLOWS).insert(follow)
+    }
+
+    override suspend fun unfollow(id: String) {
+        val userId = client.auth.currentUserOrNull() ?: return
+        client.postgrest.from(FOLLOWS)
+            .delete {
+                filter {
+                    and {
+                        eq(FOLLOWER, userId.id)
+                        eq(FOLLOWED, id)
+                    }
+                }
+            }
     }
 }

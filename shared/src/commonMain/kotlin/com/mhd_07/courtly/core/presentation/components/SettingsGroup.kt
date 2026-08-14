@@ -39,7 +39,7 @@ fun SettingsGroup(
         Column(
             modifier = Modifier.fillMaxWidth().border(
                 dimensions.xxSmall,
-                MaterialTheme.colorScheme.surface,
+                Color.Gray,
                 MaterialTheme.shapes.extraSmall
             ),
 //            verticalArrangement = Arrangement.spacedBy(dimensions.small),
@@ -51,7 +51,7 @@ fun SettingsGroup(
                 if (it != items.last())
                     HorizontalDivider(
                         thickness = dimensions.xxSmall,
-                        color = MaterialTheme.colorScheme.surface,
+                        color = Color.Gray,
                         modifier = Modifier.padding(horizontal = dimensions.small)
                     )
             }

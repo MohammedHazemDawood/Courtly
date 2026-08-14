@@ -18,7 +18,8 @@ import platform.Photos.PHAuthorizationStatusNotDetermined
 import platform.Photos.PHPhotoLibrary
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationOpenSettingsURLString
-
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 
 actual class PermissionManager actual constructor(private val listener: PermissionResultListener) :
@@ -116,8 +117,10 @@ actual class PermissionManager actual constructor(private val listener: Permissi
 
     @Composable
     actual override fun launchPermissionSettings() {
-        NSURL.URLWithString(UIApplicationOpenSettingsURLString)?.let {
-            UIApplication.sharedApplication.openURL(it)
+        dispatch_async(dispatch_get_main_queue()){
+            NSURL.URLWithString(UIApplicationOpenSettingsURLString)?.let {
+                UIApplication.sharedApplication.openURL(it)
+            }
         }
     }
 }

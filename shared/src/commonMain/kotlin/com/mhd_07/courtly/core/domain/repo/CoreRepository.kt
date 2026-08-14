@@ -14,4 +14,7 @@ interface CoreRepository {
 
     suspend fun loadFollowers() : List<Player>
     suspend fun loadFollowing() : List<Player>
+
+    suspend fun follow(id : String)
+    suspend fun unfollow(id : String)
 }

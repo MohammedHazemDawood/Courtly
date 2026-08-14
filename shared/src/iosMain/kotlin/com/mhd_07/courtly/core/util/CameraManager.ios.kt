@@ -21,6 +21,8 @@ import platform.UIKit.UIImagePickerControllerOriginalImage
 import platform.UIKit.UIImagePickerControllerSourceType
 import platform.UIKit.UINavigationControllerDelegateProtocol
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 @Composable
 actual fun rememberCameraManager(onResult: (SharedImage) -> Unit): CameraManager {
@@ -43,13 +45,23 @@ actual fun rememberCameraManager(onResult: (SharedImage) -> Unit): CameraManager
     }
     return remember {
         CameraManager {
-            imagePicker.setSourceType(UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera)
-            imagePicker.setAllowsEditing(true)
-            imagePicker.setCameraCaptureMode(UIImagePickerControllerCameraCaptureMode.UIImagePickerControllerCameraCaptureModePhoto)
-            imagePicker.setDelegate(cameraDelegate)
-            UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
-                imagePicker, true, null
-            )
+            dispatch_async(dispatch_get_main_queue()) {
+                val cameraSource =
+                    UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypeCamera
+
+                if (!UIImagePickerController.isSourceTypeAvailable(cameraSource)) {
+                    println("Camera source is not available on this device")
+                    return@dispatch_async
+                }
+
+                imagePicker.setSourceType(cameraSource)
+                imagePicker.setAllowsEditing(true)
+                imagePicker.setCameraCaptureMode(UIImagePickerControllerCameraCaptureMode.UIImagePickerControllerCameraCaptureModePhoto)
+                imagePicker.setDelegate(cameraDelegate)
+                UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
+                    imagePicker, true, null
+                )
+            }
         }
     }
 }

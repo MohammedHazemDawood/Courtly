@@ -10,11 +10,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -69,7 +72,7 @@ fun PlayersPage(
     onAddPlayer: (Player) -> Unit,
     onRemovePlayer: (Player) -> Unit,
     modifier: Modifier = Modifier,
-    isVisible : Boolean
+    isVisible: Boolean
 ) {
     val dimensions = LocalDimensions.current
     var searching by remember { mutableStateOf(false) }
@@ -82,8 +85,8 @@ fun PlayersPage(
     }
     Column(
         modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState()),
+            .fillMaxSize(),
+//            .verticalScroll(state = rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(dimensions.small)
     ) {
         // Header
@@ -93,142 +96,150 @@ fun PlayersPage(
         }
 
         // Selected Players List
-        Column(
-            modifier = Modifier.fillMaxWidth(),
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth()
+                .weight(1f),
             verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
-            players.forEach { player ->
+            items(players, key = { it.id }) { player ->
                 SelectedPlayerCard(
                     player = player,
                     onRemove = { onRemovePlayer(player) }
                 )
             }
-        }
+            item {
 
-        // Search Section
-        AnimatedVisibility(visible = searching) {
-            ExposedDropdownMenuBox(
-                expanded = searching,
-                onExpandedChange = { /*searching = it*/ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = searchText,
-                    onValueChange = onSearchPlayer,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-                    placeholder = { Text("Search a player") }, // TODO: Add string resource
-                    trailingIcon = {
-                        IconButton(
-                            onClick = {
-                                onSearchPlayer("")
-                                searching = false
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(Res.drawable.x),
-                                contentDescription = "Close search" // TODO: Add string resource
-                            )
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Search
-                    ),
-                    singleLine = true
-                )
-
-                ExposedDropdownMenu(
-                    expanded = searching,
-                    onDismissRequest = { }
+                // Search Section
+                AnimatedVisibility(
+                    visible = searching,
+                    enter = slideInHorizontally(),
+                    exit = slideOutHorizontally()
                 ) {
-                    // Option to add as a custom player (if text is typed)
-                    if (searchText.isNotBlank()) {
-                        DropdownMenuItem(
-                            text = {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                    ExposedDropdownMenuBox(
+                        expanded = searching,
+                        onExpandedChange = { /*searching = it*/ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = searchText,
+                            onValueChange = onSearchPlayer,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
+                            placeholder = { Text("Search a player") }, // TODO: Add string resource
+                            trailingIcon = {
+                                IconButton(
+                                    onClick = {
+                                        onSearchPlayer("")
+                                        searching = false
+                                    }
                                 ) {
                                     Icon(
-                                        painter = painterResource(Res.drawable.user_outline),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(dimensions.xxLarge).clip(CircleShape)
+                                        painter = painterResource(Res.drawable.x),
+                                        contentDescription = "Close search" // TODO: Add string resource
                                     )
-                                    Text("Add \"$searchText\"")//TODO: Use string resource
                                 }
                             },
-                            onClick = {
-                                onAddPlayer(
-                                    Player(
-                                        name = searchText.trim('@', ' '),
-                                        handle = null,
-                                        bio = "",
-                                        avatar = null,
-                                        avatarVersion = 0
-                                    )
+                            keyboardOptions = KeyboardOptions(
+                                imeAction = ImeAction.Search
+                            ),
+                            singleLine = true
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = searching,
+                            onDismissRequest = { }
+                        ) {
+                            // Option to add as a custom player (if text is typed)
+                            if (searchText.isNotBlank()) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                                        ) {
+                                            Icon(
+                                                painter = painterResource(Res.drawable.user_outline),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(dimensions.xxLarge)
+                                                    .clip(CircleShape)
+                                            )
+                                            Text("Add \"$searchText\"")//TODO: Use string resource
+                                        }
+                                    },
+                                    onClick = {
+                                        onAddPlayer(
+                                            Player(
+                                                name = searchText.trim('@', ' '),
+                                                handle = null,
+                                                bio = "",
+                                                avatar = null,
+                                                avatarVersion = 0
+                                            )
+                                        )
+                                        onSearchPlayer("")
+                                        searching = false
+                                    }
                                 )
-                                onSearchPlayer("")
-                                searching = false
                             }
-                        )
-                    }
 
-                    // Existing search results
-                    searchResults.forEach { (player, available) ->
-                        DropdownMenuItem(
-                            text = {
-                                PlayerRowContent(player = player)
-                            },
-                            onClick = {
-                                onAddPlayer(player)
-                                onSearchPlayer("")
-                                searching = false
-                            },
-                            enabled = available
-                        )
-                    }
+                            // Existing search results
+                            searchResults.forEach { (player, available) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        PlayerRowContent(player = player)
+                                    },
+                                    onClick = {
+                                        onAddPlayer(player)
+                                        onSearchPlayer("")
+                                        searching = false
+                                    },
+                                    enabled = available
+                                )
+                            }
 
-                    // Empty state when search produces no matching registered players and input is empty
-                    if (searchResults.isEmpty() && searchText.isBlank()) {
-                        DropdownMenuItem(
-                            text = { Text("Type a name or @handle to search") },
-                            onClick = { },
-                            enabled = false
-                        )
+                            // Empty state when search produces no matching registered players and input is empty
+                            if (searchResults.isEmpty() && searchText.isBlank()) {
+                                DropdownMenuItem(
+                                    text = { Text("Type a name or @handle to search") },
+                                    onClick = { },
+                                    enabled = false
+                                )
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-        // Add Player Button (When not searching)
-        AnimatedVisibility(
-            visible = !searching,
-            enter = slideInHorizontally(),
-            exit = slideOutHorizontally()
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(
-                        width = dimensions.xxSmall,
-                        color = Color.Gray,
-                        shape = MaterialTheme.shapes.medium
-                    )
-                    .clickable { searching = true }
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(dimensions.small),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                // Add Player Button (When not searching)
+                AnimatedVisibility(
+                    visible = !searching,
+                    enter = slideInHorizontally(),
+                    exit = slideOutHorizontally()
                 ) {
-                    Icon(
-                        painter = painterResource(Res.drawable.add_square_outline),
-                        contentDescription = null
-                    )
-                    Text(text = stringResource(Res.string.add_player))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                width = dimensions.xxSmall,
+                                color = Color.Gray,
+                                shape = MaterialTheme.shapes.medium
+                            )
+                            .clickable { searching = true }
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimensions.small),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                        ) {
+                            Icon(
+                                painter = painterResource(Res.drawable.add_square_outline),
+                                contentDescription = null
+                            )
+                            Text(text = stringResource(Res.string.add_player))
+                        }
+                    }
                 }
             }
         }
@@ -271,7 +282,7 @@ private fun SelectedPlayerCard(
 }
 
 @Composable
-private fun PlayerRowContent(
+fun PlayerRowContent(
     player: Player,
     modifier: Modifier = Modifier
 ) {
@@ -293,7 +304,7 @@ private fun PlayerRowContent(
 }
 
 @Composable
-private fun PlayerAvatar(
+fun PlayerAvatar(
     avatarUrl: String?,
     modifier: Modifier = Modifier
 ) {

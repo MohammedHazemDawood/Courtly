@@ -14,6 +14,11 @@ data class FollowingResponse(
     val followed: String,
 //    val created_at: Instant
 )
+@Serializable
+data class FollowRequest(
+    val follower: String,
+    val followed: String
+)
 
 /*
 

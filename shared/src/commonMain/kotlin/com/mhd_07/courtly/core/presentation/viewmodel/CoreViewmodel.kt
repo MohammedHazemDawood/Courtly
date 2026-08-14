@@ -4,18 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.usecase.CheckHandleUseCase
+import com.mhd_07.courtly.core.domain.usecase.FollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
 import com.mhd_07.courtly.core.domain.usecase.LoadFollowersUseCase
 import com.mhd_07.courtly.core.domain.usecase.LoadFollowingUseCase
 import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
+import com.mhd_07.courtly.core.domain.usecase.UnfollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateAvatarUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateProfileUseCase
 import com.mhd_07.courtly.core.presentation.model.CoreIntent
 import com.mhd_07.courtly.core.presentation.model.CoreState
 import com.mhd_07.courtly.core.presentation.model.RemoteError
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
-import com.mhd_07.courtly.core.presentation.model.RemoteResult.*
+import com.mhd_07.courtly.core.presentation.model.getAuthError
 import com.mhd_07.courtly.core.presentation.model.getPostgrestError
+import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -32,7 +35,9 @@ class CoreViewmodel(
     private val updateProfile: UpdateProfileUseCase,
     private val updateAvatar: UpdateAvatarUseCase,
     private val loadFollowers: LoadFollowersUseCase,
-    private val loadFollowings: LoadFollowingUseCase
+    private val loadFollowings: LoadFollowingUseCase,
+    private val follow: FollowUseCase,
+    private val unfollow: UnfollowUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(CoreState())
 
@@ -42,31 +47,29 @@ class CoreViewmodel(
     private var reloadJob: Job? = null
 
     init {
-        loadProfile()
-        loadFollowersList()
-        loadFollowingsList()
+        viewModelScope.launch {
+            loadProfile()
+            loadFollowersList()
+            loadFollowingsList()
+        }
     }
 
-    private fun loadFollowersList() {
+    private suspend fun loadFollowersList() {
         _state.update { it.copy(result = RemoteResult.Loading) }
         try {
-            viewModelScope.launch {
-                val followers = loadFollowers()
-                _state.update { it.copy(followers = followers, result = RemoteResult.Success) }
-            }
+            val followers = loadFollowers()
+            _state.update { it.copy(followers = followers, result = RemoteResult.Success) }
         } catch (e: Exception) {
             _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
             println("Load Followers Error: ${e.message}")
         }
     }
 
-    private fun loadFollowingsList() {
+    private suspend fun loadFollowingsList() {
         _state.update { it.copy(result = RemoteResult.Loading) }
         try {
-            viewModelScope.launch {
-                val followings = loadFollowings()
-                _state.update { it.copy(following = followings, result = RemoteResult.Success) }
-            }
+            val followings = loadFollowings()
+            _state.update { it.copy(following = followings, result = RemoteResult.Success) }
         } catch (e: Exception) {
             _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
             println("Load Followings Error: ${e.message}")
@@ -76,32 +79,30 @@ class CoreViewmodel(
 
     //TODO: Handle Error
 
-    private fun loadProfile() {
-        viewModelScope.launch {
-            var profile: Player? = null
-            try {
-                _state.update { it.copy(result = RemoteResult.Loading) }
-                profile = getProfile()
-                _state.update { it.copy(result = RemoteResult.Success) }
-            } catch (e: PostgrestRestException) {//TODO
-                println("Error LoadingProfile: ${e.message}")
-                _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            } catch (e: Exception) {
-                println("Error LoadingProfile: ${e.message}")
-                _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            }
-            _state.update {
-                it.copy(
-                    profile = profile,
-                    avatarPath = profile?.avatar,
-                    avatarVersion = profile?.avatarVersion ?: 0,
-                    displayName = profile?.name ?: "",
-                    handle = profile?.handle ?: "",
-                    bio = profile?.bio ?: "",
-                    handleAvailable = true,
-                    saveEnabled = false
-                )
-            }
+    private suspend fun loadProfile() {
+        var profile: Player? = null
+        try {
+            _state.update { it.copy(result = RemoteResult.Loading) }
+            profile = getProfile()
+            _state.update { it.copy(result = RemoteResult.Success) }
+        } catch (e: PostgrestRestException) {//TODO
+            println("Error LoadingProfile: ${e.message}")
+            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+        } catch (e: Exception) {
+            println("Error LoadingProfile: ${e.message}")
+            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+        }
+        _state.update {
+            it.copy(
+                profile = profile,
+                avatarPath = profile?.avatar,
+                avatarVersion = profile?.avatarVersion ?: 0,
+                displayName = profile?.name ?: "",
+                handle = profile?.handle ?: "",
+                bio = profile?.bio ?: "",
+                handleAvailable = true,
+                saveEnabled = false
+            )
         }
     }
 
@@ -145,21 +146,29 @@ class CoreViewmodel(
             }
 
             is CoreIntent.ChangeAvatar -> {
-                _state.update { it.copy(result = RemoteResult.Loading) }
-                try {
-                    viewModelScope.launch {
+                viewModelScope.launch {
+                    try {
+                        _state.update { it.copy(result = RemoteResult.Loading) }
                         updateAvatar(intent.avatar, _state.value.avatarVersion)
                         loadProfile()
+                        _state.update { it.copy(result = RemoteResult.Success) }
+                    } catch (e: Exception) {
+                        _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }//TODO:Just Temp
+                        println("Avatart Error: ${e.message}")
                     }
-                    _state.update { it.copy(result = RemoteResult.Success) }
-                } catch (e: Exception) {
-                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }//TODO:Just Temp
-                    println("Avatart Error: ${e.message}")
                 }
             }
 
             CoreIntent.LogOut -> viewModelScope.launch {
-                logout()
+                _state.update { it.copy(result = RemoteResult.Loading) }
+                try {
+                    logout()
+                    _state.update { it.copy(result = RemoteResult.Success) }
+                } catch (e: AuthRestException) {
+                    _state.update { it.copy(result = RemoteResult.Error(getAuthError(e.errorCode))) }
+                } catch (e: Exception) {
+                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+                }
             }
 
             CoreIntent.UpdateProfile -> viewModelScope.launch {
@@ -184,9 +193,9 @@ class CoreViewmodel(
                     val error = getPostgrestError(e.code)
                     if (error == RemoteError.UniquenessViolation)
                         _state.update { it.copy(handleAvailable = false) }
-                    _state.update { it.copy(result = Error(error)) }
+                    _state.update { it.copy(result = RemoteResult.Error(error)) }
                 } catch (_: Exception) {
-                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }
+                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
                 }
             }
 
@@ -197,6 +206,34 @@ class CoreViewmodel(
                     loadProfile()
                     loadFollowingsList()
                     loadFollowersList()
+                }
+            }
+
+            is CoreIntent.Follow -> viewModelScope.launch {
+                try {
+                    _state.update { it.copy(result = RemoteResult.Loading) }
+                    follow(intent.player.id)
+                    _state.update { it.copy(result = RemoteResult.Success) }
+                } catch (e: PostgrestRestException) {
+                    println(e.message)
+                    val error = getPostgrestError(e.code)
+                    _state.update { it.copy(result = RemoteResult.Error(error)) }
+                } catch (_: Exception) {
+                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+                }
+            }
+
+            is CoreIntent.Unfollow -> viewModelScope.launch {
+                try {
+                    _state.update { it.copy(result = RemoteResult.Loading) }
+                    unfollow(intent.player.id)
+                    _state.update { it.copy(result = RemoteResult.Success) }
+                } catch (e: PostgrestRestException) {
+                    println(e.message)
+                    val error = getPostgrestError(e.code)
+                    _state.update { it.copy(result = RemoteResult.Error(error)) }
+                } catch (_: Exception) {
+                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
                 }
             }
         }

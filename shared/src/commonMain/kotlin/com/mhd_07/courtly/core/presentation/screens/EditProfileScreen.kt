@@ -28,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetValue
@@ -53,6 +54,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
+import com.mhd_07.courtly.core.presentation.components.AnimatedBottomSheet
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.components.Loading
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
@@ -109,7 +111,6 @@ fun EditProfileScreen(
     val dimensions = LocalDimensions.current
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scaffoldState = rememberBottomSheetScaffoldState(sheetState)
     var cameraPermitted by remember { mutableStateOf(false) }
     var galleryPermitted by remember { mutableStateOf(false) }
     var requiredPermission by remember { mutableStateOf<PermissionType?>(null) }
@@ -161,7 +162,7 @@ fun EditProfileScreen(
         else
             navBack()
     }
-    BottomSheetScaffold(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CourtlyAppBar(
@@ -182,7 +183,12 @@ fun EditProfileScreen(
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
-        sheetContent = {
+    ) {
+        AnimatedBottomSheet(
+            isVisible = sheetState.isVisible,
+            onDismissRequest = { scope.launch { sheetState.hide() } },
+            sheetState = sheetState
+        ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensions.medium),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -204,7 +210,10 @@ fun EditProfileScreen(
                         },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
-                        Icon(painterResource(Res.drawable.camera_outline), contentDescription = null)
+                        Icon(
+                            painterResource(Res.drawable.camera_outline),
+                            contentDescription = null
+                        )
                         Text(text = stringResource(Res.string.camera))
                     }
                     Row(
@@ -216,14 +225,17 @@ fun EditProfileScreen(
                         },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
-                        Icon(painterResource(Res.drawable.gallery_wide_outline), contentDescription = null)
+                        Icon(
+                            painterResource(Res.drawable.gallery_wide_outline),
+                            contentDescription = null
+                        )
                         Text(text = stringResource(Res.string.gallery))
                     }
                 }
             }
-        },
-        scaffoldState = scaffoldState,
-    ) {
+        }
+        if (result is RemoteResult.Loading)
+            Loading()
         Column(
             modifier = Modifier.fillMaxSize().padding(it)
                 .padding(WindowInsets.ime.asPaddingValues())
@@ -232,8 +244,6 @@ fun EditProfileScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.small)
         ) {
-            if (result is RemoteResult.Loading)
-                Loading()
             Box {
                 SubcomposeAsyncImage(
                     model = avatar,
@@ -259,7 +269,7 @@ fun EditProfileScreen(
                     border = BorderStroke(dimensions.xxSmall, MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(
-                        painter= painterResource(Res.drawable.pen_new_square_outline),
+                        painter = painterResource(Res.drawable.pen_new_square_outline),
                         contentDescription = stringResource(Res.string.edit_avatar),
                         modifier = Modifier.padding(dimensions.xSmall)
                     )

@@ -3,10 +3,12 @@ package com.mhd_07.courtly.core.domain.di
 import com.mhd_07.courtly.core.data.repo.CoreRepositoryImpl
 import com.mhd_07.courtly.core.domain.repo.CoreRepository
 import com.mhd_07.courtly.core.domain.usecase.CheckHandleUseCase
+import com.mhd_07.courtly.core.domain.usecase.FollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
 import com.mhd_07.courtly.core.domain.usecase.LoadFollowersUseCase
 import com.mhd_07.courtly.core.domain.usecase.LoadFollowingUseCase
 import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
+import com.mhd_07.courtly.core.domain.usecase.UnfollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateAvatarUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateProfileUseCase
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
@@ -50,5 +52,19 @@ val coreModule = module {
     single { UpdateAvatarUseCase(get()) }
     single { LoadFollowersUseCase(get()) }
     single { LoadFollowingUseCase(get()) }
-    viewModel<CoreViewmodel> { CoreViewmodel(get(), get(), get(), get(), get(), get(), get()) }
+    single { FollowUseCase(get()) }
+    single { UnfollowUseCase(get()) }
+    viewModel<CoreViewmodel> {
+        CoreViewmodel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
 }

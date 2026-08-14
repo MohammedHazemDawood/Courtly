@@ -1,6 +1,7 @@
 package com.mhd_07.courtly.feature_sign.presentation.screen
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -23,6 +24,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
@@ -47,7 +50,7 @@ fun MailPasswordSignScreen(
     onMailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirm: () -> Unit,
-    snackbarHostState : SnackbarHostState
+    snackbarHostState: SnackbarHostState
 ) {
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState { 2 }
@@ -57,6 +60,7 @@ fun MailPasswordSignScreen(
     val mailRegex = Regex("""^[\w.-]+@([\w-]+\.)+[\w-]{2,}$""")
     val passRegex = Regex("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*?&]{8,}$")
 
+    val focusManager = LocalFocusManager.current
 
     val emailError =
         if (mailRegex.matches(mail) || mail.isEmpty()) null else stringResource(Res.string.email_error)
@@ -109,33 +113,51 @@ fun MailPasswordSignScreen(
                 modifier = Modifier.weight(1f),
                 userScrollEnabled = false
             ) { page ->
-                when (page) {
-                    0 -> {
-                        EmailPage(
-                            modifier = Modifier.fillMaxSize(),
-                            email = mail,
-                            onEmailChange = onMailChange,
-                            emailError = emailError
-                        )
-                    }
+                val pageOffset =
+                    (pagerState.currentPage - page) +
+                            pagerState.currentPageOffsetFraction
 
-                    1 -> {
-                        PasswordPage(
-                            modifier = Modifier.fillMaxSize(),
-                            password = password,
-                            onPasswordChange = onPasswordChange,
-                            passwordError = passError,
-                            email = mail,
-                            onBackClick = {
-                                if (pagerState.currentPage != 0)
-                                    scope.launch { pagerState.animateScrollToPage(0) }
-                            },
-                            forgotPassword = {/* TODO:Implement Forgot Password */ }
-                        )
+                val absOffset = kotlin.math.abs(pageOffset)
+
+                val progress = 1f - absOffset.coerceIn(0f, 1f)
+
+                Box(
+                    Modifier.graphicsLayer {
+                        alpha = progress
+
+                        translationX =
+                            size.width * (1f - progress)
+                    }
+                ) {
+                    when (page) {
+                        0 -> {
+                            EmailPage(
+                                modifier = Modifier.fillMaxSize(),
+                                email = mail,
+                                onEmailChange = onMailChange,
+                                emailError = emailError
+                            )
+                        }
+
+                        1 -> {
+                            PasswordPage(
+                                modifier = Modifier.fillMaxSize(),
+                                password = password,
+                                onPasswordChange = onPasswordChange,
+                                passwordError = passError,
+                                email = mail,
+                                onBackClick = {
+                                    if (pagerState.currentPage != 0)
+                                        scope.launch { pagerState.animateScrollToPage(0) }
+                                },
+                                forgotPassword = {/* TODO:Implement Forgot Password */ }
+                            )
+                        }
                     }
                 }
             }
             Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                focusManager.clearFocus()
                 if (pagerState.currentPage != pagerState.pageCount - 1)
                     scope.launch {
                         pagerState.animateScrollToPage(pagerState.currentPage + 1)

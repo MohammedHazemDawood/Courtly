@@ -11,6 +11,8 @@ import platform.UIKit.UIImagePickerControllerOriginalImage
 import platform.UIKit.UIImagePickerControllerSourceType
 import platform.UIKit.UINavigationControllerDelegateProtocol
 import platform.darwin.NSObject
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 
 @Composable
 actual fun rememberGalleryManager(onResult: (SharedImage) -> Unit): GalleryManager {
@@ -34,12 +36,14 @@ actual fun rememberGalleryManager(onResult: (SharedImage) -> Unit): GalleryManag
 
     return remember {
         GalleryManager {
-            imagePicker.setSourceType(UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypePhotoLibrary)
-            imagePicker.setAllowsEditing(true)
-            imagePicker.setDelegate(galleryDelegate)
-            UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
-                imagePicker, true, null
-            )
+            dispatch_async(dispatch_get_main_queue()) {
+                imagePicker.setSourceType(UIImagePickerControllerSourceType.UIImagePickerControllerSourceTypePhotoLibrary)
+                imagePicker.setAllowsEditing(true)
+                imagePicker.setDelegate(galleryDelegate)
+                UIApplication.sharedApplication.keyWindow?.rootViewController?.presentViewController(
+                    imagePicker, true, null
+                )
+            }
         }
     }
 }

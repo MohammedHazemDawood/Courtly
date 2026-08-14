@@ -1,14 +1,20 @@
 package com.mhd_07.courtly.feature_match_record.presentation.screen
 
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +29,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import com.mhd_07.courtly.core.domain.model.MatchMode
 import com.mhd_07.courtly.core.domain.model.MatchType
@@ -32,6 +39,7 @@ import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
+import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match_record.domain.model.SetupStep
 import com.mhd_07.courtly.feature_sign.presentation.components.PagerIndicator
@@ -116,7 +124,7 @@ fun MatchSetupScreen(
                         navBack()
                 },
                 trailing = {
-                    TextButton(navBack){
+                    TextButton(navBack) {
                         Text(stringResource(Res.string.cancel))
                     }
                 }
@@ -126,7 +134,7 @@ fun MatchSetupScreen(
         val dimensions = LocalDimensions.current
         Column(
             modifier = Modifier.fillMaxSize().padding(it)
-                .padding(WindowInsets.ime.asPaddingValues())
+                .imePadding()
                 .padding(vertical = dimensions.medium, horizontal = dimensions.medium),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.medium)
@@ -147,11 +155,27 @@ fun MatchSetupScreen(
 //                        pagerState.pageCount
 //                    ), style = notesTextStyle, modifier = Modifier.align(Alignment.Start)
 //                )
-                HorizontalPager(
-                    modifier = Modifier.weight(1f),
-                    state = pagerState,
-                    userScrollEnabled = false
-                ) { page ->
+            HorizontalPager(
+                modifier = Modifier.weight(1f),
+                state = pagerState,
+                userScrollEnabled = false,
+            ) { page ->
+                val pageOffset =
+                    (pagerState.currentPage - page) +
+                            pagerState.currentPageOffsetFraction
+
+                val absOffset = kotlin.math.abs(pageOffset)
+
+                val progress = 1f - absOffset.coerceIn(0f, 1f)
+
+                Box(
+                    Modifier.graphicsLayer {
+                        alpha = progress
+
+                        translationX =
+                            size.width * (1f - progress)
+                    }
+                ) {
                     when (pages[page]) {
                         SetupStep.Teams -> TeamsNamesPage(
                             teamRightName = teamRightName,
@@ -169,7 +193,11 @@ fun MatchSetupScreen(
                             players = teamLeftPlayers,
                             searchText = searchText,
                             onSearchPlayer = onSearch,
-                            searchResults = searchResults.associateWith { !teamRightPlayers.contains(it) && !teamLeftPlayers.contains(it)},
+                            searchResults = searchResults.associateWith {
+                                !teamRightPlayers.contains(it) && !teamLeftPlayers.contains(
+                                    it
+                                )
+                            },
                             onAddPlayer = { addPlayer(it, Side.TeamLeft) },
                             onRemovePlayer = { removePlayer(it, Side.TeamLeft) },
                             isVisible = page == pagerState.currentPage
@@ -184,7 +212,11 @@ fun MatchSetupScreen(
                             players = teamRightPlayers,
                             searchText = searchText,
                             onSearchPlayer = onSearch,
-                            searchResults = searchResults.associateWith{ !teamLeftPlayers.contains(it) && !teamRightPlayers.contains(it) },
+                            searchResults = searchResults.associateWith {
+                                !teamLeftPlayers.contains(it) && !teamRightPlayers.contains(
+                                    it
+                                )
+                            },
                             onAddPlayer = { addPlayer(it, Side.TeamRight) },
                             onRemovePlayer = { removePlayer(it, Side.TeamRight) },
                             isVisible = page == pagerState.currentPage
@@ -208,6 +240,7 @@ fun MatchSetupScreen(
                         )
                     }
                 }
+            }
 //            }
             Button(
                 onClick = {
