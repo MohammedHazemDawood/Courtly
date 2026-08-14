@@ -36,7 +36,7 @@
     <string name="read_less">Read Less</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
-    <string name="following_each_other">Following Each Other</string>
+    <string name="follow_you">Following You</string>
 
     <!-- Match Tracking -->
     <string name="playing">في الملعب</string>

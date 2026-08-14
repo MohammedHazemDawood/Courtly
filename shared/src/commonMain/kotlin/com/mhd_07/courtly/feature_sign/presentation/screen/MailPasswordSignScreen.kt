@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -97,9 +98,9 @@ fun MailPasswordSignScreen(
         Column(
             modifier = Modifier.fillMaxSize()
                 .padding(it)
-                .padding(WindowInsets.ime.asPaddingValues())
-                .padding(bottom = dimensions.large)
-                .padding(horizontal = dimensions.medium),
+                .imePadding()
+                .padding(bottom = dimensions.small)
+                .padding(horizontal = dimensions.small),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.medium)
         ) {

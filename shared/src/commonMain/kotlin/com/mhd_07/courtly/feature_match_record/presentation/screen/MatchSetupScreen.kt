@@ -135,7 +135,7 @@ fun MatchSetupScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(it)
                 .imePadding()
-                .padding(vertical = dimensions.medium, horizontal = dimensions.medium),
+                .padding(vertical = dimensions.medium, horizontal = dimensions.small),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.medium)
         ) {

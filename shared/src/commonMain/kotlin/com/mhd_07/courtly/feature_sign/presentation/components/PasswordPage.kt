@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -28,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
@@ -79,8 +82,12 @@ fun PasswordPage(
                 ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = email)
-                TextButton(onClick = onBackClick) {
+                Text(
+                    text = email, overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f)
+                )
+                TextButton(onClick = onBackClick, modifier = Modifier.wrapContentWidth()) {
                     Text(
                         text = stringResource(Res.string.change_email),
                         color = MaterialTheme.colorScheme.primary

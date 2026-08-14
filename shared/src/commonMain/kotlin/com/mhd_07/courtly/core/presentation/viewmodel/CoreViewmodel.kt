@@ -214,6 +214,8 @@ class CoreViewmodel(
                     _state.update { it.copy(result = RemoteResult.Loading) }
                     follow(intent.player.id)
                     _state.update { it.copy(result = RemoteResult.Success) }
+                    loadFollowingsList()
+                    loadFollowersList()
                 } catch (e: PostgrestRestException) {
                     println(e.message)
                     val error = getPostgrestError(e.code)
@@ -228,6 +230,8 @@ class CoreViewmodel(
                     _state.update { it.copy(result = RemoteResult.Loading) }
                     unfollow(intent.player.id)
                     _state.update { it.copy(result = RemoteResult.Success) }
+                    loadFollowingsList()
+                    loadFollowersList()
                 } catch (e: PostgrestRestException) {
                     println(e.message)
                     val error = getPostgrestError(e.code)

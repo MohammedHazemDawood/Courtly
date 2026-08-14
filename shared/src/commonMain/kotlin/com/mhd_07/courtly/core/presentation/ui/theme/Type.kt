@@ -10,12 +10,16 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import courtly.shared.generated.resources.Res
-import courtly.shared.generated.resources.oswald
+import courtly.shared.generated.resources.alexandria
+import courtly.shared.generated.resources.montserrat
 import org.jetbrains.compose.resources.Font
 
 @Composable
 fun CourtlyTypography(): Typography {
-    val mainFont = FontFamily(Font(Res.font.oswald))
+    val mainFont = FontFamily(
+//        Font(Res.font.montserrat),
+        Font(Res.font.alexandria),
+    )
 
     return with(MaterialTheme.typography) {
         copy(

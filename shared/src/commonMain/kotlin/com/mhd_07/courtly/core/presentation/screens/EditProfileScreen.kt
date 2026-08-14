@@ -132,14 +132,10 @@ fun EditProfileScreen(
             when (permissionType) {
                 PermissionType.CAMERA -> {
                     cameraPermitted = status == PermissionStatus.GRANTED
-                    if (status == PermissionStatus.GRANTED)
-                        cameraManager.launch()
                 }
 
                 PermissionType.GALLERY -> {
                     galleryPermitted = status == PermissionStatus.GRANTED
-                    if (status == PermissionStatus.GRANTED)
-                        galleryManager.launch()
                 }
             }
             requiredPermission = null
@@ -205,7 +201,11 @@ fun EditProfileScreen(
                         modifier = Modifier.fillMaxWidth().clickable {
                             if (cameraPermitted)
                                 cameraManager.launch()
-                            else requiredPermission = PermissionType.CAMERA
+                            else {
+                                requiredPermission = PermissionType.CAMERA
+                                if (cameraPermitted)
+                                    cameraManager.launch()
+                            }
                             scope.launch { sheetState.hide() }
                         },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
@@ -220,7 +220,11 @@ fun EditProfileScreen(
                         modifier = Modifier.fillMaxWidth().clickable {
                             if (galleryPermitted)
                                 galleryManager.launch()
-                            else requiredPermission = PermissionType.GALLERY
+                            else {
+                                requiredPermission = PermissionType.GALLERY
+                                if (galleryPermitted)
+                                    galleryManager.launch()
+                            }
                             scope.launch { sheetState.hide() }
                         },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)

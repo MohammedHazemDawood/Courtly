@@ -77,7 +77,10 @@ fun CoreUI(navToGameSetup: () -> Unit) {
                     result = state.result,
                     onRefresh = { viewmodel.handleIntent(CoreIntent.Refresh) },
                     follow = { viewmodel.handleIntent(CoreIntent.Follow(it)) },
-                    unfollow = { viewmodel.handleIntent(CoreIntent.Unfollow(it)) }
+                    unfollow = { viewmodel.handleIntent(CoreIntent.Unfollow(it)) },
+                    myFollowers = state.followers,
+                    myFollowing = state.following,
+                    isMine = true
                 )
             }
             entry<Graphs.Core.Settings> {
