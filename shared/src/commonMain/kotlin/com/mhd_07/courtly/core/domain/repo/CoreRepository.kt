@@ -11,10 +11,4 @@ interface CoreRepository {
     suspend fun updateProfile(profile: Player)
 
     suspend fun updateAvatar(avatar : ByteArray, currentV : Int)
-
-    suspend fun loadFollowers() : List<Player>
-    suspend fun loadFollowing() : List<Player>
-
-    suspend fun follow(id : String)
-    suspend fun unfollow(id : String)
 }

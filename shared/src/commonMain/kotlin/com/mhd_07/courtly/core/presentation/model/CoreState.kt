@@ -13,6 +13,4 @@ data class CoreState(
     val handleAvailable : Boolean = true,
     val result: RemoteResult? = null,
     val saveEnabled : Boolean = false,
-    val following : List<Player> = emptyList(),
-    val followers : List<Player> = emptyList()
 )

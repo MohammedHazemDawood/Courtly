@@ -5,6 +5,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface Graphs : NavKey {
+
+    @Serializable
+    data class ProfilePreview(val id : String) : Graphs, NavKey
+
     @Serializable
     data object Splash : Graphs, NavKey
 
@@ -31,7 +35,7 @@ sealed interface Graphs : NavKey {
         data object EditProfile : Graphs, NavKey
         @Serializable
         data object SetupAccount : Graphs, NavKey
-    }
+        }
 
     @Serializable
     data object Match : Graphs, NavKey {

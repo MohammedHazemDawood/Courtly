@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.core.data.model
+package com.mhd_07.courtly.feature_profile_preview.data.model
 
 const val FOLLOWER = "follower"
 const val FOLLOWED = "followed"

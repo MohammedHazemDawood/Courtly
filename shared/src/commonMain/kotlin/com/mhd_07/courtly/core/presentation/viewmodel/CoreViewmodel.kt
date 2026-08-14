@@ -4,12 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.usecase.CheckHandleUseCase
-import com.mhd_07.courtly.core.domain.usecase.FollowUseCase
+import com.mhd_07.courtly.feature_profile_preview.domain.usecase.FollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
-import com.mhd_07.courtly.core.domain.usecase.LoadFollowersUseCase
-import com.mhd_07.courtly.core.domain.usecase.LoadFollowingUseCase
+import com.mhd_07.courtly.feature_profile_preview.domain.usecase.LoadFollowersUseCase
+import com.mhd_07.courtly.feature_profile_preview.domain.usecase.LoadFollowingUseCase
 import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
-import com.mhd_07.courtly.core.domain.usecase.UnfollowUseCase
+import com.mhd_07.courtly.feature_profile_preview.domain.usecase.UnfollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateAvatarUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateProfileUseCase
 import com.mhd_07.courtly.core.presentation.model.CoreIntent
@@ -34,10 +34,6 @@ class CoreViewmodel(
     private val checkHandle: CheckHandleUseCase,
     private val updateProfile: UpdateProfileUseCase,
     private val updateAvatar: UpdateAvatarUseCase,
-    private val loadFollowers: LoadFollowersUseCase,
-    private val loadFollowings: LoadFollowingUseCase,
-    private val follow: FollowUseCase,
-    private val unfollow: UnfollowUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(CoreState())
 
@@ -49,33 +45,8 @@ class CoreViewmodel(
     init {
         viewModelScope.launch {
             loadProfile()
-            loadFollowersList()
-            loadFollowingsList()
         }
     }
-
-    private suspend fun loadFollowersList() {
-        _state.update { it.copy(result = RemoteResult.Loading) }
-        try {
-            val followers = loadFollowers()
-            _state.update { it.copy(followers = followers, result = RemoteResult.Success) }
-        } catch (e: Exception) {
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            println("Load Followers Error: ${e.message}")
-        }
-    }
-
-    private suspend fun loadFollowingsList() {
-        _state.update { it.copy(result = RemoteResult.Loading) }
-        try {
-            val followings = loadFollowings()
-            _state.update { it.copy(following = followings, result = RemoteResult.Success) }
-        } catch (e: Exception) {
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            println("Load Followings Error: ${e.message}")
-        }
-    }
-
 
     //TODO: Handle Error
 
@@ -193,48 +164,6 @@ class CoreViewmodel(
                     val error = getPostgrestError(e.code)
                     if (error == RemoteError.UniquenessViolation)
                         _state.update { it.copy(handleAvailable = false) }
-                    _state.update { it.copy(result = RemoteResult.Error(error)) }
-                } catch (_: Exception) {
-                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-                }
-            }
-
-            CoreIntent.Refresh -> {
-                reloadJob?.cancel()
-                reloadJob = viewModelScope.launch {
-                    delay(1000.milliseconds)
-                    loadProfile()
-                    loadFollowingsList()
-                    loadFollowersList()
-                }
-            }
-
-            is CoreIntent.Follow -> viewModelScope.launch {
-                try {
-                    _state.update { it.copy(result = RemoteResult.Loading) }
-                    follow(intent.player.id)
-                    _state.update { it.copy(result = RemoteResult.Success) }
-                    loadFollowingsList()
-                    loadFollowersList()
-                } catch (e: PostgrestRestException) {
-                    println(e.message)
-                    val error = getPostgrestError(e.code)
-                    _state.update { it.copy(result = RemoteResult.Error(error)) }
-                } catch (_: Exception) {
-                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-                }
-            }
-
-            is CoreIntent.Unfollow -> viewModelScope.launch {
-                try {
-                    _state.update { it.copy(result = RemoteResult.Loading) }
-                    unfollow(intent.player.id)
-                    _state.update { it.copy(result = RemoteResult.Success) }
-                    loadFollowingsList()
-                    loadFollowersList()
-                } catch (e: PostgrestRestException) {
-                    println(e.message)
-                    val error = getPostgrestError(e.code)
                     _state.update { it.copy(result = RemoteResult.Error(error)) }
                 } catch (_: Exception) {
                     _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }

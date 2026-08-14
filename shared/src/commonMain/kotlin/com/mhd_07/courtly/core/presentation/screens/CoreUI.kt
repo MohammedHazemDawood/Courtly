@@ -17,6 +17,8 @@ import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
+import com.mhd_07.courtly.feature_profile_preview.presentation.ProfilePreviewUI
+import com.mhd_07.courtly.feature_profile_preview.presentation.ProfileScreen
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.handle_error
 import kotlinx.serialization.modules.SerializersModule
@@ -25,7 +27,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CoreUI(navToGameSetup: () -> Unit) {
+fun CoreUI(navToGameSetup: () -> Unit, previewProfile: (id: String) -> Unit) {
     val backStack = rememberNavBackStack(SavedStateConfiguration {
         serializersModule = SerializersModule {
             polymorphic(NavKey::class) {
@@ -42,7 +44,7 @@ fun CoreUI(navToGameSetup: () -> Unit) {
 
     LaunchedEffect(state) {
         state.profile?.let {
-            if (it.handle.isNullOrEmpty()){
+            if (it.handle.isNullOrEmpty()) {
                 backStack.clear()
                 backStack.add(Graphs.Core.SetupAccount)
             }
@@ -53,7 +55,9 @@ fun CoreUI(navToGameSetup: () -> Unit) {
     NavDisplay(
         backStack = backStack,
         modifier = Modifier.fillMaxSize(),
-        transitionSpec = { pushTransform }, popTransitionSpec = { popTransform }, predictivePopTransitionSpec = { predictiveTransform },
+        transitionSpec = { pushTransform },
+        popTransitionSpec = { popTransform },
+        predictivePopTransitionSpec = { predictiveTransform },
         entryProvider = entryProvider {
             entry<Graphs.Core.Home> {
                 HomeScreen(
@@ -63,24 +67,16 @@ fun CoreUI(navToGameSetup: () -> Unit) {
                 )
             }
             entry<Graphs.Core.Profile> {
-                ProfileScreen(
+                ProfilePreviewUI(
                     navBack = {
                         if (backStack.size > 1)
                             backStack.removeLast()
                     },
-                    profile = state.profile ?: return@entry,
                     navToSettings = {
                         backStack.add(Graphs.Core.Settings)
                     },
-                    followers = state.followers,
-                    following = state.following,
-                    result = state.result,
-                    onRefresh = { viewmodel.handleIntent(CoreIntent.Refresh) },
-                    follow = { viewmodel.handleIntent(CoreIntent.Follow(it)) },
-                    unfollow = { viewmodel.handleIntent(CoreIntent.Unfollow(it)) },
-                    myFollowers = state.followers,
-                    myFollowing = state.following,
-                    isMine = true
+                    previewProfile = { player ->  previewProfile(player.id) }
+
                 )
             }
             entry<Graphs.Core.Settings> {
@@ -109,12 +105,15 @@ fun CoreUI(navToGameSetup: () -> Unit) {
                     saveEnables = state.saveEnabled,
                     avatar = state.avatarPath + "?v=" + state.avatarVersion,
                     changeAvatar = {
-                        viewmodel.handleIntent(CoreIntent.ChangeAvatar(it)) },
+                        viewmodel.handleIntent(CoreIntent.ChangeAvatar(it))
+                    },
                     name = state.displayName,
                     onNameChange = { viewmodel.handleIntent(CoreIntent.ChangeName(it)) },
                     handle = state.handle,
                     onHandleChange = { viewmodel.handleIntent(CoreIntent.ChangeHandle(it)) },
-                    handleErrorMessage = if (state.handle.isEmpty() || !state.handleAvailable) stringResource(Res.string.handle_error) else null,
+                    handleErrorMessage = if (state.handle.isEmpty() || !state.handleAvailable) stringResource(
+                        Res.string.handle_error
+                    ) else null,
                     bio = state.bio,
                     onBioChange = { viewmodel.handleIntent(CoreIntent.ChangeBio(it)) },
                     result = state.result,
@@ -132,14 +131,17 @@ fun CoreUI(navToGameSetup: () -> Unit) {
                     saveEnables = state.saveEnabled,
                     avatar = state.avatarPath + "?v=" + state.avatarVersion,
                     changeAvatar = {
-                        viewmodel.handleIntent(CoreIntent.ChangeAvatar(it))},
+                        viewmodel.handleIntent(CoreIntent.ChangeAvatar(it))
+                    },
                     name = state.displayName,
-                    onNameChange = { viewmodel.handleIntent(CoreIntent.ChangeName(it))},
+                    onNameChange = { viewmodel.handleIntent(CoreIntent.ChangeName(it)) },
                     handle = state.handle,
-                    onHandleChange = { viewmodel.handleIntent(CoreIntent.ChangeHandle(it))},
-                    handleErrorMessage = if (state.handle.isEmpty() || !state.handleAvailable) stringResource(Res.string.handle_error) else null,
+                    onHandleChange = { viewmodel.handleIntent(CoreIntent.ChangeHandle(it)) },
+                    handleErrorMessage = if (state.handle.isEmpty() || !state.handleAvailable) stringResource(
+                        Res.string.handle_error
+                    ) else null,
                     bio = state.bio,
-                    onBioChange = { viewmodel.handleIntent(CoreIntent.ChangeBio(it))},
+                    onBioChange = { viewmodel.handleIntent(CoreIntent.ChangeBio(it)) },
                     result = state.result
                 )
             }

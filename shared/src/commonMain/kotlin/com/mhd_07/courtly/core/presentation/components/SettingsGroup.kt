@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.unit.dp
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 
 
@@ -38,8 +39,8 @@ fun SettingsGroup(
             Text(text = title, style = MaterialTheme.typography.titleMedium)
         Column(
             modifier = Modifier.fillMaxWidth().border(
-                dimensions.xxSmall,
-                Color.Gray,
+                2.dp,
+                MaterialTheme.colorScheme.surface,
                 MaterialTheme.shapes.extraSmall
             ),
 //            verticalArrangement = Arrangement.spacedBy(dimensions.small),
@@ -50,8 +51,8 @@ fun SettingsGroup(
                 it()
                 if (it != items.last())
                     HorizontalDivider(
-                        thickness = dimensions.xxSmall,
-                        color = Color.Gray,
+                        thickness = 2.dp,
+                        color = MaterialTheme.colorScheme.surface,
                         modifier = Modifier.padding(horizontal = dimensions.small)
                     )
             }
@@ -79,7 +80,8 @@ fun SettingsGroupItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.padding(vertical = dimensions.small).padding(start = dimensions.small),
+            modifier = Modifier.padding(vertical = dimensions.small)
+                .padding(start = dimensions.small),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {

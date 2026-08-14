@@ -15,6 +15,7 @@ coilCompose = "3.5.0"
 coilNetworkOkhttp = "3.5.0"
 composeAspectRatioReference = "1.00.04"
 composeMultiplatform = "1.11.1"
+composeShimmer = "1.5.0"
 compottieNetwork = "2.2.4"
 constraintlayoutComposeMultiplatform = "0.8.0"
 #iconsaxCompose = "0.0.5"
@@ -43,6 +44,7 @@ animation = { module = "org.jetbrains.compose.animation:animation", version.ref 
 coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilNetworkOkhttp" }
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 compose-aspect-ratio-reference = { module = "com.github.Mercandj:compose-aspect-ratio-reference", version.ref = "composeAspectRatioReference" }
+compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottieNetwork" }
 compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottieNetwork" }
 compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottieNetwork" }

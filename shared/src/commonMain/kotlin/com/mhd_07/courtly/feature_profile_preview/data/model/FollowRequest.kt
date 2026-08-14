@@ -1,7 +1,6 @@
-package com.mhd_07.courtly.core.data.model
+package com.mhd_07.courtly.feature_profile_preview.data.model
 
 import kotlinx.serialization.Serializable
-import kotlin.time.Instant
 
 @Serializable
 data class FollowerResponse(

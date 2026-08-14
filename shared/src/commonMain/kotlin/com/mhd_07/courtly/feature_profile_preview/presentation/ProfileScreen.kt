@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.core.presentation.screens
+package com.mhd_07.courtly.feature_profile_preview.presentation
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,7 +44,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.LinkAnnotation
@@ -54,6 +58,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.components.AnimatedBottomSheet
@@ -64,6 +69,8 @@ import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import com.mhd_07.courtly.feature_match_record.presentation.screen.PlayerAvatar
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.follow
 import courtly.shared.generated.resources.followers
@@ -85,7 +92,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 fun ProfileScreen(
     navBack: () -> Unit,
-    profile: Player,
+    profile: Player?,
     followers: List<Player>,
     following: List<Player>,
     myFollowers: List<Player>,
@@ -96,6 +103,8 @@ fun ProfileScreen(
     follow: (Player) -> Unit = {},
     unfollow: (Player) -> Unit = {},
     isMine: Boolean = false,
+    previewProfile: (Player) -> Unit,
+    myId: String?
 ) {
     val dimensions = LocalDimensions.current
     var followerSheetVisible by remember { mutableStateOf(false) }
@@ -105,13 +114,12 @@ fun ProfileScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CourtlyAppBar(
-                title = profile.name,
+                title = profile?.name ?: "",
                 backVisible = true,
                 onBackClick = navBack
             )
         }
     ) { innerPadding ->
-
         // Followers Bottom Sheet
         PlayerListBottomSheet(
             isVisible = followerSheetVisible,
@@ -119,7 +127,9 @@ fun ProfileScreen(
             players = followers,
             onDismissRequest = { followerSheetVisible = false },
             buttonText = { player ->
-                if (following.contains(player)) stringResource(Res.string.unfollow)
+                println("player ID: ${player.id}, my ID: $myId")
+                if (player.id == myId) null
+                else if (following.contains(player)) stringResource(Res.string.unfollow)
                 else stringResource(Res.string.follow)
             },
             badgeText = { player ->
@@ -127,6 +137,9 @@ fun ProfileScreen(
             },
             onActionClick = { player ->
                 if (myFollowing.contains(player)) unfollow(player) else follow(player)
+            },
+            onClick = { player ->
+                previewProfile(player)
             }
         )
 
@@ -137,7 +150,8 @@ fun ProfileScreen(
             players = following,
             onDismissRequest = { followingSheetVisible = false },
             buttonText = { player ->
-                if (following.contains(player)) stringResource(Res.string.unfollow)
+                if (player.id == myId) null
+                else if (following.contains(player)) stringResource(Res.string.unfollow)
                 else stringResource(Res.string.follow)
             },
             badgeText = { player ->
@@ -145,6 +159,9 @@ fun ProfileScreen(
             },
             onActionClick = { player ->
                 if (myFollowing.contains(player)) unfollow(player) else follow(player)
+            },
+            onClick = { player ->
+                previewProfile(player)
             }
         )
 
@@ -152,7 +169,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            isRefreshing = result == RemoteResult.Loading,
+            isRefreshing = (result is RemoteResult.Loading),
             onRefresh = onRefresh
         ) {
             var openMenu by remember { mutableStateOf(false) }
@@ -172,7 +189,7 @@ fun ProfileScreen(
                     var avatarSize by remember { mutableStateOf(IntSize.Zero) }
 
                     SubcomposeAsyncImage(
-                        model = "${profile.avatar}?v=${profile.avatarVersion}",
+                        model = "${profile?.avatar ?: ""}?v=${profile?.avatarVersion ?: ""}",
                         contentDescription = stringResource(Res.string.profile),
                         contentScale = ContentScale.Crop,
                         error = {
@@ -197,6 +214,7 @@ fun ProfileScreen(
                                 color = MaterialTheme.colorScheme.primary,
                                 shape = CircleShape
                             )
+//                            .shimmerable(profile == null)
                     )
                 }
 
@@ -233,7 +251,7 @@ fun ProfileScreen(
                                 expanded = openMenu,
                                 onDismissRequest = { openMenu = false },
                                 shape = MaterialTheme.shapes.medium,
-                                modifier = Modifier.padding(dimensions.xSmall)
+//                                modifier = Modifier.padding(dimensions.xSmall)
                             ) {
                                 DropdownMenuItem(
                                     leadingIcon = {
@@ -250,33 +268,54 @@ fun ProfileScreen(
                                 )
                             }
                         }
-                    Button(
-                        onClick = {
-                            if (myFollowing.contains(profile)) unfollow(profile)
-                            else follow(profile)
-                        },
-                        modifier = Modifier.wrapContentWidth()
-                    ){
-                        Text(text = if (myFollowing.contains(profile)) stringResource(Res.string.unfollow) else stringResource(Res.string.follow))
-                    }
+                    else
+                        Button(
+                            onClick = {
+                                if (profile != null) {
+                                    if (myFollowing.contains(profile)) unfollow(profile)
+                                    else follow(profile)
+                                }
+                            },
+                            modifier = Modifier.wrapContentWidth().align(Alignment.End)
+                                .shimmerable(profile == null),
+                            colors = ButtonDefaults.buttonColors(containerColor = if (profile == null) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary)
+                        ) {
+                            if (profile != null)
+                                Text(
+                                    text = if (myFollowing.contains(profile)) stringResource(Res.string.unfollow) else stringResource(
+                                        Res.string.follow
+                                    )
+                                )
+                        }
 
-                    // User Names & Bio
+                    // Usernames & Bio
                     Column(
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
                         Column {
-                            Text(text = profile.name, style = titleTextStyle)
-                            Text(text = "@${profile.handle}", style = notesTextStyle)
+                            Text(
+                                text = profile?.name ?: "",
+                                style = titleTextStyle,
+                                modifier = Modifier.fillMaxWidth(0.75f).shimmerable(profile == null),
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = profile?.let { "@${it.handle}" } ?: "",
+                                style = notesTextStyle,
+                                modifier = Modifier.fillMaxWidth(0.75f).shimmerable(profile == null, paddingValues = PaddingValues(vertical = dimensions.xSmall)),
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                         ReadMoreText(
-                            text = profile.bio,
+                            text = profile?.bio ?: "",
                             modifier = Modifier.fillMaxWidth()
+                                .shimmerable(profile == null)
                         )
                     }
 
                     // Location
-                    if (profile.location.isNotEmpty()) {
+                    if (profile?.location?.isNotEmpty() == true) {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(dimensions.small),
@@ -291,7 +330,7 @@ fun ProfileScreen(
                                     contentDescription = null,
                                     tint = Color.Gray
                                 )
-                                Text(text = profile.location, style = notesTextStyle)
+                                Text(text = profile.location ?: "", style = notesTextStyle)
                             }
                         }
                     }
@@ -337,9 +376,10 @@ private fun PlayerListBottomSheet(
     title: String,
     players: List<Player>,
     onDismissRequest: () -> Unit,
-    buttonText: @Composable (Player) -> String,
+    buttonText: @Composable (Player) -> String?,
     badgeText: @Composable (Player) -> String?,
     onActionClick: (Player) -> Unit,
+    onClick: (Player) -> Unit
 ) {
     val dimensions = LocalDimensions.current
 
@@ -359,7 +399,7 @@ private fun PlayerListBottomSheet(
             Text(text = title)
             LazyColumn(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                verticalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
                 itemsIndexed(
                     items = players,
@@ -372,8 +412,10 @@ private fun PlayerListBottomSheet(
                         player = player,
                         buttonText = buttonText(player),
                         badgeText = badgeText(player),
-                        onClick = { onActionClick(player) },
-                        modifier = Modifier.fillMaxWidth()
+                        onButtonClick = { onActionClick(player) },
+                        modifier = Modifier.fillMaxWidth().clickable {
+                            onClick(player)
+                        }
                     )
                 }
             }
@@ -478,10 +520,10 @@ fun ReadMoreText(
 @Composable
 private fun PlayerCard(
     player: Player,
-    buttonText: String,
+    buttonText: String?,
     modifier: Modifier = Modifier,
     badgeText: String? = null,
-    onClick: () -> Unit
+    onButtonClick: () -> Unit,
 ) {
     val dimensions = LocalDimensions.current
 
@@ -495,16 +537,18 @@ private fun PlayerCard(
             badgeText = badgeText,
             modifier = Modifier.weight(1f)
         )
-        Button(
-            onClick = onClick,
-            shape = MaterialTheme.shapes.small,
-            modifier = Modifier.wrapContentWidth()
-        ) {
-            Text(
-                text = buttonText,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
-            )
+        buttonText?.let {
+            Button(
+                onClick = onButtonClick,
+                shape = MaterialTheme.shapes.small,
+                modifier = Modifier.wrapContentWidth()
+            ) {
+                Text(
+                    text = it,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+            }
         }
     }
 }
@@ -557,6 +601,24 @@ fun PlayerRowContent(
     }
 }
 
+@Composable
+fun Modifier.shimmerable(
+    enabled: Boolean,
+    color: Color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+    shape: Shape = MaterialTheme.shapes.extraSmall,
+    paddingValues: PaddingValues = PaddingValues(0.dp)
+): Modifier {
+    if (!enabled) return this
+
+    return this
+        .padding(paddingValues)
+        .shimmer()
+        .background(color = color, shape = shape)
+        .drawWithContent{
+
+        }
+}
+
 @Preview
 @Composable
 fun ProfilePreview() {
@@ -570,7 +632,9 @@ fun ProfilePreview() {
             navToSettings = {},
             myFollowers = emptyList(),
             myFollowing = emptyList(),
-            isMine = true
+            isMine = true,
+            previewProfile = {},
+            myId = ""
         )
     }
 }

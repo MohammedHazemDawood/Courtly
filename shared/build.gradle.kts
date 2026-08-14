@@ -126,6 +126,8 @@ kotlin {
             implementation(libs.compottie.dot)
             implementation(libs.compottie.network)
 
+
+            implementation(libs.compose.shimmer)
 //            implementation(libs.animation)
 
 

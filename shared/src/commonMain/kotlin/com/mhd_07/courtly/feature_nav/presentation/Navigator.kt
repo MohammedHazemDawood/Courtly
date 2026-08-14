@@ -26,6 +26,7 @@ import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchUI
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
+import com.mhd_07.courtly.feature_profile_preview.presentation.ProfilePreviewUI
 import com.mhd_07.courtly.feature_sign.presentation.screen.SignUI
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.serialization.modules.SerializersModule
@@ -43,6 +44,7 @@ fun AppNavigator(deepsLink: String? = null) {
                 subclass(Graphs.Sign::class, Graphs.Sign.serializer())
                 subclass(Graphs.Match::class, Graphs.Match.serializer())
                 subclass(Graphs.Splash::class, Graphs.Splash.serializer())
+                subclass(Graphs.ProfilePreview::class, Graphs.ProfilePreview.serializer())
             }
         }
     }, Graphs.Splash)
@@ -63,19 +65,7 @@ fun AppNavigator(deepsLink: String? = null) {
                 backStack.add(Graphs.Sign)
             }
         }
-//        else {
-//                backStack.clear()
-//                backStack.add(Graphs.Splash)
-//        }
     }
-
-    LaunchedEffect(deepsLink) {
-        resolveDeepLink(deepsLink)?.let {
-            backStack.clear()
-            backStack.add(it)
-        }
-    }
-
 
     NavDisplay(
         backStack = backStack,
@@ -84,13 +74,17 @@ fun AppNavigator(deepsLink: String? = null) {
             rememberSaveableStateHolderNavEntryDecorator(),
             rememberViewModelStoreNavEntryDecorator()
         ),
-        transitionSpec = { pushTransform }, popTransitionSpec = { popTransform }, predictivePopTransitionSpec = {predictiveTransform},
+        transitionSpec = { pushTransform },
+        popTransitionSpec = { popTransform },
+        predictivePopTransitionSpec = { predictiveTransform },
         entryProvider = entryProvider {
             entry<Graphs.Sign> {
                 SignUI()
             }
             entry<Graphs.Core> {
-                CoreUI { backStack.add(Graphs.Match) }
+                CoreUI({ backStack.add(Graphs.Match) }) {
+                    backStack.add(Graphs.ProfilePreview(it))
+                }
             }
             entry<Graphs.Match> {
                 MatchUI {
@@ -103,8 +97,19 @@ fun AppNavigator(deepsLink: String? = null) {
             entry<Graphs.Splash> {
                 SplashScreen()
             }
+            entry<Graphs.ProfilePreview>(
+
+            ) { key ->
+                ProfilePreviewUI(
+                    id = key.id,
+                    navBack = {
+                        if (backStack.size > 1)
+                            backStack.removeLast()
+                    },
+                    previewProfile = { player ->
+                        backStack.add(Graphs.ProfilePreview(player.id))
+                    }
+                )
+            }
         })
 }
-
-fun resolveDeepLink(deepsLink: String?): NavKey? =
-    if (deepsLink?.contains("https://courtly.app//confirmed") == true) Graphs.Sign else null
