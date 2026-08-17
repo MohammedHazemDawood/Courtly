@@ -4,47 +4,51 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
 @Composable
-fun rememberPermissionManager(listener: PermissionResultListener) =
-    remember { PermissionManager(listener)   }
+expect fun rememberPermissionManager(onPermissionResult: (permission: Permission, status: PermissionStatus) -> Unit) : PermissionManager
 
-expect class PermissionManager(listener: PermissionResultListener) : PermissionHandler {
-    @Composable
-    override fun requestPermission(
-        permissionType: PermissionType,
-    )
-
-    @Composable
-    override fun checkPermission(permissionType: PermissionType): PermissionStatus
-
-    @Composable
-    override fun launchPermissionSettings()
+sealed interface Permission {
+    data object Camera : Permission
+    data object Gallery : Permission
 }
 
-
-enum class PermissionType {
-    CAMERA,
-    GALLERY
+sealed interface PermissionStatus {
+    data object Granted : PermissionStatus
+    data object Denied : PermissionStatus
+    data object ShowRational : PermissionStatus
 }
 
-enum class PermissionStatus {
-    GRANTED,
-    DENIED,
-    SHOW_RATIONAL
-//    PERMANENTLY_DENIED
-}
+internal interface PermissionDelegate {
+    fun permissionRequired(permission: Permission) : Boolean
+    fun checkStatus(permission: Permission): PermissionStatus
 
-interface PermissionResultListener {
-    fun onPermissionResult(permissionType: PermissionType, status: PermissionStatus)
-}
-
-interface PermissionHandler {
-
-    @Composable
-    fun requestPermission(permissionType: PermissionType)
-
-    @Composable
-    fun checkPermission(permissionType: PermissionType): PermissionStatus
-
-    @Composable
     fun launchPermissionSettings()
+}
+
+interface PermissionManager {
+    fun isGranted(permission: Permission): Boolean
+    fun shouldShowRational(permission: Permission): Boolean
+    fun checkAndRequest(permission: Permission)
+    fun launchSettings()
+}
+
+internal class PermissionManagerImpl(
+    private val delegate: PermissionDelegate,
+    private val onLaunch: (Permission) -> Unit
+) : PermissionManager {
+    override fun isGranted(permission: Permission): Boolean {
+        return delegate.checkStatus(permission) == PermissionStatus.Granted
+    }
+
+    override fun shouldShowRational(permission: Permission): Boolean {
+        return delegate.checkStatus(permission) == PermissionStatus.ShowRational
+    }
+
+    override fun checkAndRequest(permission: Permission) {
+        if (isGranted(permission)) return
+        onLaunch(permission)
+    }
+
+    override fun launchSettings() {
+        delegate.launchPermissionSettings()
+    }
 }

@@ -28,7 +28,8 @@ fun ModeTypePage(
     mode: MatchMode,
     type: MatchType,
     onModeChange: (MatchMode) -> Unit,
-    onTypeChange: (MatchType) -> Unit
+    onTypeChange: (MatchType) -> Unit,
+    doubleEnabled: Boolean = true
 ) {
     val dimensions = LocalDimensions.current
     Column(
@@ -42,7 +43,7 @@ fun ModeTypePage(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
-            Column(modifier = Modifier.fillMaxWidth()){
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(Res.string.mode))
                 Text(
                     text = stringResource(if (mode == MatchMode.FreeStyle) Res.string.freestyle_description else Res.string.professional_description),
@@ -53,14 +54,14 @@ fun ModeTypePage(
                 modifier = Modifier.fillMaxWidth(),
                 options = MatchMode.entries.map { stringResource(it.display) },
                 selectedOptionIndex = MatchMode.entries.indexOf(mode),
-                onOptionSelected = { onModeChange(MatchMode.entries[it]) }
+                onOptionSelected = { onModeChange(MatchMode.entries[it]) },
             )
         }
         Column(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
-            Column(modifier = Modifier.fillMaxWidth()){
+            Column(modifier = Modifier.fillMaxWidth()) {
                 Text(text = stringResource(Res.string.type))
                 Text(text = stringResource(Res.string.type_description), style = notesTextStyle)
             }
@@ -68,7 +69,8 @@ fun ModeTypePage(
                 modifier = Modifier.fillMaxWidth(),
                 options = MatchType.entries.map { stringResource(it.display) },
                 selectedOptionIndex = MatchType.entries.indexOf(type),
-                onOptionSelected = { onTypeChange(MatchType.entries[it]) }
+                onOptionSelected = { onTypeChange(MatchType.entries[it]) },
+                optionEnabled = { MatchType.entries[it] == MatchType.Single || doubleEnabled}
             )
         }
     }

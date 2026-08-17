@@ -1,10 +1,10 @@
 package com.mhd_07.courtly.feature_match_setup.data.repository
 
 import com.mhd_07.courtly.core.data.mapper.toPlayer
+import com.mhd_07.courtly.core.data.model.MATCHES
 import com.mhd_07.courtly.core.data.model.PROFILES
 import com.mhd_07.courtly.core.data.model.PlayerResponse
 import com.mhd_07.courtly.core.domain.model.Player
-import com.mhd_07.courtly.feature_match_record.data.model.MATCHES
 import com.mhd_07.courtly.feature_match_setup.data.mapper.toRequest
 import com.mhd_07.courtly.feature_match_setup.data.model.SetupResponse
 import com.mhd_07.courtly.feature_match_setup.domain.model.Setup

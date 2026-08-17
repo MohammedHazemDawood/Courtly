@@ -9,11 +9,12 @@ import org.koin.core.module.dsl.viewModel
 
 val profilePreviewModule = module {
     single<ProfilePreviewRepository> { ProfilePreviewRepositoryImpl(get()) }
-    single { GetProfileUseCase(get()) }
+    single { GetProfileByIdUseCase(get()) }
     single { LoadFollowersUseCase(get()) }
     single { LoadFollowingUseCase(get()) }
     single { FollowUseCase(get()) }
     single { UnfollowUseCase(get()) }
     single { GetUserId(get()) }
-    viewModel<ProfilePreviewViewModel> { ProfilePreviewViewModel(get(), get(), get(), get(), get(), get()) }
+    single { GetProfileByHandleUseCase(get()) }
+    viewModel<ProfilePreviewViewModel> { ProfilePreviewViewModel(get(), get(), get(), get(), get(), get(), get()) }
 }

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
@@ -137,12 +139,14 @@ fun PlayersPage(
                             keyboardOptions = KeyboardOptions(
                                 imeAction = ImeAction.Search
                             ),
-                            singleLine = true
+                            singleLine = true,
+                            shape = MaterialTheme.shapes.medium.copy(bottomEnd = CornerSize(0.dp), bottomStart = CornerSize(0.dp))
                         )
 
                         ExposedDropdownMenu(
                             expanded = searching,
-                            onDismissRequest = { }
+                            onDismissRequest = { },
+                            shape = MaterialTheme.shapes.medium.copy(topEnd = CornerSize(0.dp), topStart = CornerSize(0.dp))
                         ) {
                             // Option to add as a custom player (if text is typed)
                             if (searchText.isNotBlank()) {
@@ -168,7 +172,8 @@ fun PlayersPage(
                                                 handle = null,
                                                 bio = "",
                                                 avatar = null,
-                                                avatarVersion = 0
+                                                avatarVersion = 0,
+                                                isRemote = false
                                             )
                                         )
                                         onSearchPlayer("")

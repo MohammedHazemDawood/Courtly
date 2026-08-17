@@ -31,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -41,7 +40,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -61,9 +59,8 @@ import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
-import com.mhd_07.courtly.core.util.PermissionResultListener
+import com.mhd_07.courtly.core.util.Permission
 import com.mhd_07.courtly.core.util.PermissionStatus
-import com.mhd_07.courtly.core.util.PermissionType
 import com.mhd_07.courtly.core.util.rememberCameraManager
 import com.mhd_07.courtly.core.util.rememberGalleryManager
 import com.mhd_07.courtly.core.util.rememberPermissionManager
@@ -113,56 +110,30 @@ fun SetupAccountScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scaffoldState = rememberBottomSheetScaffoldState(sheetState)
-    var cameraPermitted by remember { mutableStateOf(false) }
-    var galleryPermitted by remember { mutableStateOf(false) }
-    var requiredPermission by remember { mutableStateOf<PermissionType?>(null) }
+
     val cameraManager = rememberCameraManager { res ->
-        res.toByteArray()?.let {
-            println("Camera image selected ${it.size}")
-            changeAvatar(it)
-        }
+        res.toByteArray()?.let { changeAvatar(it) }
     }
     val galleryManager = rememberGalleryManager { res ->
-        res.toByteArray()?.let {
-            println("Gallery image selected ${it.size}")
-            changeAvatar(it)
-        }
+        res.toByteArray()?.let { changeAvatar(it) }
     }
-    val permissionManager = rememberPermissionManager(object : PermissionResultListener {
-        override fun onPermissionResult(permissionType: PermissionType, status: PermissionStatus) {
-            println("Permission Result: $permissionType $status")
-            when (permissionType) {
-                PermissionType.CAMERA -> {
-                    cameraPermitted = status == PermissionStatus.GRANTED
-                    if (status == PermissionStatus.GRANTED)
-                        cameraManager.launch()
-                }
 
-                PermissionType.GALLERY -> {
-                    galleryPermitted = status == PermissionStatus.GRANTED
-                    if (status == PermissionStatus.GRANTED)
-                        galleryManager.launch()
-                }
+    val permissionManager = rememberPermissionManager { permission, status ->
+        if (status == PermissionStatus.Granted) {
+            when (permission) {
+                Permission.Camera -> cameraManager.launch()
+                Permission.Gallery -> galleryManager.launch()
             }
-            requiredPermission = null
         }
-    })
-    cameraPermitted =
-        permissionManager.checkPermission(PermissionType.CAMERA) == PermissionStatus.GRANTED
-    galleryPermitted =
-        permissionManager.checkPermission(PermissionType.GALLERY) == PermissionStatus.GRANTED
-    requiredPermission?.let { permissionType ->
-        permissionManager.requestPermission(permissionType)
     }
     LaunchedEffect(result) {
         if (result is RemoteResult.Error)
             snackbarHostState.showSnackbar(getString(result.error.message))
     }
     BackHandler(scope) {
-        if (sheetState.currentValue != SheetValue.Hidden)
-            sheetState.hide()
-//        else
-//            navBack()
+        if (sheetState.isVisible) {
+            scope.launch { sheetState.hide() }
+        }
     }
     BottomSheetScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -194,27 +165,39 @@ fun SetupAccountScreen(
                     verticalArrangement = Arrangement.spacedBy(dimensions.small)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            if (cameraPermitted)
-                                cameraManager.launch()
-                            else requiredPermission = PermissionType.CAMERA
-                            scope.launch { sheetState.hide() }
-                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                scope.launch { sheetState.hide() }
+                                if (permissionManager.isGranted(Permission.Camera))
+                                    cameraManager.launch()
+                                else
+                                    permissionManager.checkAndRequest(Permission.Camera)
+                            },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
-                        Icon(painterResource(Res.drawable.camera_outline), contentDescription = null)
+                        Icon(
+                            painterResource(Res.drawable.camera_outline),
+                            contentDescription = null
+                        )
                         Text(text = stringResource(Res.string.camera))
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            if (galleryPermitted)
-                                galleryManager.launch()
-                            else requiredPermission = PermissionType.GALLERY
-                            scope.launch { sheetState.hide() }
-                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                scope.launch { sheetState.hide() }
+                                if (permissionManager.isGranted(Permission.Gallery))
+                                    galleryManager.launch()
+                                else
+                                    permissionManager.checkAndRequest(Permission.Gallery)
+                            },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
-                        Icon(painterResource(Res.drawable.gallery_wide_outline), contentDescription = null)
+                        Icon(
+                            painterResource(Res.drawable.gallery_wide_outline),
+                            contentDescription = null
+                        )
                         Text(text = stringResource(Res.string.gallery))
                     }
                 }

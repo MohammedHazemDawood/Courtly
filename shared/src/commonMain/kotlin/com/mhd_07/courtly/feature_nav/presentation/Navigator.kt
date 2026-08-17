@@ -1,11 +1,5 @@
 package com.mhd_07.courtly.feature_nav.presentation
 
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -17,27 +11,28 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import androidx.navigation3.ui.defaultPredictivePopTransitionSpec
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.mhd_07.courtly.core.presentation.screens.CoreUI
 import com.mhd_07.courtly.core.presentation.ui.theme.popTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
-import com.mhd_07.courtly.feature_match_record.presentation.screen.MatchUI
+import com.mhd_07.courtly.core.presentation.viewmodel.HANDLE_REGEX
+import com.mhd_07.courtly.feature_match.presentation.screens.MatchUI
 import com.mhd_07.courtly.feature_match_setup.presentation.screens.MatchSetupUI
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
+import com.mhd_07.courtly.feature_nav.presentation.data.UserSelectionType
 import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
 import com.mhd_07.courtly.feature_profile_preview.presentation.ProfilePreviewUI
 import com.mhd_07.courtly.feature_sign.presentation.screen.SignUI
 import io.github.jan.supabase.auth.status.SessionStatus
+import io.ktor.http.Url
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.koin.compose.viewmodel.koinViewModel
 
+/**@pram :deepsLink https://courtly.app/{handle} **/
 @Composable
 fun AppNavigator(deepsLink: String? = null) {
-
-
     val backStack = rememberNavBackStack(configuration = SavedStateConfiguration {
         serializersModule = SerializersModule {
             polymorphic(NavKey::class) {
@@ -54,13 +49,17 @@ fun AppNavigator(deepsLink: String? = null) {
     val viewModel: NavViewModel = koinViewModel()
     val authState = viewModel.status.collectAsStateWithLifecycle()
 
-
-    LaunchedEffect(authState.value) {
+    LaunchedEffect(authState.value, deepsLink) {
         println("AuthState: ${authState.value}")
-        if (authState.value is SessionStatus.Authenticated) {
+        if (authState.value is SessionStatus.Authenticated && backStack.lastOrNull() == Graphs.Splash || backStack.lastOrNull() == Graphs.Sign) {
             println("Accepted")
             backStack.clear()
             backStack.add(Graphs.Core)
+            if (deepsLink != null) {
+                parseUrl(deepsLink)?.let {
+                    backStack.add(Graphs.ProfilePreview(it, UserSelectionType.Handle))
+                }
+            }
         } else if (authState.value is SessionStatus.NotAuthenticated) {
             if (backStack.lastOrNull() != Graphs.Sign) {
                 backStack.clear()
@@ -88,12 +87,16 @@ fun AppNavigator(deepsLink: String? = null) {
                     backStack.add(Graphs.ProfilePreview(it))
                 }
             }
-            entry<Graphs.Match> {
-                MatchUI {
+            entry<Graphs.Match> { key ->
+                /*MatchUI {
                     if (backStack.size > 1) {
                         backStack.clear()
                         backStack.add(Graphs.Core)
                     }
+                }*/
+                MatchUI(key.id) {
+                    if (backStack.size > 1)
+                        backStack.removeLast()
                 }
             }
             entry<Graphs.Splash> {
@@ -106,13 +109,15 @@ fun AppNavigator(deepsLink: String? = null) {
                             backStack.removeLast()
                     },
                     navToGameRecord = { id ->
-
+                        backStack.removeLast()
+                        backStack.add(Graphs.Match(id))
                     }
                 )
             }
             entry<Graphs.ProfilePreview> { key ->
                 ProfilePreviewUI(
-                    id = key.id,
+                    key = key.key,
+                    type = key.type,
                     navBack = {
                         if (backStack.size > 1)
                             backStack.removeLast()
@@ -124,4 +129,16 @@ fun AppNavigator(deepsLink: String? = null) {
             }
         }
     )
+}
+
+const val host = "courtly.app"
+private fun parseUrl(link: String): String? {
+    println("link: $link")
+    val url = Url(link)
+    if (url.host != host) return null
+    val path = url.encodedPath.trim('/')
+    return path.takeIf {
+        println("path: $it")
+        it.matches(Regex(HANDLE_REGEX))
+    }
 }

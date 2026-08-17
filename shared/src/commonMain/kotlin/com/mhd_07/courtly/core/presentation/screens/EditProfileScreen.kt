@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,38 +19,28 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import coil3.compose.AsyncImage
 import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.presentation.components.AnimatedBottomSheet
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
@@ -61,9 +49,8 @@ import com.mhd_07.courtly.core.presentation.model.RemoteResult
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.util.BackHandler
-import com.mhd_07.courtly.core.util.PermissionResultListener
+import com.mhd_07.courtly.core.util.Permission
 import com.mhd_07.courtly.core.util.PermissionStatus
-import com.mhd_07.courtly.core.util.PermissionType
 import com.mhd_07.courtly.core.util.rememberCameraManager
 import com.mhd_07.courtly.core.util.rememberGalleryManager
 import com.mhd_07.courtly.core.util.rememberPermissionManager
@@ -83,8 +70,6 @@ import courtly.shared.generated.resources.profile
 import courtly.shared.generated.resources.save
 import courtly.shared.generated.resources.select_source
 import courtly.shared.generated.resources.user_outline
-
-
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
@@ -111,53 +96,37 @@ fun EditProfileScreen(
     val dimensions = LocalDimensions.current
     val snackbarHostState = remember { SnackbarHostState() }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var cameraPermitted by remember { mutableStateOf(false) }
-    var galleryPermitted by remember { mutableStateOf(false) }
-    var requiredPermission by remember { mutableStateOf<PermissionType?>(null) }
+
     val cameraManager = rememberCameraManager { res ->
-        res.toByteArray()?.let {
-            println("Camera image selected ${it.size}")
-            changeAvatar(it)
-        }
+        res.toByteArray()?.let { changeAvatar(it) }
     }
     val galleryManager = rememberGalleryManager { res ->
-        res.toByteArray()?.let {
-            println("Gallery image selected ${it.size}")
-            changeAvatar(it)
-        }
+        res.toByteArray()?.let { changeAvatar(it) }
     }
-    val permissionManager = rememberPermissionManager(object : PermissionResultListener {
-        override fun onPermissionResult(permissionType: PermissionType, status: PermissionStatus) {
-            println("Permission Result: $permissionType $status")
-            when (permissionType) {
-                PermissionType.CAMERA -> {
-                    cameraPermitted = status == PermissionStatus.GRANTED
-                }
 
-                PermissionType.GALLERY -> {
-                    galleryPermitted = status == PermissionStatus.GRANTED
-                }
+    val permissionManager = rememberPermissionManager { permission, status ->
+        if (status == PermissionStatus.Granted) {
+            when (permission) {
+                Permission.Camera -> cameraManager.launch()
+                Permission.Gallery -> galleryManager.launch()
             }
-            requiredPermission = null
         }
-    })
-    cameraPermitted =
-        permissionManager.checkPermission(PermissionType.CAMERA) == PermissionStatus.GRANTED
-    galleryPermitted =
-        permissionManager.checkPermission(PermissionType.GALLERY) == PermissionStatus.GRANTED
-    requiredPermission?.let { permissionType ->
-        permissionManager.requestPermission(permissionType)
     }
+
     LaunchedEffect(result) {
-        if (result is RemoteResult.Error)
+        if (result is RemoteResult.Error) {
             snackbarHostState.showSnackbar(getString(result.error.message))
+        }
     }
+
     BackHandler(scope) {
-        if (sheetState.currentValue != SheetValue.Hidden)
-            sheetState.hide()
-        else
+        if (sheetState.isVisible) {
+            scope.launch { sheetState.hide() }
+        } else {
             navBack()
+        }
     }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -179,7 +148,7 @@ fun EditProfileScreen(
             )
         },
         containerColor = MaterialTheme.colorScheme.background,
-    ) {
+    ) { innerPadding ->
         AnimatedBottomSheet(
             isVisible = sheetState.isVisible,
             onDismissRequest = { scope.launch { sheetState.hide() } },
@@ -188,7 +157,8 @@ fun EditProfileScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(dimensions.medium),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = dimensions.medium)
                     .padding(bottom = dimensions.medium)
             ) {
@@ -198,16 +168,15 @@ fun EditProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(dimensions.small)
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            if (cameraPermitted)
-                                cameraManager.launch()
-                            else {
-                                requiredPermission = PermissionType.CAMERA
-                                if (cameraPermitted)
-                                    cameraManager.launch()
-                            }
-                            scope.launch { sheetState.hide() }
-                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                scope.launch { sheetState.hide() }
+                               if(permissionManager.isGranted(Permission.Camera))
+                                   cameraManager.launch()
+                                else
+                                    permissionManager.checkAndRequest(Permission.Camera)
+                            },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
                         Icon(
@@ -217,16 +186,15 @@ fun EditProfileScreen(
                         Text(text = stringResource(Res.string.camera))
                     }
                     Row(
-                        modifier = Modifier.fillMaxWidth().clickable {
-                            if (galleryPermitted)
-                                galleryManager.launch()
-                            else {
-                                requiredPermission = PermissionType.GALLERY
-                                if (galleryPermitted)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                scope.launch { sheetState.hide() }
+                                if (permissionManager.isGranted(Permission.Gallery))
                                     galleryManager.launch()
-                            }
-                            scope.launch { sheetState.hide() }
-                        },
+                                else
+                                    permissionManager.checkAndRequest(Permission.Gallery)
+                            },
                         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                     ) {
                         Icon(
@@ -238,10 +206,15 @@ fun EditProfileScreen(
                 }
             }
         }
-        if (result is RemoteResult.Loading)
+
+        if (result is RemoteResult.Loading) {
             Loading()
+        }
+
         Column(
-            modifier = Modifier.fillMaxSize().padding(it)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
                 .padding(WindowInsets.ime.asPaddingValues())
                 .padding(horizontal = dimensions.medium, vertical = dimensions.small)
                 .verticalScroll(rememberScrollState()),
@@ -252,22 +225,26 @@ fun EditProfileScreen(
                 SubcomposeAsyncImage(
                     model = avatar,
                     contentDescription = stringResource(Res.string.profile),
-//                    placeholder = rememberVectorPainter(TablerIcons.Filled.User),
                     contentScale = ContentScale.Crop,
                     error = {
                         Icon(
                             painter = painterResource(Res.drawable.user_outline),
                             contentDescription = stringResource(Res.string.profile),
-                            modifier = Modifier.fillMaxSize().padding(dimensions.xSmall)
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(dimensions.xSmall)
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(1f).clip(CircleShape)
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f)
+                        .clip(CircleShape)
                         .border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
                         .align(Alignment.Center)
                 )
                 Card(
                     onClick = { scope.launch { sheetState.expand() } },
-                    modifier = Modifier.align(Alignment.BottomEnd).align(Alignment.BottomEnd),
+                    modifier = Modifier.align(Alignment.BottomEnd),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                     shape = CircleShape,
                     border = BorderStroke(dimensions.xxSmall, MaterialTheme.colorScheme.primary)
@@ -279,6 +256,7 @@ fun EditProfileScreen(
                     )
                 }
             }
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
@@ -287,7 +265,6 @@ fun EditProfileScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = onNameChange,
-//                    label = { Text(text = stringResource(Res.string.name)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     isError = name.isEmpty(),
@@ -302,6 +279,7 @@ fun EditProfileScreen(
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
             }
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
@@ -310,19 +288,22 @@ fun EditProfileScreen(
                 OutlinedTextField(
                     value = handle,
                     onValueChange = onHandleChange,
-//                    label = { Text(text = stringResource(Res.string.handle)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     isError = handleErrorMessage != null,
                     supportingText = {
                         if (handleErrorMessage != null) {
-                            Text(text = handleErrorMessage, color = MaterialTheme.colorScheme.error)
+                            Text(
+                                text = handleErrorMessage,
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     prefix = { Text(text = "@") },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
             }
+
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
@@ -331,7 +312,6 @@ fun EditProfileScreen(
                 OutlinedTextField(
                     value = bio,
                     onValueChange = onBioChange,
-//                    label = { Text(text = stringResource(Res.string.bio)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = false,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.None)

@@ -36,6 +36,7 @@
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
     <string name="follow_you">Following You</string>
+    <string name="cannot_find_user">Cannot Find This User</string>
 
     <!-- Match Tracking -->
     <string name="playing">On Court</string>
@@ -46,9 +47,13 @@
     <string name="won_game">%1$s bagged the game</string>
     <string name="won_match">%1$s takes the whole match!</string>
     <string name="set">Set</string>
+    <string name="ensure_quit_title">Quit</string>
     <string name="ensure_quit">Really? You're bailing now?</string>
     <string name="quit">Yep, I'm Out</string>
     <string name="cancel">Cancel</string>
+
+    <string name="select_player">Select Player</string>
+    <string name="select_player_description">Who Scored This Point</string>
 
     <string name="step">Step %1$s out of %1$s</string>
     <string name="next">Next</string>

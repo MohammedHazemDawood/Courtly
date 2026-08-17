@@ -2,6 +2,7 @@ package com.mhd_07.courtly.feature_profile_preview.presentation.viewmodel.model
 
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
+import com.mhd_07.courtly.feature_nav.presentation.data.UserSelectionType
 
 data class ProfilePreviewState(
     val profile: Player? = null,
@@ -11,5 +12,5 @@ data class ProfilePreviewState(
     val userFollowing: List<Player> = emptyList(),
     val result: RemoteResult? = null,
     val myId : String? = null,
-    val mine : Boolean = false
+    val mine : Boolean = false,
 )

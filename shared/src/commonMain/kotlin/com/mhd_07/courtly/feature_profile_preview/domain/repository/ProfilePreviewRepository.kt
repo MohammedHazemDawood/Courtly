@@ -4,7 +4,8 @@ import com.mhd_07.courtly.core.domain.model.Player
 
 interface ProfilePreviewRepository {
     fun getUserId() : String?
-    suspend fun getProfile(id : String) : Player?
+    suspend fun getProfileById(id : String) : Player?
+    suspend fun getProfileByHandle(handle : String) : Player?
 
     suspend fun loadFollowers(userId : String) : List<Player>
     suspend fun loadFollowing(userId : String) : List<Player>

@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         setContent {
-            App(intent?.dataString)
+            App(intent?.data?.toString())
         }
     }
 }

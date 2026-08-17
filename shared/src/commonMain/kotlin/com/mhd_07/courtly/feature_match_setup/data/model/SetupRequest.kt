@@ -1,8 +1,8 @@
 package com.mhd_07.courtly.feature_match_setup.data.model
-import com.mhd_07.courtly.core.domain.model.HCourtSide
 import com.mhd_07.courtly.core.domain.model.MatchMode
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.MatchType
+import com.mhd_07.courtly.feature_match.data.model.RemotePlayer
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
@@ -27,14 +27,14 @@ import kotlin.time.Instant
 data class SetupRequest(
 	val created_at: Instant,
 	val host: String,
-	val team_left_name: String,
-	val team_right_name: String,
-	val team_left_players: List<String> = emptyList(),
-	val team_right_players: List<String> = emptyList(),
+	val team_1_name: String,
+	val team_2_name: String,
+	val team_1_players: List<RemotePlayer> = emptyList(),
+	val team_2_players: List<RemotePlayer> = emptyList(),
 	val location: String,
 	val type: MatchType,
 	val status: MatchStatus,
 	val mode: MatchMode,
 	val best_of: Int,
-	val ball_half: HCourtSide,
+//	val ball_half: HCourtSide,
 )

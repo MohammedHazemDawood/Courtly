@@ -1,6 +1,5 @@
 package com.mhd_07.courtly.feature_match_setup.presentation.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,7 @@ import com.mhd_07.courtly.core.presentation.model.RemoteResult
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
 import com.mhd_07.courtly.core.presentation.ui.theme.buttonTextStyle
 import com.mhd_07.courtly.core.util.BackHandler
-import com.mhd_07.courtly.feature_match_record.domain.model.SetupStep
+import com.mhd_07.courtly.feature_match_setup.domain.model.SetupStep
 import com.mhd_07.courtly.feature_match_setup.presentation.components.LocationPage
 import com.mhd_07.courtly.feature_match_setup.presentation.components.ModeTypePage
 import com.mhd_07.courtly.feature_match_setup.presentation.components.PlayersPage
@@ -120,17 +119,19 @@ fun MatchSetupScreen(
             snackbarHostState.showSnackbar(message = getString(result.error.message))
     }
 
-
+    val dimensions = LocalDimensions.current
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         snackbarHost = {
             SnackbarHost(
                 hostState = snackbarHostState,
-             ){
+            ) {
                 Snackbar(
                     snackbarData = it,
                     containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(dimensions.medium)
                 )
             }
         },
@@ -155,7 +156,6 @@ fun MatchSetupScreen(
             )
         }
     ) {
-        val dimensions = LocalDimensions.current
         Column(
             modifier = Modifier.fillMaxSize().padding(it)
                 .imePadding()
@@ -255,7 +255,8 @@ fun MatchSetupScreen(
                             mode = mode,
                             type = type,
                             onModeChange = onModeChange,
-                            onTypeChange = onTypeChange
+                            onTypeChange = onTypeChange,
+                            doubleEnabled = teamLeftPlayers.size >= 2 && teamRightPlayers.size >= 2
                         )
 
                         SetupStep.System -> SystemPage(
@@ -274,9 +275,8 @@ fun MatchSetupScreen(
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         }
                     else {
-                        startGame(Side.TeamLeft)
-                        if (result is RemoteResult.Success)
-                            navToGameRecord()
+                        startGame(Side.Team1)
+                        navToGameRecord()
                     }
 //                nextEnabled = false
                 },

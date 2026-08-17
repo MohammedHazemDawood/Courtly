@@ -13,7 +13,8 @@ data class Player(
     val avatar : String?,
     val bio : String,
     val avatarVersion : Int,
-    val bench : Boolean = false,
+    val bench : Boolean = true,
     val visibility: Visibility = Visibility.Public,
     val location : String = "",
+    val isRemote : Boolean = true
 )

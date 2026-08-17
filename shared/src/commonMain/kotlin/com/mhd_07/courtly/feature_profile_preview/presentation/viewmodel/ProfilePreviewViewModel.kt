@@ -18,7 +18,8 @@ import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
 class ProfilePreviewViewModel(
-    private val loadProfile: GetProfileUseCase,
+    private val loadProfileById: GetProfileByIdUseCase,
+    private val loadProfileByHandle: GetProfileByHandleUseCase,
     private val loadFollowers: LoadFollowersUseCase,
     private val loadFollowings: LoadFollowingUseCase,
     private val follow: FollowUseCase,
@@ -77,10 +78,24 @@ class ProfilePreviewViewModel(
         }
     }
 
-    private suspend fun loadPreviewProfile(id: String) {
+    private suspend fun loadPreviewProfileById(id: String) {
         try {
             _state.update { it.copy(result = RemoteResult.Loading) }
-            val profile = loadProfile(id)
+            val profile = loadProfileById(id)
+            _state.update { it.copy(profile = profile, result = RemoteResult.Success) }
+        } catch (e: PostgrestRestException) {
+            println(e.message)
+            val error = getPostgrestError(e.code)
+            _state.update { it.copy(result = RemoteResult.Error(error)) }
+        } catch (e: Exception) {
+            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+        }
+    }
+
+    private suspend fun loadPreviewProfileByHandle(handle: String) {
+        try {
+            _state.update { it.copy(result = RemoteResult.Loading) }
+            val profile = loadProfileByHandle(handle)
             _state.update { it.copy(profile = profile, result = RemoteResult.Success) }
         } catch (e: PostgrestRestException) {
             println(e.message)
@@ -98,12 +113,23 @@ class ProfilePreviewViewModel(
         actionJob = viewModelScope.launch {
             try {
                 when (intent) {
-                    is ProfilePreviewIntent.LoadProfile -> {
+                    is ProfilePreviewIntent.LoadProfileById -> {
                         if (_state.value.profile != null) return@launch
                         _state.update { it.copy(myId = _userId.value) }
                         loadUserFollowersList()
                         loadUserFollowingsList()
-                        loadPreviewProfile(intent.id)
+                        loadPreviewProfileById(intent.id)
+                        loadFollowersList()
+                        loadFollowingsList()
+                        _state.update { it.copy(mine = _userId.value == it.profile?.id) }
+                    }
+
+                    is ProfilePreviewIntent.LoadProfileByHandle -> {
+                        if (_state.value.profile != null) return@launch
+                        _state.update { it.copy(myId = _userId.value) }
+                        loadUserFollowersList()
+                        loadUserFollowingsList()
+                        loadPreviewProfileByHandle(intent.handle)
                         loadFollowersList()
                         loadFollowingsList()
                         _state.update { it.copy(mine = _userId.value == it.profile?.id) }
@@ -113,7 +139,7 @@ class ProfilePreviewViewModel(
                         _state.value.profile?.let {
                             loadUserFollowersList()
                             loadUserFollowingsList()
-                            loadPreviewProfile(it.id)
+                            loadPreviewProfileById(it.id)
                             loadFollowersList()
                             loadFollowingsList()
                         }
@@ -153,7 +179,7 @@ class ProfilePreviewViewModel(
                         loadUserFollowersList()
                         loadUserFollowingsList()
                         _userId.value?.let {
-                            loadPreviewProfile(it)
+                            loadPreviewProfileById(it)
                             loadFollowersList()
                             loadFollowingsList()
                         }

@@ -38,6 +38,7 @@ enum class RemoteError(val message: StringResource) {
     ConnectionError(message = Res.string.unknown),
 
     Unknown(message = Res.string.unknown),
+    NotFound(message = Res.string.unknown)//TODO: To be changed
 }
 
 private val postgrestErrorMessages = mapOf(

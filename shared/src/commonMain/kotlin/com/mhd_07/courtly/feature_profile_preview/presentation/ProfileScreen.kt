@@ -68,6 +68,7 @@ import coil3.compose.SubcomposeAsyncImage
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.components.AnimatedBottomSheet
 import com.mhd_07.courtly.core.presentation.components.CourtlyAppBar
+import com.mhd_07.courtly.core.presentation.model.RemoteError
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
 import com.mhd_07.courtly.core.presentation.ui.theme.LocalDimensions
@@ -77,6 +78,7 @@ import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import com.mhd_07.courtly.feature_match_setup.presentation.components.PlayerAvatar
 import com.valentinilk.shimmer.shimmer
 import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.cannot_find_user
 import courtly.shared.generated.resources.follow
 import courtly.shared.generated.resources.followers
 import courtly.shared.generated.resources.follow_you
@@ -114,7 +116,6 @@ fun ProfileScreen(
     val dimensions = LocalDimensions.current
     var followerSheetVisible by remember { mutableStateOf(false) }
     var followingSheetVisible by remember { mutableStateOf(false) }
-
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -179,201 +180,206 @@ fun ProfileScreen(
         ) {
             var openMenu by remember { mutableStateOf(false) }
 
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Banner & Profile Avatar Header
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(3f)
-                ) {
+            if (result is RemoteResult.Error && result.error == RemoteError.NotFound && profile == null)
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = stringResource(Res.string.cannot_find_user))
+                }
+            else
+                Column(modifier = Modifier.fillMaxSize()) {
+                    // Banner & Profile Avatar Header
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Gray)
-                    )
-                    var avatarSize by remember { mutableStateOf(IntSize.Zero) }
-
-                    SubcomposeAsyncImage(
-                        model = "${profile?.avatar ?: ""}?v=${profile?.avatarVersion ?: ""}",
-                        contentDescription = stringResource(Res.string.profile),
-                        contentScale = ContentScale.Crop,
-                        error = {
-                            Icon(
-                                painter = painterResource(Res.drawable.user_outline),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(dimensions.xSmall)
-                            )
-                        },
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = dimensions.small)
-                            .fillMaxWidth(0.3f)
-                            .aspectRatio(1f)
-                            .onSizeChanged { avatarSize = it }
-                            .offset { IntOffset(x = 0, y = avatarSize.height / 2) }
-                            .clip(CircleShape)
-                            .border(
-                                width = dimensions.xxSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                shape = CircleShape
-                            )
-//                            .shimmerable(profile == null)
-                    )
-                }
-
-                // Profile Info Details
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(horizontal = dimensions.small)
-                        .padding(top = dimensions.xSmall, bottom = dimensions.small),
-                    horizontalAlignment = Alignment.Start,
-                    verticalArrangement = Arrangement.spacedBy(dimensions.small)
-                ) {
-                    // Settings Menu Action
-                    if (isMine)
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            IconButton(
-                                onClick = { openMenu = true },
-                                modifier = Modifier.border(
-                                    dimensions.xxSmall,
-                                    Color.Gray,
-                                    CircleShape
-                                )
-                            ) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.menu_dots_outline),
-                                    contentDescription = stringResource(Res.string.settings)
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = openMenu,
-                                onDismissRequest = { openMenu = false },
-                                shape = MaterialTheme.shapes.medium,
-//                                modifier = Modifier.padding(dimensions.xSmall)
-                            ) {
-                                DropdownMenuItem(
-                                    leadingIcon = {
-                                        Icon(
-                                            painter = painterResource(Res.drawable.settings_outline),
-                                            contentDescription = null
-                                        )
-                                    },
-                                    text = { Text(text = stringResource(Res.string.settings)) },
-                                    onClick = {
-                                        openMenu = false
-                                        navToSettings()
-                                    }
-                                )
-                            }
-                        }
-                    else
-                        Button(
-                            onClick = {
-                                if (profile != null) {
-                                    if (myFollowing.contains(profile)) unfollow(profile)
-                                    else follow(profile)
-                                }
-                            },
-                            modifier = Modifier.wrapContentWidth().align(Alignment.End)
-                                .shimmerable(profile == null),
-                            colors = ButtonDefaults.buttonColors(containerColor = if (profile == null) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary)
-                        ) {
-                            if (profile != null)
-                                Text(
-                                    text = if (myFollowing.contains(profile)) stringResource(Res.string.unfollow) else stringResource(
-                                        Res.string.follow
-                                    )
-                                )
-                        }
-
-                    // Usernames & Bio
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                            .fillMaxWidth()
+                            .aspectRatio(3f)
                     ) {
-                        Column {
-                            Text(
-                                text = profile?.name ?: "",
-                                style = titleTextStyle,
-                                modifier = Modifier.fillMaxWidth(0.75f)
-                                    .shimmerable(profile == null),
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = profile?.let { "@${it.handle}" } ?: "",
-                                style = notesTextStyle,
-                                modifier = Modifier.fillMaxWidth(0.75f).shimmerable(
-                                    profile == null,
-                                    paddingValues = PaddingValues(vertical = dimensions.xSmall)
-                                ),
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        ExpandableText(
-                            text = profile?.bio ?: "",
-                            modifier = Modifier.fillMaxWidth()
-                                .shimmerable(profile == null)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Gray)
+                        )
+                        var avatarSize by remember { mutableStateOf(IntSize.Zero) }
+
+                        SubcomposeAsyncImage(
+                            model = "${profile?.avatar ?: ""}?v=${profile?.avatarVersion ?: ""}",
+                            contentDescription = stringResource(Res.string.profile),
+                            contentScale = ContentScale.Crop,
+                            error = {
+                                Icon(
+                                    painter = painterResource(Res.drawable.user_outline),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(dimensions.xSmall)
+                                )
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(start = dimensions.small)
+                                .fillMaxWidth(0.3f)
+                                .aspectRatio(1f)
+                                .onSizeChanged { avatarSize = it }
+                                .offset { IntOffset(x = 0, y = avatarSize.height / 2) }
+                                .clip(CircleShape)
+                                .border(
+                                    width = dimensions.xxSmall,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = CircleShape
+                                )
+//                            .shimmerable(profile == null)
                         )
                     }
 
-                    // Location
-                    if (profile?.location?.isNotEmpty() == true) {
-                        FlowRow(
+                    // Profile Info Details
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = dimensions.small)
+                            .padding(top = dimensions.xSmall, bottom = dimensions.small),
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(dimensions.small)
+                    ) {
+                        // Settings Menu Action
+                        if (isMine)
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                IconButton(
+                                    onClick = { openMenu = true },
+                                    modifier = Modifier.border(
+                                        dimensions.xxSmall,
+                                        Color.Gray,
+                                        CircleShape
+                                    )
+                                ) {
+                                    Icon(
+                                        painter = painterResource(Res.drawable.menu_dots_outline),
+                                        contentDescription = stringResource(Res.string.settings)
+                                    )
+                                }
+                                DropdownMenu(
+                                    expanded = openMenu,
+                                    onDismissRequest = { openMenu = false },
+                                    shape = MaterialTheme.shapes.medium,
+//                                modifier = Modifier.padding(dimensions.xSmall)
+                                ) {
+                                    DropdownMenuItem(
+                                        leadingIcon = {
+                                            Icon(
+                                                painter = painterResource(Res.drawable.settings_outline),
+                                                contentDescription = null
+                                            )
+                                        },
+                                        text = { Text(text = stringResource(Res.string.settings)) },
+                                        onClick = {
+                                            openMenu = false
+                                            navToSettings()
+                                        }
+                                    )
+                                }
+                            }
+                        else
+                            Button(
+                                onClick = {
+                                    if (profile != null) {
+                                        if (myFollowing.contains(profile)) unfollow(profile)
+                                        else follow(profile)
+                                    }
+                                },
+                                modifier = Modifier.wrapContentWidth().align(Alignment.End)
+                                    .shimmerable(profile == null),
+                                colors = ButtonDefaults.buttonColors(containerColor = if (profile == null) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.primary)
+                            ) {
+                                if (profile != null)
+                                    Text(
+                                        text = if (myFollowing.contains(profile)) stringResource(Res.string.unfollow) else stringResource(
+                                            Res.string.follow
+                                        )
+                                    )
+                            }
+
+                        // Usernames & Bio
+                        Column(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(dimensions.small),
                             verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                        ) {
+                            Column {
+                                Text(
+                                    text = profile?.name ?: "",
+                                    style = titleTextStyle,
+                                    modifier = Modifier.fillMaxWidth(0.75f)
+                                        .shimmerable(profile == null),
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = profile?.let { "@${it.handle}" } ?: "",
+                                    style = notesTextStyle,
+                                    modifier = Modifier.fillMaxWidth(0.75f).shimmerable(
+                                        profile == null,
+                                        paddingValues = PaddingValues(vertical = dimensions.xSmall)
+                                    ),
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                            ExpandableText(
+                                text = profile?.bio ?: "",
+                                modifier = Modifier.fillMaxWidth()
+                                    .shimmerable(profile == null)
+                            )
+                        }
+
+                        // Location
+                        if (profile?.location?.isNotEmpty() == true) {
+                            FlowRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(dimensions.small),
+                                verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(Res.drawable.map_point_outline),
+                                        contentDescription = null,
+                                        tint = Color.Gray
+                                    )
+                                    Text(text = profile.location, style = notesTextStyle)
+                                }
+                            }
+                        }
+
+                        // Follower Counts
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(dimensions.small)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
+                                modifier = Modifier.clickable { followerSheetVisible = true }
                             ) {
-                                Icon(
-                                    painter = painterResource(Res.drawable.map_point_outline),
-                                    contentDescription = null,
-                                    tint = Color.Gray
+                                Text(text = followers.size.toString())
+                                Text(
+                                    text = stringResource(Res.string.followers),
+                                    style = notesTextStyle
                                 )
-                                Text(text = profile.location ?: "", style = notesTextStyle)
+                            }
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
+                                modifier = Modifier.clickable { followingSheetVisible = true }
+                            ) {
+                                Text(text = following.size.toString())
+                                Text(
+                                    text = stringResource(Res.string.followings),
+                                    style = notesTextStyle
+                                )
                             }
                         }
                     }
-
-                    // Follower Counts
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dimensions.small)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                            modifier = Modifier.clickable { followerSheetVisible = true }
-                        ) {
-                            Text(text = followers.size.toString())
-                            Text(
-                                text = stringResource(Res.string.followers),
-                                style = notesTextStyle
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                            modifier = Modifier.clickable { followingSheetVisible = true }
-                        ) {
-                            Text(text = following.size.toString())
-                            Text(
-                                text = stringResource(Res.string.followings),
-                                style = notesTextStyle
-                            )
-                        }
-                    }
                 }
-            }
         }
     }
 }

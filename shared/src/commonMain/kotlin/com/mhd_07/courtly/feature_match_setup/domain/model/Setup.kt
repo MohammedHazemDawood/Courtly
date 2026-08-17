@@ -27,6 +27,6 @@ data class Setup(
 
     val mode: MatchMode = MatchMode.Professional,
 
-    val ballHalf: HCourtSide = HCourtSide.Right
+//    val ballHalf: HCourtSide = HCourtSide.Right
 
 )

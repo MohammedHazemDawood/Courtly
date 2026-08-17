@@ -40,7 +40,7 @@ class CoreViewmodel(
     val state = _state.asStateFlow()
 
     private var checkHandleJob: Job? = null
-    private var reloadJob: Job? = null
+//    private var reloadJob: Job? = null
 
     init {
         viewModelScope.launch {

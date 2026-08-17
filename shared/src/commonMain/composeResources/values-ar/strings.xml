@@ -37,6 +37,7 @@
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
     <string name="follow_you">Following You</string>
+    <string name="cannot_find_user">Cannot Find This User</string>
 
     <!-- Match Tracking -->
     <string name="playing">في الملعب</string>
@@ -47,9 +48,14 @@
     <string name="won_game">%1$s كسب الجيم</string>
     <string name="won_match">%1$s كسب الماتش كله!</string>
     <string name="set">سيت</string>
+    <string name="ensure_quit_title">اقفل</string>
     <string name="ensure_quit">بجد؟ هتنسحب دلوقتي؟</string>
     <string name="quit">أيوه، أنا ماشي</string>
     <string name="cancel">إلغاء</string>
+
+    <string name="select_player">Select Player</string>
+    <string name="select_player_description">Who Scored This Point</string>
+
 
     <string name="step">خطوة %1$s من %1$s</string>
     <string name="next">التالي</string>

@@ -13,6 +13,7 @@ import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.feature_profile_preview.domain.repository.ProfilePreviewRepository
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.exceptions.NotFoundRestException
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
 
@@ -21,13 +22,22 @@ class ProfilePreviewRepositoryImpl(private val client: SupabaseClient) : Profile
         return client.auth.currentUserOrNull()?.id
     }
 
-    override suspend fun getProfile(id : String): Player? {
+    override suspend fun getProfileById(id : String): Player {
 //        return client.auth.currentUserOrNull()?.let {
         return client.postgrest.from(PROFILES).select {
             filter {
                 PlayerResponse::id eq id
             }
-        }.decodeSingle<PlayerResponse>().toPlayer()
+        }.decodeSingle<PlayerResponse?>()?.toPlayer() ?: throw Exception("User Not Found")
+//        }
+    }
+    override suspend fun getProfileByHandle(handle : String): Player {
+//        return client.auth.currentUserOrNull()?.let {
+        return client.postgrest.from(PROFILES).select {
+            filter {
+                PlayerResponse::handle eq handle
+            }
+        }.decodeSingle<PlayerResponse?>()?.toPlayer() ?: throw Exception("User Not Found")
 //        }
     }
 

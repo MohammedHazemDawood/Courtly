@@ -21,7 +21,8 @@ fun OptionSelector(
     modifier: Modifier = Modifier,
     options: List<String>,
     selectedOptionIndex: Int,
-    onOptionSelected: (Int) -> Unit
+    onOptionSelected: (Int) -> Unit,
+    optionEnabled: (Int) -> Boolean = { true }
 ) {
     val dimensions = LocalDimensions.current
     Row(
@@ -32,6 +33,7 @@ fun OptionSelector(
         options.forEachIndexed { index, option ->
             Card(
                 modifier = Modifier.weight(1f),
+                enabled = optionEnabled(index),
                 border = BorderStroke(
                     dimensions.xxSmall,
                     color = if (selectedOptionIndex == index) MaterialTheme.colorScheme.primary else Color.Gray

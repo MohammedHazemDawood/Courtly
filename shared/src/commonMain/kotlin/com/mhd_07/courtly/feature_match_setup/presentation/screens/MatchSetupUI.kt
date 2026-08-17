@@ -20,6 +20,11 @@ fun MatchSetupUI(
         println("State = $state")
     }
 
+    LaunchedEffect(state.matchId, state.result) {
+        if (state.matchId != null)
+            navToGameRecord(state.matchId)
+    }
+
     MatchSetupScreen(
         teamLeftName = state.setup.teamLeft.name,
         teamRightName = state.setup.teamRight.name,
@@ -36,7 +41,7 @@ fun MatchSetupUI(
         type = state.setup.type,
         mode = state.setup.mode,
         bestOf = state.setup.bestOf,
-        navToGameRecord = { navToGameRecord(state.matchId) },
+        navToGameRecord = { },
         navBack = navBack,
         onChangeTeamLeftName = { viewmodel.handleIntent(MatchSetupIntent.ChangeTeamLeftName(it)) },
         onChangeTeamRightName = { viewmodel.handleIntent(MatchSetupIntent.ChangeTeamRightName(it)) },

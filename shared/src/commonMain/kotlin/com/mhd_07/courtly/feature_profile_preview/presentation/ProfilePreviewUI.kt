@@ -5,14 +5,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mhd_07.courtly.core.domain.model.Player
-import com.mhd_07.courtly.core.presentation.components.Loading
+import com.mhd_07.courtly.feature_nav.presentation.data.UserSelectionType
 import com.mhd_07.courtly.feature_profile_preview.presentation.viewmodel.ProfilePreviewViewModel
 import com.mhd_07.courtly.feature_profile_preview.presentation.viewmodel.model.ProfilePreviewIntent
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ProfilePreviewUI(
-    id: String,
+    key: String,
+    type: UserSelectionType,
     navBack: () -> Unit,
     navToSettings: () -> Unit = {},
     previewProfile: (Player) -> Unit
@@ -20,8 +21,13 @@ fun ProfilePreviewUI(
     val viewmodel: ProfilePreviewViewModel = koinViewModel()
     val state by viewmodel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        viewmodel.handleIntent(ProfilePreviewIntent.LoadProfile(id))
+        if (type == UserSelectionType.Id)
+            viewmodel.handleIntent(ProfilePreviewIntent.LoadProfileById(key))
+        else
+            viewmodel.handleIntent(ProfilePreviewIntent.LoadProfileByHandle(key))
     }
+
+    println("state: $state")
 
     ProfileScreen(
         navBack = navBack,

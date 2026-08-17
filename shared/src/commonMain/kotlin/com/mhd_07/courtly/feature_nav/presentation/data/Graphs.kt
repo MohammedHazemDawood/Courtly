@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 sealed interface Graphs : NavKey {
 
     @Serializable
-    data class ProfilePreview(val id: String) : Graphs, NavKey
+    data class ProfilePreview(val key: String, val type : UserSelectionType = UserSelectionType.Id) : Graphs, NavKey
 
     @Serializable
     data object Splash : Graphs, NavKey
@@ -50,8 +50,16 @@ sealed interface Graphs : NavKey {
     data object MatchSetup : Graphs, NavKey
 
     @Serializable
-    data object Match : Graphs, NavKey {
+    data class  Match(val id: String?) : Graphs, NavKey {
         @Serializable
         data object Record : Graphs, NavKey
+
+        @Serializable
+        data object Preview : Graphs, NavKey
     }
+}
+
+enum class UserSelectionType {
+    Id,
+    Handle,
 }

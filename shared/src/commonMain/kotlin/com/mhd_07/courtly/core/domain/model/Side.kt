@@ -4,8 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Side {
-    TeamRight,
-    TeamLeft
+    Team1,
+    Team2
 }
 
-fun Side.opposite(): Side = if (this == Side.TeamRight) Side.TeamLeft else Side.TeamRight
+fun Side.opposite(): Side = if (this == Side.Team2) Side.Team1 else Side.Team2
