@@ -82,6 +82,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.collections.emptyList
+import kotlin.time.Clock
+import kotlin.time.Duration.Companion.minutes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -121,6 +123,12 @@ fun MatchUI(
                     parametersOf(id)
                 }
                 val state by viewmodel.state.collectAsStateWithLifecycle()
+                LaunchedEffect(state.match.status, state.match.doneAt) {
+                    if (state.match.status == MatchStatus.Finished && state.match.doneAt != null && Clock.System.now()
+                            .minus(state.match.doneAt!!) < 5.minutes && backStack.size > 1
+                    )
+                        backStack.removeLast()
+                }
                 MatchScreen(
                     match = state.match,
                     isUndoAvailable = state.undoEnabled,
@@ -171,7 +179,7 @@ fun MatchScreen(
     result: RemoteResult?,
     navBack: () -> Unit,
     isMine: Boolean,
-    finishMatch : () -> Unit
+    finishMatch: () -> Unit
 ) {
     println("id: ${match.id}")
 

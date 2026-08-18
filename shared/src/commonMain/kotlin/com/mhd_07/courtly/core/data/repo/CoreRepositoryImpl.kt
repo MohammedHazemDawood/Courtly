@@ -43,6 +43,11 @@ class CoreRepositoryImpl(private val client: SupabaseClient) : CoreRepository {
                 PlayerResponse::avatar_path setTo profile.avatar
                 PlayerResponse::handle setTo profile.handle
                 PlayerResponse::bio setTo profile.bio
+                PlayerResponse::avatar_version setTo profile.avatarVersion
+                PlayerResponse::cover setTo profile.cover
+                PlayerResponse::cover_v setTo profile.coverVersion
+                PlayerResponse::visibility setTo profile.visibility
+                PlayerResponse::location setTo profile.location
             }
         ) {
             filter {
@@ -69,6 +74,33 @@ class CoreRepositoryImpl(private val client: SupabaseClient) : CoreRepository {
                 {
                     PlayerResponse::avatar_path setTo imageUrl
                     PlayerResponse::avatar_version setTo currentV + 1
+                }
+            ) {
+                filter {
+                    PlayerResponse::id eq it.id
+                }
+            }
+        }
+    }
+
+    override suspend fun updateCover(avatar: ByteArray, currentV: Int) {
+        val bucket = client.storage.from("avatar")
+        val path = "${client.auth.currentUserOrNull()?.id}/cover.jpg"
+        bucket.upload(
+            path,
+            avatar
+        ) {
+            upsert = true
+            contentType = ContentType("image", "jpeg")
+        }
+        val imageUrl = bucket.publicUrl(path)
+        println("Image Url $imageUrl")
+        client.auth.currentUserOrNull()?.let {
+            println("user: $it")
+            client.postgrest.from(PROFILES).update(
+                {
+                    PlayerResponse::cover setTo imageUrl
+                    PlayerResponse::cover_v setTo currentV + 1
                 }
             ) {
                 filter {

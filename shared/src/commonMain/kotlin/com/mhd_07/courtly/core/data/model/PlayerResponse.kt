@@ -9,6 +9,8 @@ data class PlayerResponse(
     val handle : String?,
     val display_name : String?,
     val avatar_path : String?,
+    val cover : String?,
+    val cover_v : Int,
     val bio : String?,
     val avatar_version : Int,
     val visibility: Visibility,

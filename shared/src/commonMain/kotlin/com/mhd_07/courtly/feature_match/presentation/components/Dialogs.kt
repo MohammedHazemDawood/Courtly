@@ -230,7 +230,9 @@ fun PlayerSelectionDialogPreviewDialog() {
                     avatar = "https://gcflppntjrgnbvsuoxkr.supabase.co/storage/v1/object/public/avatar/cdfdb848-cefe-4a0d-bb73-835a57f37823/pfp.jpg",
                     avatarVersion = 0,
                     location = "Egypt",
-                    bio = ""
+                    bio = "",
+                    cover = null,
+                    coverVersion = 0
                 ),
                 p2 = Player(
                     handle = "_sj_55",
@@ -238,7 +240,9 @@ fun PlayerSelectionDialogPreviewDialog() {
                     avatar = "https://static.wikia.nocookie.net/ipod/images/c/cb/Jobs_hero20110329.png/revision/latest?cb=20200202110213",
                     avatarVersion = 0,
                     location = "Egypt",
-                    bio = ""
+                    bio = "",
+                    cover = null,
+                    coverVersion = 0
                 ),
                 select = { throw NotImplementedError("Select not implemented in preview") },
                 visible = true,

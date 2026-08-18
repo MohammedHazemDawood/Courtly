@@ -4,18 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.domain.usecase.CheckHandleUseCase
-import com.mhd_07.courtly.feature_profile_preview.domain.usecase.FollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
-import com.mhd_07.courtly.feature_profile_preview.domain.usecase.LoadFollowersUseCase
-import com.mhd_07.courtly.feature_profile_preview.domain.usecase.LoadFollowingUseCase
 import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
-import com.mhd_07.courtly.feature_profile_preview.domain.usecase.UnfollowUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateAvatarUseCase
+import com.mhd_07.courtly.core.domain.usecase.UpdateCoverUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateProfileUseCase
 import com.mhd_07.courtly.core.presentation.model.CoreIntent
 import com.mhd_07.courtly.core.presentation.model.CoreState
 import com.mhd_07.courtly.core.presentation.model.RemoteError
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
+import com.mhd_07.courtly.core.presentation.model.RemoteResult.*
 import com.mhd_07.courtly.core.presentation.model.getAuthError
 import com.mhd_07.courtly.core.presentation.model.getPostgrestError
 import io.github.jan.supabase.auth.exception.AuthRestException
@@ -34,6 +32,7 @@ class CoreViewmodel(
     private val checkHandle: CheckHandleUseCase,
     private val updateProfile: UpdateProfileUseCase,
     private val updateAvatar: UpdateAvatarUseCase,
+    private val updateCover: UpdateCoverUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(CoreState())
 
@@ -72,7 +71,9 @@ class CoreViewmodel(
                 handle = profile?.handle ?: "",
                 bio = profile?.bio ?: "",
                 handleAvailable = true,
-                saveEnabled = false
+                saveEnabled = false,
+                cover = profile?.cover,
+                coverVersion = profile?.coverVersion ?: 0
             )
         }
     }
@@ -124,7 +125,7 @@ class CoreViewmodel(
                         loadProfile()
                         _state.update { it.copy(result = RemoteResult.Success) }
                     } catch (e: Exception) {
-                        _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }//TODO:Just Temp
+                        _state.update { it.copy(result = Error(RemoteError.Unknown)) }//TODO:Just Temp
                         println("Avatart Error: ${e.message}")
                     }
                 }
@@ -136,9 +137,9 @@ class CoreViewmodel(
                     logout()
                     _state.update { it.copy(result = RemoteResult.Success) }
                 } catch (e: AuthRestException) {
-                    _state.update { it.copy(result = RemoteResult.Error(getAuthError(e.errorCode))) }
+                    _state.update { it.copy(result = Error(getAuthError(e.errorCode))) }
                 } catch (e: Exception) {
-                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }
                 }
             }
 
@@ -154,7 +155,12 @@ class CoreViewmodel(
                             name = _state.value.displayName.trim(),
                             avatar = _state.value.avatarPath ?: "",
                             bio = _state.value.bio.trim(),
-                            avatarVersion = _state.value.avatarVersion
+                            avatarVersion = _state.value.avatarVersion,
+                            visibility = _state.value.profile!!.visibility,
+                            location = _state.value.profile!!.location,
+                            isRemote = _state.value.profile!!.isRemote,
+                            cover = _state.value.profile!!.cover,
+                            coverVersion = _state.value.profile!!.coverVersion
                         )
                     )
                     loadProfile()
@@ -164,9 +170,21 @@ class CoreViewmodel(
                     val error = getPostgrestError(e.code)
                     if (error == RemoteError.UniquenessViolation)
                         _state.update { it.copy(handleAvailable = false) }
-                    _state.update { it.copy(result = RemoteResult.Error(error)) }
+                    _state.update { it.copy(result = Error(error)) }
                 } catch (_: Exception) {
-                    _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }
+                }
+            }
+
+            is CoreIntent.ChangeCover -> viewModelScope.launch {
+                try {
+                    _state.update { it.copy(result = Loading) }
+                    updateCover(intent.cover, _state.value.avatarVersion)
+                    loadProfile()
+                    _state.update { it.copy(result = Success) }
+                } catch (e: Exception) {
+                    _state.update { it.copy(result = Error(RemoteError.Unknown)) }//TODO:Just Temp
+                    println("Cover Error: ${e.message}")
                 }
             }
         }

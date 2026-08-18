@@ -6,6 +6,7 @@ import com.mhd_07.courtly.core.domain.usecase.CheckHandleUseCase
 import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
 import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateAvatarUseCase
+import com.mhd_07.courtly.core.domain.usecase.UpdateCoverUseCase
 import com.mhd_07.courtly.core.domain.usecase.UpdateProfileUseCase
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
 import com.mhd_07.courtly.shared.BuildKonfig
@@ -56,8 +57,10 @@ val coreModule = module {
     single { CheckHandleUseCase(get()) }
     single { UpdateProfileUseCase(get()) }
     single { UpdateAvatarUseCase(get()) }
+    single { UpdateCoverUseCase(get()) }
     viewModel<CoreViewmodel> {
         CoreViewmodel(
+            get(),
             get(),
             get(),
             get(),

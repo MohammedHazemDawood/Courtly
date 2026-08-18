@@ -30,7 +30,7 @@ import courtly.shared.generated.resources.feed
 import courtly.shared.generated.resources.new_game
 import courtly.shared.generated.resources.profile
 import courtly.shared.generated.resources.my_games
-import courtly.shared.generated.resources.user_outline
+import courtly.shared.generated.resources.user_bold
 import kotlinx.coroutines.launch
 
 
@@ -50,7 +50,7 @@ fun HomeScreen(navToGameSetup: () -> Unit, navToProfileScreen: () -> Unit, userP
                 )
             ),
             startingIcon = userPFP,
-            placeHolder = painterResource(Res.drawable.user_outline),
+            placeHolder = painterResource(Res.drawable.user_bold),
             startingDescription = stringResource(Res.string.profile),
             onStartingIconClick = navToProfileScreen
         )

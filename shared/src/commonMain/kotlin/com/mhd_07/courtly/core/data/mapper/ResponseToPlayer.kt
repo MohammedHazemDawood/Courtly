@@ -11,5 +11,7 @@ fun PlayerResponse.toPlayer() = Player(
     bio = bio ?: "",
     avatarVersion = avatar_version,
     visibility = visibility,
-    location = location ?: ""
+    location = location ?: "",
+    cover = cover,
+    coverVersion = cover_v
 )

@@ -17,8 +17,7 @@ import com.mhd_07.courtly.core.presentation.ui.theme.predictiveTransform
 import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
-import com.mhd_07.courtly.feature_profile_preview.presentation.ProfilePreviewUI
-import com.mhd_07.courtly.feature_profile_preview.presentation.ProfileScreen
+import com.mhd_07.courtly.feature_profile_preview.presentation.screen.ProfilePreviewUI
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.handle_error
 import kotlinx.serialization.modules.SerializersModule
@@ -35,7 +34,6 @@ fun CoreUI(navToGameSetup: () -> Unit, previewProfile: (id: String) -> Unit) {
                 subclass(Graphs.Core.Profile::class, Graphs.Core.Profile.serializer())
                 subclass(Graphs.Core.Settings::class, Graphs.Core.Settings.serializer())
                 subclass(Graphs.Core.EditProfile::class, Graphs.Core.EditProfile.serializer())
-                subclass(Graphs.Core.SetupAccount::class, Graphs.Core.SetupAccount.serializer())
             }
         }
     }, Graphs.Core.Home)
@@ -46,7 +44,7 @@ fun CoreUI(navToGameSetup: () -> Unit, previewProfile: (id: String) -> Unit) {
         state.profile?.let {
             if (it.handle.isNullOrEmpty()) {
                 backStack.clear()
-                backStack.add(Graphs.Core.SetupAccount)
+                backStack.add(Graphs.Core.EditProfile)
             }
         }
     }
@@ -117,32 +115,10 @@ fun CoreUI(navToGameSetup: () -> Unit, previewProfile: (id: String) -> Unit) {
                     bio = state.bio,
                     onBioChange = { viewmodel.handleIntent(CoreIntent.ChangeBio(it)) },
                     result = state.result,
-                )
-            }
-            entry<Graphs.Core.SetupAccount> {
-                SetupAccountScreen(
-//                    navBack = {
-//                        if (backStack.size > 1)
-//                            backStack.removeLast()
-//                    },
-                    save = {
-                        viewmodel.handleIntent(CoreIntent.UpdateProfile)
-                    },
-                    saveEnables = state.saveEnabled,
-                    avatar = state.avatarPath + "?v=" + state.avatarVersion,
-                    changeAvatar = {
-                        viewmodel.handleIntent(CoreIntent.ChangeAvatar(it))
-                    },
-                    name = state.displayName,
-                    onNameChange = { viewmodel.handleIntent(CoreIntent.ChangeName(it)) },
-                    handle = state.handle,
-                    onHandleChange = { viewmodel.handleIntent(CoreIntent.ChangeHandle(it)) },
-                    handleErrorMessage = if (state.handle.isEmpty() || !state.handleAvailable) stringResource(
-                        Res.string.handle_error
-                    ) else null,
-                    bio = state.bio,
-                    onBioChange = { viewmodel.handleIntent(CoreIntent.ChangeBio(it)) },
-                    result = state.result
+                    cover = state.profile?.cover + "",
+                    changeCover = {
+                        viewmodel.handleIntent(CoreIntent.ChangeCover(it))
+                    }
                 )
             }
         }

@@ -11,4 +11,5 @@ interface CoreRepository {
     suspend fun updateProfile(profile: Player)
 
     suspend fun updateAvatar(avatar : ByteArray, currentV : Int)
+    suspend fun updateCover(cover : ByteArray, currentV : Int)
 }

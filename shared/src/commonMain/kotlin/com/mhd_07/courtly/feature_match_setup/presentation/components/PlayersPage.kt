@@ -49,7 +49,7 @@ import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.add_player
 import courtly.shared.generated.resources.add_square_outline
 import courtly.shared.generated.resources.remove_player
-import courtly.shared.generated.resources.user_outline
+import courtly.shared.generated.resources.user_bold
 import courtly.shared.generated.resources.x
 import org.jetbrains.compose.resources.painterResource
 
@@ -157,7 +157,7 @@ fun PlayersPage(
                                             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
                                         ) {
                                             Icon(
-                                                painter = painterResource(Res.drawable.user_outline),
+                                                painter = painterResource(Res.drawable.user_bold),
                                                 contentDescription = null,
                                                 modifier = Modifier.size(dimensions.xxLarge)
                                                     .clip(CircleShape)
@@ -173,7 +173,9 @@ fun PlayersPage(
                                                 bio = "",
                                                 avatar = null,
                                                 avatarVersion = 0,
-                                                isRemote = false
+                                                isRemote = false,
+                                                cover = null,
+                                                coverVersion = 0
                                             )
                                         )
                                         onSearchPlayer("")
@@ -318,7 +320,7 @@ fun PlayerAvatar(
             .clip(CircleShape),
         error = {
             Icon(
-                painter = painterResource(Res.drawable.user_outline),
+                painter = painterResource(Res.drawable.user_bold),
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize()
             )

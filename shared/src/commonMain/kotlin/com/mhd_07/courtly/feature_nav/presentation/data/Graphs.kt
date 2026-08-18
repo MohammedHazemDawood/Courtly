@@ -38,8 +38,6 @@ sealed interface Graphs : NavKey {
         @Serializable
         data object EditProfile : Graphs, NavKey
 
-        @Serializable
-        data object SetupAccount : Graphs, NavKey
     }
 
     @Serializable

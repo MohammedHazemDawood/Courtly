@@ -24,5 +24,7 @@ fun RemotePlayer.toPlayer() = Player(
     bench = bench,
     visibility = Visibility.Public,
     location = "",
-    isRemote = is_remote
+    isRemote = is_remote,
+    cover = null,
+    coverVersion = 0
 )

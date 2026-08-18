@@ -7,6 +7,8 @@ data class CoreState(
     val profile: Player? = null,
     val avatarPath : String? = null,
     val avatarVersion : Int = 0,
+    val cover : String? = null,
+    val coverVersion : Int = 0,
     val handle : String = "",
     val displayName : String = "",
     val bio : String = "",

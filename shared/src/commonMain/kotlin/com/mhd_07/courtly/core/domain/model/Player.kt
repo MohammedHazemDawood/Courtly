@@ -11,6 +11,8 @@ data class Player(
     val handle : String?,
     val name : String,
     val avatar : String?,
+    val cover : String?,
+    val coverVersion : Int,
     val bio : String,
     val avatarVersion : Int,
     val bench : Boolean = true,

@@ -17,4 +17,5 @@ data class Dimensions(
     val xxLarge: Dp = 48.dp,
     val xxxLarge: Dp = 56.dp,
     val xxxxLarge: Dp = 64.dp,
+    val huge : Dp = 120.dp
 )

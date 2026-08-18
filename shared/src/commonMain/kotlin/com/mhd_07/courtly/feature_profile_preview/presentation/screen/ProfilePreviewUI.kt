@@ -1,4 +1,4 @@
-package com.mhd_07.courtly.feature_profile_preview.presentation
+package com.mhd_07.courtly.feature_profile_preview.presentation.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

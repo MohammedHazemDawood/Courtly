@@ -22,7 +22,7 @@ import com.mhd_07.courtly.feature_match_setup.presentation.screens.MatchSetupUI
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import com.mhd_07.courtly.feature_nav.presentation.data.UserSelectionType
 import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
-import com.mhd_07.courtly.feature_profile_preview.presentation.ProfilePreviewUI
+import com.mhd_07.courtly.feature_profile_preview.presentation.screen.ProfilePreviewUI
 import com.mhd_07.courtly.feature_sign.presentation.screen.SignUI
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.ktor.http.Url

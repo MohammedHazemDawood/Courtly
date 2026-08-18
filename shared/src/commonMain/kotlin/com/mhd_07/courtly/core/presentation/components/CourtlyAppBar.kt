@@ -37,6 +37,7 @@ import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.alt_arrow_left_outline
 import courtly.shared.generated.resources.alt_arrow_right_outline
 import courtly.shared.generated.resources.back
+import courtly.shared.generated.resources.user_bold
 
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -217,7 +218,7 @@ fun CourtlyAppBar(
 @Composable
 fun CourtlyAppBar(
     modifier: Modifier = Modifier,
-    startingModifier: Modifier = Modifier,
+//    startingModifier: Modifier = Modifier,
     title: String,
     titleColor: Color = MaterialTheme.colorScheme.onBackground,
     startingIcon: Any?,
@@ -257,12 +258,28 @@ fun CourtlyAppBar(
 //                    placeholder = rememberVectorPainter(placeHolder),
                     contentScale = ContentScale.Crop,
                     error = {
-                        Icon(
-                            placeHolder,
-                            contentDescription = startingDescription,
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.fillMaxSize().padding(dimensions.xSmall)
-                        )
+                        Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(dimensions.xSmall),
+                                painter = painterResource(Res.drawable.user_bold),
+                                tint = Color.DarkGray,
+                                contentDescription = null
+                            )
+                        }
+                    },
+                    loading = {
+                        Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
+                            Icon(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(dimensions.xSmall) ,
+                                tint = Color.DarkGray,
+                                painter = painterResource(Res.drawable.user_bold),
+                                contentDescription = null
+                            )
+                        }
                     },
                     modifier = Modifier.clip(CircleShape)
                         .border(dimensions.xxSmall, MaterialTheme.colorScheme.primary, CircleShape)
