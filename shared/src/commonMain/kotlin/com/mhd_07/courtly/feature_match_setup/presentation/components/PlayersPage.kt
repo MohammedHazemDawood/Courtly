@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -76,7 +77,6 @@ fun PlayersPage(
     DisposableEffect(isVisible) {
         onDispose {
             onSearchPlayer("")
-            searching = false
         }
     }
     Column(
@@ -104,7 +104,6 @@ fun PlayersPage(
                 )
             }
             item {
-
                 // Search Section
                 AnimatedVisibility(
                     visible = searching,
@@ -146,7 +145,7 @@ fun PlayersPage(
                         ExposedDropdownMenu(
                             expanded = searching,
                             onDismissRequest = { },
-                            shape = MaterialTheme.shapes.medium.copy(topEnd = CornerSize(0.dp), topStart = CornerSize(0.dp))
+                            shape = MaterialTheme.shapes.medium.copy(topEnd = CornerSize(0.dp), topStart = CornerSize(0.dp)),
                         ) {
                             // Option to add as a custom player (if text is typed)
                             if (searchText.isNotBlank()) {
@@ -185,7 +184,8 @@ fun PlayersPage(
                             }
 
                             // Existing search results
-                            searchResults.forEach { (player, available) ->
+                            searchResults.onEachIndexed { index, (player, available) ->
+                                Spacer(modifier = Modifier.size(dimensions.xSmall))
                                 DropdownMenuItem(
                                     text = {
                                         PlayerRowContent(player = player)
@@ -294,7 +294,7 @@ fun PlayerRowContent(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
     ) {
-        PlayerAvatar(avatarUrl = player.avatar)
+        PlayerAvatar(avatarUrl = player.avatar + "?v=" + player.avatarVersion)
         Column {
             Text(text = player.name)
             player.handle?.let {

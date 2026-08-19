@@ -3,6 +3,7 @@ import com.mhd_07.courtly.core.domain.model.MatchMode
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.MatchType
 import com.mhd_07.courtly.feature_match.data.model.RemotePlayer
+import com.mhd_07.courtly.feature_match.data.model.RemoteSet
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
@@ -36,5 +37,6 @@ data class SetupRequest(
 	val status: MatchStatus,
 	val mode: MatchMode,
 	val best_of: Int,
+	val sets : List<RemoteSet>
 //	val ball_half: HCourtSide,
 )

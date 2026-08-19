@@ -2,6 +2,7 @@ package com.mhd_07.courtly.feature_match_setup.data.mapper
 
 import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.feature_match.data.mapper.toRemote
+import com.mhd_07.courtly.feature_match.domain.model.Set
 import com.mhd_07.courtly.feature_match_setup.data.model.SetupRequest
 import com.mhd_07.courtly.feature_match_setup.domain.model.Setup
 
@@ -17,5 +18,6 @@ fun Setup.toRequest(hostId: String): SetupRequest = SetupRequest(
     status = status,
     mode = mode,
     best_of = bestOf,
+    sets = listOf(Set().toRemote())
 //    ball_half = ballHalf
 )

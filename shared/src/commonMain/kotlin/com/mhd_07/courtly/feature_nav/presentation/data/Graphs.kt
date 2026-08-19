@@ -1,13 +1,23 @@
 package com.mhd_07.courtly.feature_nav.presentation.data
 
 import androidx.navigation3.runtime.NavKey
+import com.mhd_07.courtly.core.domain.model.Player
 import kotlinx.serialization.Serializable
 
 @Serializable
 sealed interface Graphs : NavKey {
 
     @Serializable
-    data class ProfilePreview(val key: String, val type : UserSelectionType = UserSelectionType.Id) : Graphs, NavKey
+    data class ProfilePreview(val key: String, val type : UserSelectionType = UserSelectionType.Id) : Graphs, NavKey{
+        @Serializable
+        data class Profile(val id: String?) : Graphs, NavKey
+
+        @Serializable
+        data object Settings : Graphs, NavKey
+
+        @Serializable
+        data object EditProfile : Graphs, NavKey
+    }
 
     @Serializable
     data object Splash : Graphs, NavKey
@@ -28,16 +38,6 @@ sealed interface Graphs : NavKey {
     data object Core : Graphs, NavKey {
         @Serializable
         data object Home : Graphs, NavKey
-
-        @Serializable
-        data object Profile : Graphs, NavKey
-
-        @Serializable
-        data object Settings : Graphs, NavKey
-
-        @Serializable
-        data object EditProfile : Graphs, NavKey
-
     }
 
     @Serializable

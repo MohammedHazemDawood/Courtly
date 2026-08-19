@@ -39,11 +39,17 @@ import courtly.shared.generated.resources.select_player_description
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
-fun EnsureBackDialog(
+fun EnsureDialog(
     visible: Boolean,
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    title: String,
+    description: String,
+    confirmText: String,
+    cancelText: String,
+    additionalActionText : String? = null,
+    additionalAction : (() -> Unit) = {}
 ) {
     val dimensions = LocalDimensions.current
     if (visible)
@@ -61,13 +67,13 @@ fun EnsureBackDialog(
                     verticalArrangement = Arrangement.spacedBy(dimensions.small)
                 ) {
                     Text(
-                        text = stringResource(Res.string.ensure_quit_title),
+                        text = title,
                         style = titleTextStyle,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = dimensions.small),
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = stringResource(Res.string.ensure_quit),
+                        text = description,
                         modifier = Modifier.fillMaxWidth().padding(horizontal = dimensions.small),
                         textAlign = TextAlign.Center
                     )
@@ -76,13 +82,23 @@ fun EnsureBackDialog(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        additionalActionText?.let {
+                            HorizontalDivider()
+                            TextButton(
+                                onClick = additionalAction,
+                                shape = RectangleShape,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(text = additionalActionText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                            }
+                        }
                         HorizontalDivider()
                         TextButton(
                             onClick = onConfirm,
                             shape = RectangleShape,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = stringResource(Res.string.quit))
+                            Text(text = confirmText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                         }
                         HorizontalDivider()
                         TextButton(
@@ -90,7 +106,7 @@ fun EnsureBackDialog(
                             shape = RectangleShape,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = stringResource(Res.string.cancel))
+                            Text(text = cancelText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
                         }
 //                    Spacer(modifier = Modifier)
                     }
@@ -101,14 +117,18 @@ fun EnsureBackDialog(
 
 @Preview
 @Composable
-fun EnsureBackDialogPreview() {
+fun EnsureDialogPreview() {
     CourtlyTheme(darkTheme = true) {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            EnsureBackDialog(
+            EnsureDialog(
 //                modifier = Modifier.fillMaxWidth().padding(16.dp),
                 onDismiss = {},
                 onConfirm = {},
-                visible = true
+                visible = true,
+                title = "",
+                description = "",
+                confirmText = "",
+                cancelText = ""
             )
         }
     }
@@ -208,11 +228,12 @@ fun PlayerRow(
                 modifier = Modifier.height(dimensions.xxLarge),
                 name = name,
                 avatar = avatar,
-                borderWidth = dimensions.default/*, modifier = Modifier.weight(1f)*/
+//                borderWidth = dimensions.default/*, modifier = Modifier.weight(1f)*/
             )
             Column(verticalArrangement = Arrangement.spacedBy(dimensions.xxSmall)) {
                 Text(text = name)
-                Text(text = "@$handle", style = notesTextStyle)
+                if (handle.isNotEmpty())
+                    Text(text = "@$handle", style = notesTextStyle)
             }
         }
     }

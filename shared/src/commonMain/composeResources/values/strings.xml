@@ -38,6 +38,9 @@
     <string name="follow_you">Following You</string>
     <string name="cannot_find_user">Cannot Find This User</string>
 
+    <string name="permission_camera_rational">Camera Access Required</string>
+    <string name="permission_camera_rational_description">Courtly needs camera access to let you update your Profile Picture. We never snap photos without your direct input.</string>
+    <string name="open_settings">Continue To Settings</string>
     <!-- Match Tracking -->
     <string name="playing">On Court</string>
     <string name="bench">Benched</string>

@@ -22,7 +22,7 @@ import com.mhd_07.courtly.feature_match_setup.presentation.screens.MatchSetupUI
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import com.mhd_07.courtly.feature_nav.presentation.data.UserSelectionType
 import com.mhd_07.courtly.feature_nav.presentation.viemodel.NavViewModel
-import com.mhd_07.courtly.feature_profile_preview.presentation.screen.ProfilePreviewUI
+import com.mhd_07.courtly.feature_profile.presentation.screen.ProfilePreviewUI
 import com.mhd_07.courtly.feature_sign.presentation.screen.SignUI
 import io.github.jan.supabase.auth.status.SessionStatus
 import io.ktor.http.Url
@@ -83,20 +83,22 @@ fun AppNavigator(deepsLink: String? = null) {
                 SignUI()
             }
             entry<Graphs.Core> {
-                CoreUI({ backStack.add(Graphs.MatchSetup) }) {
-                    backStack.add(Graphs.ProfilePreview(it))
-                }
+                CoreUI(
+                    navToGameSetup = { backStack.add(Graphs.MatchSetup) },
+                    previewProfile = {
+                        backStack.add(Graphs.ProfilePreview(it))
+                    },
+                    navToMatch = {
+                        backStack.add(Graphs.Match(it))
+                    },
+                    setupScreen = {},
+                    navToProfile = { backStack.add(Graphs.ProfilePreview(it, UserSelectionType.Id)) }
+                )
             }
             entry<Graphs.Match> { key ->
-                /*MatchUI {
-                    if (backStack.size > 1) {
-                        backStack.clear()
-                        backStack.add(Graphs.Core)
-                    }
-                }*/
                 MatchUI(key.id) {
                     if (backStack.size > 1)
-                        backStack.removeLast()
+                        backStack.removeAt(backStack.lastIndex)
                 }
             }
             entry<Graphs.Splash> {
@@ -106,10 +108,10 @@ fun AppNavigator(deepsLink: String? = null) {
                 MatchSetupUI(
                     navBack = {
                         if (backStack.size > 1)
-                            backStack.removeLast()
+                            backStack.removeAt(backStack.lastIndex)
                     },
                     navToGameRecord = { id ->
-                        backStack.removeLast()
+                        backStack.removeAt(backStack.lastIndex)
                         backStack.add(Graphs.Match(id))
                     }
                 )
@@ -120,11 +122,11 @@ fun AppNavigator(deepsLink: String? = null) {
                     type = key.type,
                     navBack = {
                         if (backStack.size > 1)
-                            backStack.removeLast()
+                            backStack.removeAt(backStack.lastIndex)
                     },
-                    previewProfile = { player ->
-                        backStack.add(Graphs.ProfilePreview(player.id))
-                    }
+                    navToMatch = {
+                        backStack.add(Graphs.Match(it))
+                    },
                 )
             }
         }

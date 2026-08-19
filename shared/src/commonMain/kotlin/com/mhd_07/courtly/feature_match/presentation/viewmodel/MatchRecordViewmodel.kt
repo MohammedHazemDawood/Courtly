@@ -33,13 +33,18 @@ class MatchRecordViewmodel(
         viewModelScope.launch {
             getMatch(matchId).let { match ->
                 _state.update { it.copy(match = match) }
-//                println("Match: $match")
+                timeLineManager = TimeLineManager(Match.initial.copy(
+                    id = match.id,
+                    createdAt = match.createdAt,
+                    hostId = match.hostId,
+                    team1 = match.team1,
+                    team2 = match.team2,
+                    rules = match.rules,
+                ), _state.value.match.timeLine, ::reducer)
             }
-            timeLineManager = TimeLineManager(_state.value.match, ::reducer)
-//            if (_state.value.match.status == MatchStatus.Coming) {
             _state.update {
                 it.copy(
-                    match = timeLineManager.start(),
+                    match = if (_state.value.match.status == MatchStatus.Coming) timeLineManager.start() else it.match,
                     undoEnabled = timeLineManager.undoAvailable,
                     redoEnabled = timeLineManager.redoAvailable
                 )
@@ -57,6 +62,7 @@ class MatchRecordViewmodel(
                     MatchIntent.Redo -> timeLineManager.redo()
                     is MatchIntent.Team1Point -> timeLineManager.pointTeam1(intent.player)
                     is MatchIntent.Team2Point -> timeLineManager.pointTeam2(intent.player)
+                    MatchIntent.FinishMatch -> timeLineManager.finish()
                 }
                 syncToRemote(updatedMatch)
                 _state.update {
@@ -75,28 +81,36 @@ class MatchRecordViewmodel(
             update(match)
         } catch (e: PostgrestRestException) {
             println("Error sync: ${e.message}")
+            println("Error sync, match: $match")
             _state.update { it.copy(result = RemoteResult.Error(getPostgrestError(e.code))) }
         } catch (e: Exception) {
             println("Error sync: ${e.message}")
+            println("Error sync, match: $match")
             _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
         }
     }
 
-    private fun reducer(state: Match, event: Event): Match {
-        return when (event) {
-            is Event.Team1Point -> state.pointTeam1()
-            is Event.Team2Point -> state.pointTeam2()
-            is Event.Team1GameWin -> state.winGameTeam1()
-            is Event.Team2GameWin -> state.winGameTeam2()
-            is Event.Team1SetWin -> state.winSetTeam1()
-            is Event.Team2SetWin -> state.winSetTeam2()
-            is Event.Team1Won -> state.winMatchTeam1()
-            is Event.Team2Won -> state.winMatchTeam2()
-            is Event.Start -> state.copy(
-                status = MatchStatus.Live,
-                startedAt = Clock.System.now(),
-                sets = persistentListOf(Set()),
-            ).sortPlayers()
+        private fun reducer(state: Match, event: Event): Match {
+            return when (event) {
+                is Event.Team1Point -> state.pointTeam1()
+                is Event.Team2Point -> state.pointTeam2()
+                is Event.Team1GameWin -> state.winGameTeam1()
+                is Event.Team2GameWin -> state.winGameTeam2()
+                is Event.Team1SetWin -> state.winSetTeam1()
+                is Event.Team2SetWin -> state.winSetTeam2()
+                is Event.Team1Won -> state.winMatchTeam1()
+                is Event.Team2Won -> state.winMatchTeam2()
+                is Event.Start -> state.copy(
+                    status = MatchStatus.Live,
+                    startedAt = event.createdAt,
+                    winner = null, // Clear winner on Start/Replay
+                    doneAt = null  // Clear doneAt on Start/Replay
+                ).sortPlayers()
+
+                is Event.Done -> state.copy(
+                    doneAt = event.createdAt,
+                    status = MatchStatus.Finished
+                )
+            }
         }
-    }
 }

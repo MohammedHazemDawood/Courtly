@@ -128,6 +128,8 @@ kotlin {
 
 
             implementation(libs.compose.shimmer)
+
+            implementation(libs.confettikit)
 //            implementation(libs.animation)
 
 

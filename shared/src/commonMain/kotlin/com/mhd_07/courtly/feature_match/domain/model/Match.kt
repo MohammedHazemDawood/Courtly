@@ -150,11 +150,11 @@ data class Match(
     }
 
     fun winMatchTeam1(): Match {
-        return copy(winner = Side.Team1, status = MatchStatus.Finished, doneAt = Clock.System.now())
+        return copy(winner = Side.Team1)
     }
 
     fun winMatchTeam2(): Match {
-        return copy(winner = Side.Team1, status = MatchStatus.Finished, doneAt = Clock.System.now())
+        return copy(winner = Side.Team2)
     }
 
     fun sortPlayers(): Match {

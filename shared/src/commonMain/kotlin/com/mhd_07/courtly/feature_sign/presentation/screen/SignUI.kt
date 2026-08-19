@@ -68,7 +68,7 @@ fun SignUI() {
                 MailPasswordSignScreen(
                     navBack = {
                         if (backStack.size > 1)
-                            backStack.removeLast()
+                            backStack.removeAt(backStack.lastIndex)
                     },
                     mail = state.email,
                     password = state.password,
@@ -98,7 +98,7 @@ fun SignUI() {
                         viewmodel.handleIntent(SignIntent.EditOTP(it))
                     }, navBack = {
                         if (backStack.size > 1)
-                            backStack.removeLast()
+                            backStack.removeAt(backStack.lastIndex)
                     }, snackbarHostState = hostState
                 )
             }

@@ -1,5 +1,10 @@
 package com.mhd_07.courtly.feature_match.presentation.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -56,7 +61,7 @@ import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match.domain.model.Match
 import com.mhd_07.courtly.feature_match.domain.model.MatchIntent
 import com.mhd_07.courtly.feature_match.presentation.components.Court
-import com.mhd_07.courtly.feature_match.presentation.components.EnsureBackDialog
+import com.mhd_07.courtly.feature_match.presentation.components.EnsureDialog
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerAvatar
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerNamesText
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerSelectDialog
@@ -66,14 +71,22 @@ import com.mhd_07.courtly.feature_match.presentation.viewmodel.MatchPreviewViewm
 import com.mhd_07.courtly.feature_match.presentation.viewmodel.MatchRecordViewmodel
 import com.mhd_07.courtly.feature_nav.presentation.data.Graphs
 import courtly.shared.generated.resources.Res
+import courtly.shared.generated.resources.cancel
+import courtly.shared.generated.resources.ensure_quit
 import courtly.shared.generated.resources.finished
 import courtly.shared.generated.resources.live
+import courtly.shared.generated.resources.quit
 import courtly.shared.generated.resources.redo
 import courtly.shared.generated.resources.undo
 import courtly.shared.generated.resources.undo_left_outline
 import courtly.shared.generated.resources.undo_right_outline
 import courtly.shared.generated.resources.upcoming
-import kotlinx.collections.immutable.persistentListOf
+import io.github.vinceglb.confettikit.compose.ConfettiKit
+import io.github.vinceglb.confettikit.core.Angle
+import io.github.vinceglb.confettikit.core.Party
+import io.github.vinceglb.confettikit.core.Position
+import io.github.vinceglb.confettikit.core.Spread
+import io.github.vinceglb.confettikit.core.emitter.Emitter
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.jetbrains.compose.resources.getString
@@ -81,9 +94,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.collections.emptyList
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -104,14 +117,6 @@ fun MatchUI(
             }
         }
     }, Graphs.Match.Preview)
-
-    LaunchedEffect(isMine) {
-        if (isMine)
-            backStack.add(Graphs.Match.Record)
-        else
-            backStack.add(Graphs.Match.Preview)
-    }
-
     NavDisplay(
         backStack,
         transitionSpec = { pushTransform },
@@ -123,12 +128,6 @@ fun MatchUI(
                     parametersOf(id)
                 }
                 val state by viewmodel.state.collectAsStateWithLifecycle()
-                LaunchedEffect(state.match.status, state.match.doneAt) {
-                    if (state.match.status == MatchStatus.Finished && state.match.doneAt != null && Clock.System.now()
-                            .minus(state.match.doneAt!!) < 5.minutes && backStack.size > 1
-                    )
-                        backStack.removeLast()
-                }
                 MatchScreen(
                     match = state.match,
                     isUndoAvailable = state.undoEnabled,
@@ -140,7 +139,7 @@ fun MatchUI(
                     onPointTeam2 = { viewmodel.handleIntent(MatchIntent.Team2Point(it)) },
                     result = state.result,
                     navBack = navBack,
-                    finishMatch = {}
+                    finishMatch = { viewmodel.handleIntent(MatchIntent.FinishMatch) }
                 )
             }
             entry<Graphs.Match.Preview> {
@@ -148,6 +147,16 @@ fun MatchUI(
                     parametersOf(id)
                 }
                 val state by viewmodel.state.collectAsStateWithLifecycle()
+                LaunchedEffect(state.status, state.doneAt, isMine) {
+//                    val isFinished = state.status == MatchStatus.Finished
+                    val isExpired =
+                        state.doneAt?.let { Clock.System.now() - it > 5.minutes } ?: false
+
+                    if (isMine && !isExpired) {
+                        backStack.clear()
+                        backStack.add(Graphs.Match.Record)
+                    }
+                }
                 MatchScreen(
                     match = state,
                     isUndoAvailable = false,
@@ -197,7 +206,10 @@ fun MatchScreen(
     val scope = rememberCoroutineScope()
 
     BackHandler(scope) {
-        quitRequested = !quitRequested
+        if (!isMine)
+            navBack()
+        else if (match.status != MatchStatus.Finished && isMine)
+            quitRequested = !quitRequested
     }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -222,7 +234,12 @@ fun MatchScreen(
                 dotVisible = match.status == MatchStatus.Live,
                 backVisible = true,
                 titleColor = if (match.status != MatchStatus.Live) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.error,
-                onBackClick = { quitRequested = !quitRequested },
+                onBackClick = {
+                    if (!isMine)
+                        navBack()
+                    else if (match.status != MatchStatus.Finished && isMine)
+                        quitRequested = !quitRequested
+                },
                 actions = if (isMine) arrayOf(
                     ActionIcon(
                         painterResource(if (direction == LayoutDirection.Ltr) Res.drawable.undo_left_outline else Res.drawable.undo_right_outline),
@@ -267,12 +284,28 @@ fun MatchScreen(
         }
     ) { innerPadding ->
 
-        EnsureBackDialog(
-            visible = quitRequested,
+        if (match.status == MatchStatus.Finished && match.winner != null)
+            ConfettiKit(
+                modifier = Modifier.fillMaxSize(),
+                parties = rain(),
+            )
+        EnsureDialog(
+            visible = quitRequested && isMine,
             onDismiss = { quitRequested = false },
+            cancelText = stringResource(Res.string.cancel),
+
             onConfirm = {
                 finishMatch()
-                navBack
+                navBack()
+            },
+            confirmText = "Finish This Match",
+
+            title = stringResource(Res.string.quit),
+            description = stringResource(Res.string.ensure_quit),
+
+            additionalActionText = "Suspend this match until you get back",
+            additionalAction = {
+                navBack()
             }
         )
 
@@ -311,7 +344,7 @@ fun MatchScreen(
         Column(
             modifier = Modifier.fillMaxSize().padding(innerPadding).padding(dimensions.small),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween//spacedBy(dimensions.medium)
+            verticalArrangement = Arrangement.spacedBy(dimensions.medium)
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -365,12 +398,14 @@ fun MatchScreen(
                         }
                     }
                     TeamSetsRow(
+                        modifier = Modifier.padding(start = dimensions.xSmall),
                         sets = match.sets.map { it.team1Games },
                         bestOf = match.rules.bestOf,
                         currentSetIndex = match.currentSetIndex,
                         currentGameScore = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team1Score
                             ?: Score.Zero,
-                        isPlaying = match.winner == null
+                        isPlaying = match.winner == null,
+                        isWinner = match.winner == Side.Team1
                     )
                 }
 
@@ -422,12 +457,14 @@ fun MatchScreen(
                         }
                     }
                     TeamSetsRow(
+                        modifier = Modifier.padding(start = dimensions.xSmall),
                         sets = match.sets.map { it.team2Games },
                         bestOf = match.rules.bestOf,
                         currentSetIndex = match.currentSetIndex,
                         currentGameScore = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team2Score
                             ?: Score.Zero,
-                        isPlaying = match.winner == null//TODO CHANGE TO is LIVE
+                        isPlaying = match.winner == null,
+                        isWinner = match.winner == Side.Team2
                     )
                 }
             }
@@ -441,7 +478,11 @@ fun MatchScreen(
                 win = match.winner != null
             )
 
-            if (isMine)
+            AnimatedVisibility(
+                visible = isMine && match.status != MatchStatus.Finished,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(dimensions.small),
@@ -489,6 +530,22 @@ fun MatchScreen(
                         }
                     }
                 }
+            }
         }
     }
+}
+
+fun rain(): List<Party> {
+    return listOf(
+        Party(
+            speed = 0f,
+            maxSpeed = 15f,
+            damping = 0.9f,
+            angle = Angle.BOTTOM,
+            spread = Spread.ROUND,
+            colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
+            emitter = Emitter(duration = 3.5.seconds).perSecond(100),
+            position = Position.Relative(0.0, 0.0).between(Position.Relative(1.0, 0.0))
+        )
+    )
 }

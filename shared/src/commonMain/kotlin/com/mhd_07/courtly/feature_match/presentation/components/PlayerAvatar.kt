@@ -14,7 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,7 +28,7 @@ fun PlayerAvatar(
     name :  String,
     modifier: Modifier = Modifier,
     contentPadding: Dp = 16.dp,
-    borderWidth: Dp = 4.dp,
+//    borderWidth: Dp = 4.dp,
     borderColor: Color = MaterialTheme.colorScheme.background
 ) {
     val initials = remember(name) { name.getInitials() }
@@ -55,7 +57,13 @@ fun PlayerAvatar(
             }
         },
         contentScale = ContentScale.Crop,
-        modifier = modifier.aspectRatio(1f).clip(CircleShape).border(borderWidth, borderColor, CircleShape)
+        modifier = modifier.aspectRatio(1f).drawWithContent{
+            drawContent()
+            drawCircle(
+                color = borderColor,
+                style = Stroke(width = 5f)
+            )
+        }.clip(CircleShape)
     )
 
 }

@@ -32,12 +32,13 @@ fun TeamSetsRow(
     currentSetIndex: Int,
     currentGameScore: Score,
     modifier: Modifier = Modifier,
-    isPlaying: Boolean = true
+    isPlaying: Boolean = true,
+    isWinner: Boolean
 ) {
     val dimensions = LocalDimensions.current
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
+        horizontalArrangement = Arrangement.spacedBy(dimensions.xxSmall),
         modifier = modifier
     ) {
         sets.completeTo(bestOf, 0)
@@ -55,7 +56,7 @@ fun TeamSetsRow(
                         modifier = Modifier.fillMaxWidth()
                             .fillMaxWidth().then(
                                 Modifier.height(dimensions.xxSmall).background(
-                                    color = if (index == currentSetIndex) MaterialTheme.colorScheme.primary else Color.Transparent,
+                                    color = if ((index == currentSetIndex && isPlaying)|| isWinner) MaterialTheme.colorScheme.primary else Color.Transparent,
                                     shape = CircleShape
                                 )
                             )

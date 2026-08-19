@@ -66,4 +66,7 @@ sealed interface Event {
     @Serializable
     data class Team2Won(override val createdAt: Instant = Clock.System.now()) : Event
 
+    @Serializable
+    data class Done(override val createdAt: Instant = Clock.System.now()) : Event
+
 }

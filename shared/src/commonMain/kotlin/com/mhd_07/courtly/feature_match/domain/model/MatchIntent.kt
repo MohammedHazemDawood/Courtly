@@ -7,4 +7,6 @@ sealed interface MatchIntent {
     object Redo : MatchIntent
     data class Team1Point(val player: Player) : MatchIntent
     data class Team2Point(val player: Player) : MatchIntent
+
+    data object FinishMatch : MatchIntent
 }

@@ -3,7 +3,7 @@ package com.mhd_07.courtly.feature_match.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mhd_07.courtly.feature_match.domain.usecase.GetMatchUseCase
-import com.mhd_07.courtly.feature_profile_preview.domain.usecase.GetUserId
+import com.mhd_07.courtly.feature_profile.domain.usecase.GetUserId
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

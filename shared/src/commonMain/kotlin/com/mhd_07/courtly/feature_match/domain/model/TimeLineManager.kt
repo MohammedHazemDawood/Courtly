@@ -8,12 +8,28 @@ import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlin.time.Clock
 
-class TimeLineManager(
-    private val initialState: Match,
-    private val reducer: (Match, Event) -> Match
-) {
-    private val events: MutableList<Event> = mutableListOf()
+class TimeLineManager {
+    private val events: MutableList<Event>
     private var cursor: Int = -1
+
+    private val initialState: Match
+    private val reducer: (Match, Event) -> Match
+
+    constructor(
+        initialState: Match,
+        initialEvents: List<Event> = listOf(),
+        reducer: (Match, Event) -> Match
+    ) {
+        events = initialEvents.toMutableList()
+        this.initialState = initialState
+        this.reducer = reducer
+        cursor = initialEvents.size - 1
+
+        println("Initial state: $initialState")
+        println("Initial events: $initialEvents")
+        println("Events: $events")
+        println("Cursor: $cursor")
+    }
 
     val undoAvailable: Boolean
         get() = cursor >= 0
@@ -32,6 +48,7 @@ class TimeLineManager(
         Event.Team2GameWin::class,
         Event.Team1SetWin::class,
         Event.Team2SetWin::class,
+        Event.Done::class
     )
 
     fun push(event: Event): Match {
@@ -137,13 +154,19 @@ class TimeLineManager(
         val target = (match.rules.bestOf / 2) + 1
         if (match.team1Sets == target) {
             push(Event.Team1Won())
+            push(Event.Done())
         } else if (match.team2Sets == target) {
             push(Event.Team2Won())
+            push(Event.Done())
         }
     }
 
     fun start(): Match {
         return push(Event.Start())
+    }
+
+    fun finish(): Match {
+        return push(Event.Done())
     }
 
     fun undo(): Match {

@@ -4,110 +4,249 @@
       banner: {
         width: "parent",
         height: "3:1",
-        start: ['parent', 'start'],
-        end: ['parent', 'end'],
-        top: ['parent', 'top']
+        start: [
+          'parent',
+          'start'
+        ],
+        end: [
+          'parent',
+          'end'
+        ],
+        top: [
+          'parent',
+          'top'
+        ]
       },
-
       back_btn: {
-        top: ['banner', 'top'],
-        start: ['parent', 'start']
+        top: [
+          'banner',
+          'top'
+        ],
+        start: [
+          'parent',
+          'start'
+        ]
       },
-
       pfp: {
         width: 120,
         height: 120,
-        start: ['parent', 'start', 16],
-        bottom: ['banner', 'bottom', -80]
+        start: [
+          'parent',
+          'start',
+          16
+        ],
+        bottom: [
+          'banner',
+          'bottom',
+          -80
+        ]
       },
-
       action: {
-        top: ['banner', 'bottom', 16],
-        end: ['parent', 'end', 16]
+        top: [
+          'banner',
+          'bottom',
+          16
+        ],
+        end: [
+          'parent',
+          'end',
+          16
+        ]
       },
-
       badge: {
-        top: ['handle', 'top'],
-        bottom: ['handle', 'bottom'],
-        start : ['handle', 'end', 8]
+        top: [
+          'handle',
+          'top'
+        ],
+        bottom: [
+          'handle',
+          'bottom'
+        ],
+        start: [
+          'handle',
+          'end',
+          8
+        ]
       },
-
       name: {
-        top: ['pfp', 'bottom', 16],
-        start: ['parent', 'start', 16],
-        end: ['action', 'start', 16],
+        top: [
+          'pfp',
+          'bottom',
+          16
+        ],
+        start: [
+          'parent',
+          'start',
+          16
+        ],
+        end: [
+          'action',
+          'start',
+          16
+        ],
         hBias: 0.0
-//        width: 'spread'
+        //        width: 'spread'
       },
-
       handle: {
-        top: ['name', 'bottom', 4],
-        start: ['parent', 'start', 16],
-//        end : ['name', 'end'],
-//        width: '50%',
+        top: [
+          'name',
+          'bottom',
+          4
+        ],
+        start: [
+          'parent',
+          'start',
+          16
+        ],
+        //        end : ['name', 'end'],
+        //        width: '50%',
       }
     },
-
     end: {
       banner: {
         width: 'parent',
-        height: 'spread', // Standard top app bar height
-        start: ['parent', 'start'],
-        end: ['parent', 'end'],
-        top: ['parent', 'top'],
-        bottom : ['handle', 'bottom', -16]
+        height: 'spread',
+        // Standard top app bar height
+        start: [
+          'parent',
+          'start'
+        ],
+        end: [
+          'parent',
+          'end'
+        ],
+        top: [
+          'parent',
+          'top'
+        ],
+        bottom: [
+          'handle',
+          'bottom',
+          -16
+        ]
       },
       back_btn: {
-        start: ['banner', 'start'],
-        top: ['name', 'top'],
-        bottom: ['handle', 'bottom']
+        start: [
+          'banner',
+          'start'
+        ],
+        top: [
+          'name',
+          'top'
+        ],
+        bottom: [
+          'handle',
+          'bottom'
+        ]
       },
       name: {
-        top: ['banner', 'top'],
-        bottom: ['banner', 'bottom'],
-        start: ['back_btn', 'end', 16],
-        end: ['action', 'start', 16],
+        top: [
+          'banner',
+          'top'
+        ],
+        bottom: [
+          'banner',
+          'bottom'
+        ],
+        start: [
+          'back_btn',
+          'end',
+          16
+        ],
+        end: [
+          'action',
+          'start',
+          16
+        ],
+        width: 'spread',
         hBias: 0.0
       },
       action: {
-        top: ['name', 'top'],
-        end: ['banner', 'end', 16],
-        bottom: ['handle', 'bottom']
+        top: [
+          'name',
+          'top'
+        ],
+        end: [
+          'banner',
+          'end',
+          16
+        ],
+        bottom: [
+          'handle',
+          'bottom'
+        ]
       },
       handle: {
-        top: ['name', 'bottom', 4],
-        start: ['back_btn', 'end', 16],
-//        end : ['name', 'end'],
-//        width: 'spread',
+        top: [
+          'name',
+          'bottom',
+          4
+        ],
+        start: [
+          'back_btn',
+          'end',
+          16
+        ],
+        //        end : ['name', 'end'],
+        //        width: 'spread',
       },
       badge: {
-        top: ['handle', 'top'],
-        bottom: ['handle', 'bottom'],
-        start : ['handle', 'end', 8],
+        top: [
+          'handle',
+          'top'
+        ],
+        bottom: [
+          'handle',
+          'bottom'
+        ],
+        start: [
+          'handle',
+          'end',
+          8
+        ],
         alpha: 0.0
       },
       pfp: {
         width: 30,
         height: 30,
         alpha: 0.0,
-        start: ['parent', 'start', 16],
-        bottom: ['banner', 'bottom', -20]
+        start: [
+          'parent',
+          'start',
+          16
+        ],
+        bottom: [
+          'banner',
+          'bottom',
+          -20
+        ]
       }
     }
   },
-
   Transitions: {
     default: {
       from: 'start',
       to: 'end',
-      easing: 'standard', // Applies Material easing (cubic-bezier)
+      easing: 'standard',
+      // Applies Material easing (cubic-bezier)
       pathMotionArc: 'startVertically',
       KeyFrames: {
         KeyAttributes: [
           {
-            target: ['pfp'],
-            frames: [0, 60, 100],
-            alpha: [1.0, 0.0, 0.0] // Profile picture disappears halfway through
+            target: [
+              'pfp'
+            ],
+            frames: [
+              0,
+              60,
+              100
+            ],
+            alpha: [
+              1.0,
+              0.0,
+              0.0
+            ]
+            // Profile picture disappears halfway through
           }
         ]
       }

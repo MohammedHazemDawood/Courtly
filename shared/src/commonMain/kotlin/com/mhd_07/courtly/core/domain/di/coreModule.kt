@@ -2,12 +2,13 @@ package com.mhd_07.courtly.core.domain.di
 
 import com.mhd_07.courtly.core.data.repo.CoreRepositoryImpl
 import com.mhd_07.courtly.core.domain.repo.CoreRepository
-import com.mhd_07.courtly.core.domain.usecase.CheckHandleUseCase
+import com.mhd_07.courtly.feature_profile.domain.usecase.CheckHandleUseCase
 import com.mhd_07.courtly.core.domain.usecase.GetProfileUseCase
-import com.mhd_07.courtly.core.domain.usecase.LogoutUseCase
-import com.mhd_07.courtly.core.domain.usecase.UpdateAvatarUseCase
-import com.mhd_07.courtly.core.domain.usecase.UpdateCoverUseCase
-import com.mhd_07.courtly.core.domain.usecase.UpdateProfileUseCase
+import com.mhd_07.courtly.core.domain.usecase.LoadFeedUseCase
+import com.mhd_07.courtly.feature_profile.domain.usecase.LogoutUseCase
+import com.mhd_07.courtly.feature_profile.domain.usecase.UpdateAvatarUseCase
+import com.mhd_07.courtly.feature_profile.domain.usecase.UpdateCoverUseCase
+import com.mhd_07.courtly.feature_profile.domain.usecase.UpdateProfileUseCase
 import com.mhd_07.courtly.core.presentation.viewmodel.CoreViewmodel
 import com.mhd_07.courtly.shared.BuildKonfig
 import io.github.jan.supabase.annotations.SupabaseInternal
@@ -58,12 +59,9 @@ val coreModule = module {
     single { UpdateProfileUseCase(get()) }
     single { UpdateAvatarUseCase(get()) }
     single { UpdateCoverUseCase(get()) }
+    single { LoadFeedUseCase(get()) }
     viewModel<CoreViewmodel> {
         CoreViewmodel(
-            get(),
-            get(),
-            get(),
-            get(),
             get(),
             get(),
         )
