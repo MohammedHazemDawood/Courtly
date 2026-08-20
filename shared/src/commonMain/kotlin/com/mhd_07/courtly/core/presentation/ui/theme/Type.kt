@@ -21,9 +21,9 @@ fun CourtlyTypography(): Typography {
         Font(Res.font.alexandria),
     )
 
+
     return with(MaterialTheme.typography) {
         copy(
-            // "Enter your email address"
             displayLarge = TextStyle(
                 fontSize = 32.sp,
                 fontFamily = mainFont,
@@ -31,21 +31,10 @@ fun CourtlyTypography(): Typography {
                 fontWeight = FontWeight.Bold,
                 letterSpacing = (-0.5).sp
             ),
-
-            displaySmall = displaySmall.copy(fontFamily = mainFont),
             displayMedium = displayMedium.copy(fontFamily = mainFont),
-
-            // "We'll send you a verification code"
-            bodyLarge = TextStyle(
-                fontSize = 17.sp,
-                fontFamily = mainFont,
-                lineHeight = 24.sp,
-                fontWeight = FontWeight.Normal
-            ),
-
-            bodyMedium = bodyMedium.copy(fontFamily = mainFont),
-
-            // Placeholder: "tom@example.com"
+            displaySmall = displaySmall.copy(fontFamily = mainFont),
+            headlineLarge = headlineLarge.copy(fontFamily = mainFont),
+            headlineMedium = headlineMedium.copy(fontFamily = mainFont),
             headlineSmall = TextStyle(
                 fontSize = 20.sp,
                 fontFamily = mainFont,
@@ -54,29 +43,22 @@ fun CourtlyTypography(): Typography {
                 fontStyle = FontStyle.Normal,
                 letterSpacing = 0.3.sp
             ),
-            headlineMedium = headlineMedium.copy(fontFamily = mainFont),
-            headlineLarge = headlineLarge.copy(fontFamily = mainFont),
-
             titleLarge = titleLarge.copy(fontFamily = mainFont),
-            titleSmall = titleSmall.copy(fontFamily = mainFont),
-
-            // "Continue"
             titleMedium = TextStyle(
                 fontSize = 18.sp,
                 fontFamily = mainFont,
                 lineHeight = 22.sp,
                 fontWeight = FontWeight.SemiBold
             ),
-
-            // Terms & Privacy text
+            titleSmall = titleSmall.copy(fontFamily = mainFont),
+            bodyLarge = bodyLarge.copy(fontFamily = mainFont),
+            bodyMedium = bodyMedium.copy(fontFamily = mainFont),
             bodySmall = TextStyle(
                 fontSize = 14.sp,
                 fontFamily = mainFont,
                 lineHeight = 20.sp,
                 fontWeight = FontWeight.Normal
             ),
-
-            // Top app bar action ("Use phone")
             labelLarge = TextStyle(
                 fontSize = 17.sp,
                 fontFamily = mainFont,
@@ -84,7 +66,7 @@ fun CourtlyTypography(): Typography {
                 fontWeight = FontWeight.Medium
             ),
             labelMedium = labelMedium.copy(fontFamily = mainFont),
-            labelSmall = labelSmall.copy(fontFamily = mainFont)
+            labelSmall = labelSmall.copy(fontFamily = mainFont),
         )
     }
 }

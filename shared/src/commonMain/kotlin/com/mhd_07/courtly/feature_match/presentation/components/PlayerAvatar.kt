@@ -51,7 +51,7 @@ fun PlayerAvatar(
 //                        fontWeight = FontWeight.Bold,
                         maxLines = 1,
                         softWrap = false,
-                        autoSize = TextAutoSize.StepBased()
+                        autoSize = TextAutoSize.StepBased(),
                     )
                 }
             }
@@ -61,7 +61,7 @@ fun PlayerAvatar(
             drawContent()
             drawCircle(
                 color = borderColor,
-                style = Stroke(width = 5f)
+                style = Stroke(width = 8f)
             )
         }.clip(CircleShape)
     )

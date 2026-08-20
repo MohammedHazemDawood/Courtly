@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.vector.VectorPainter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -68,7 +69,7 @@ fun CourtlyAppBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
             ) {
-                Text(text = title, color = titleColor)
+                Text(text = title, color = titleColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (dotVisible)
                     Box(
                         modifier = Modifier.clip(CircleShape).size(dimensions.small)
@@ -177,7 +178,7 @@ fun CourtlyAppBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
             ) {
-                Text(text = title, color = titleColor)
+                Text(text = title, color = titleColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (dotVisible)
                     Box(
                         modifier = Modifier.clip(CircleShape).size(dimensions.small)
@@ -242,7 +243,7 @@ fun CourtlyAppBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
             ) {
-                Text(text = title, color = titleColor)
+                Text(text = title, color = titleColor, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 if (dotVisible)
                     Box(
                         modifier = Modifier.clip(CircleShape).size(dimensions.small)

@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import com.mhd_07.courtly.core.presentation.ui.theme.CourtlyTheme
@@ -71,12 +72,12 @@ fun SignOptionsScreen(
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+                verticalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
                 Image(
                     painter = painterResource(Res.drawable.foreground_ico),
                     contentDescription = null,
-                    modifier = Modifier.fillMaxWidth(0.6f)
+                    modifier = Modifier.fillMaxWidth(0.4f)
 //               modifier = Modifier.size(100.dp)
                 )
                 Text(
@@ -197,7 +198,10 @@ fun SignButton(
                 Text(
                     text = text,
                     style = buttonTextStyle,
-                    color = tint ?: Color.Unspecified
+                    color = tint ?: Color.Unspecified,
+                    maxLines = 1,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.StartEllipsis
                 )
             }
         }

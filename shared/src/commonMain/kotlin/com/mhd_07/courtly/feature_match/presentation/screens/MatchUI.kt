@@ -5,6 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,12 +16,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.PrimaryTabRow
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -37,7 +45,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -60,12 +70,16 @@ import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match.domain.model.Match
 import com.mhd_07.courtly.feature_match.domain.model.MatchIntent
+import com.mhd_07.courtly.feature_match.domain.model.MatchState
 import com.mhd_07.courtly.feature_match.presentation.components.Court
 import com.mhd_07.courtly.feature_match.presentation.components.EnsureDialog
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerAvatar
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerNamesText
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerSelectDialog
+import com.mhd_07.courtly.feature_match.presentation.components.Players
+import com.mhd_07.courtly.feature_match.presentation.components.Stats
 import com.mhd_07.courtly.feature_match.presentation.components.TeamSetsRow
+import com.mhd_07.courtly.feature_match.presentation.components.TimelineList
 import com.mhd_07.courtly.feature_match.presentation.viewmodel.MatchControllerViewmodel
 import com.mhd_07.courtly.feature_match.presentation.viewmodel.MatchPreviewViewmodel
 import com.mhd_07.courtly.feature_match.presentation.viewmodel.MatchRecordViewmodel
@@ -75,8 +89,11 @@ import courtly.shared.generated.resources.cancel
 import courtly.shared.generated.resources.ensure_quit
 import courtly.shared.generated.resources.finished
 import courtly.shared.generated.resources.live
+import courtly.shared.generated.resources.players
 import courtly.shared.generated.resources.quit
 import courtly.shared.generated.resources.redo
+import courtly.shared.generated.resources.stats
+import courtly.shared.generated.resources.timeline
 import courtly.shared.generated.resources.undo
 import courtly.shared.generated.resources.undo_left_outline
 import courtly.shared.generated.resources.undo_right_outline
@@ -87,6 +104,7 @@ import io.github.vinceglb.confettikit.core.Party
 import io.github.vinceglb.confettikit.core.Position
 import io.github.vinceglb.confettikit.core.Spread
 import io.github.vinceglb.confettikit.core.emitter.Emitter
+import kotlinx.coroutines.launch
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 import org.jetbrains.compose.resources.getString
@@ -147,14 +165,21 @@ fun MatchUI(
                     parametersOf(id)
                 }
                 val state by viewmodel.state.collectAsStateWithLifecycle()
-                LaunchedEffect(state.status, state.doneAt, isMine) {
-//                    val isFinished = state.status == MatchStatus.Finished
+                LaunchedEffect(state.status, state.doneAt, isMine, state) {
+                    if (state == Match.initial) return@LaunchedEffect
+                    val doneAt = state.doneAt
+
+
                     val isExpired =
-                        state.doneAt?.let { Clock.System.now() - it > 5.minutes } ?: false
+                        doneAt?.let { da -> Clock.System.now() - da > 5.minutes } ?: false
+                    println("is expired: $isExpired | doneAt: $doneAt")
 
                     if (isMine && !isExpired) {
                         backStack.clear()
                         backStack.add(Graphs.Match.Record)
+                    } else {
+                        backStack.clear()
+                        backStack.add(Graphs.Match.Preview)
                     }
                 }
                 MatchScreen(
@@ -192,13 +217,14 @@ fun MatchScreen(
 ) {
     println("id: ${match.id}")
 
-    val scaffoldState = rememberBottomSheetScaffoldState()
-
     val direction = LocalLayoutDirection.current
     val dimensions = LocalDimensions.current
 
-    val tabs = listOf("Stats", "Players", "Timeline")
-    var selectedTab by remember { mutableStateOf(0) }
+    val tabs = listOf(
+        stringResource(Res.string.timeline),
+        stringResource(Res.string.stats),
+        stringResource(Res.string.players)
+    )//TODO
 
     var quitRequested by remember { mutableStateOf(false) }
     var pointScored by remember { mutableStateOf<Side?>(null) }
@@ -206,7 +232,7 @@ fun MatchScreen(
     val scope = rememberCoroutineScope()
 
     BackHandler(scope) {
-        if (!isMine)
+        if (!isMine || (isMine && match.status == MatchStatus.Finished))
             navBack()
         else if (match.status != MatchStatus.Finished && isMine)
             quitRequested = !quitRequested
@@ -220,7 +246,7 @@ fun MatchScreen(
         }
     }
 
-    BottomSheetScaffold(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             CourtlyAppBar(
@@ -235,7 +261,7 @@ fun MatchScreen(
                 backVisible = true,
                 titleColor = if (match.status != MatchStatus.Live) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.error,
                 onBackClick = {
-                    if (!isMine)
+                    if (!isMine || (isMine && match.status == MatchStatus.Finished))
                         navBack()
                     else if (match.status != MatchStatus.Finished && isMine)
                         quitRequested = !quitRequested
@@ -265,84 +291,15 @@ fun MatchScreen(
                 )
             }
         },
-        scaffoldState = scaffoldState,
         containerColor = MaterialTheme.colorScheme.background,
-        sheetContent = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                PrimaryTabRow(
-                    selectedTabIndex = selectedTab,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    tabs.fastForEachIndexed { i, tab ->
-                        Tab(
-                            selected = selectedTab == i,
-                            onClick = { selectedTab = i },
-                            text = { Text(tab) })
-                    }
-                }
-            }
-        }
     ) { innerPadding ->
 
-        if (match.status == MatchStatus.Finished && match.winner != null)
-            ConfettiKit(
-                modifier = Modifier.fillMaxSize(),
-                parties = rain(),
-            )
-        EnsureDialog(
-            visible = quitRequested && isMine,
-            onDismiss = { quitRequested = false },
-            cancelText = stringResource(Res.string.cancel),
-
-            onConfirm = {
-                finishMatch()
-                navBack()
-            },
-            confirmText = "Finish This Match",
-
-            title = stringResource(Res.string.quit),
-            description = stringResource(Res.string.ensure_quit),
-
-            additionalActionText = "Suspend this match until you get back",
-            additionalAction = {
-                navBack()
-            }
-        )
-
-        match.team1.players.filter { !it.bench }.let {
-            PlayerSelectDialog(
-                visible = pointScored == Side.Team1,
-                p1 = it.getOrNull(0),
-                p2 = it.getOrNull(1),
-                select = { player ->
-                    onPointTeam1(player)
-                    pointScored = null
-                },
-                cancel = {
-                    pointScored = null
-                }
-            )
-        }
-
-        match.team2.players.filter { !it.bench }.let {
-            PlayerSelectDialog(
-                visible = pointScored == Side.Team2,
-                p1 = it.getOrNull(0),
-                p2 = it.getOrNull(1),
-                select = { player ->
-                    onPointTeam2(player)
-                    pointScored = null
-                },
-                cancel = {
-                    pointScored = null
-                }
-            )
-        }
-
-
-
         Column(
-            modifier = Modifier.fillMaxSize().padding(innerPadding).padding(dimensions.small),
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
+                .padding(horizontal = dimensions.small)
+                .verticalScroll(
+                    rememberScrollState()
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.medium)
         ) {
@@ -357,7 +314,7 @@ fun MatchScreen(
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dimensions.xxSmall),
+                        horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
                         modifier = Modifier.weight(1f, fill = false)
                     ) {
                         val team1ActivePlayers = match.team1.players.filter { !it.bench }
@@ -468,15 +425,20 @@ fun MatchScreen(
                     )
                 }
             }
-
-            Court(
-                modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(2f),
-                fill = MaterialTheme.colorScheme.primary,
-                stroke = MaterialTheme.colorScheme.onBackground,
-                hCourtSide = match.currentCourtSide,
-                side = match.currentServeSide,
-                win = match.winner != null
-            )
+            AnimatedVisibility(
+                visible = match.status == MatchStatus.Live,
+                enter = slideInVertically() + fadeIn(),
+                exit = slideOutVertically() + fadeOut()
+            ) {
+                Court(
+                    modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(2f),
+                    fill = MaterialTheme.colorScheme.primary,
+                    stroke = MaterialTheme.colorScheme.onBackground,
+                    hCourtSide = match.currentCourtSide,
+                    side = match.currentServeSide,
+                    win = match.winner != null
+                )
+            }
 
             AnimatedVisibility(
                 visible = isMine && match.status != MatchStatus.Finished,
@@ -493,7 +455,8 @@ fun MatchScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         onClick = {
                             if (match.status == MatchStatus.Live)
-                                pointScored = Side.Team1
+                                if (match.rules.type == MatchType.Double) pointScored = Side.Team1
+                                else onPointTeam1(match.team1.players.first { !it.bench })
                         }
                     ) {
                         Column(
@@ -514,7 +477,8 @@ fun MatchScreen(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                         onClick = {
                             if (match.status == MatchStatus.Live)
-                                pointScored = Side.Team2
+                                if (match.rules.type == MatchType.Double) pointScored = Side.Team2
+                                else onPointTeam2(match.team2.players.first { !it.bench })
                         }
                     ) {
                         Column(
@@ -531,6 +495,106 @@ fun MatchScreen(
                     }
                 }
             }
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(dimensions.xSmall)
+            ) {
+                val pagerState = rememberPagerState { tabs.size }
+                PrimaryScrollableTabRow(
+                    selectedTabIndex = pagerState.currentPage,
+                    modifier = Modifier.fillMaxWidth(),
+                    containerColor = MaterialTheme.colorScheme.background,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    divider = {},
+                    edgePadding = dimensions.default
+                ) {
+                    tabs.fastForEachIndexed { i, tab ->
+                        Tab(
+                            selected = pagerState.currentPage == i,
+                            onClick = { scope.launch { pagerState.animateScrollToPage(i) } },
+                            text = { Text(tab, maxLines = 1) },
+                        )
+                    }
+                }
+                HorizontalPager(pagerState, Modifier.fillMaxSize()) {
+                    when (it) {
+                        0 -> TimelineList(
+                            timeline = match.timeLine,
+                            startTime = match.startedAt,
+                            team1Name = match.team1.name,
+                            team2Name = match.team2.name
+                        )
+
+                        1 -> Stats(
+                            match.timeLine,
+                            match.team1.players + match.team2.players,
+                            team1Name = match.team1.name,
+                            team2Name = match.team2.name
+                        )
+
+                        2 -> Players(team1Players = match.team1.players, team2Players = match.team2.players, onSubOrTransfer = {}, mine = isMine)
+                    }
+                }
+            }
+
+        }
+
+
+        if (match.status == MatchStatus.Finished && match.winner != null)
+            ConfettiKit(
+                modifier = Modifier.fillMaxSize(),
+                parties = rain(),
+            )
+
+        EnsureDialog(
+            visible = quitRequested && isMine,
+            onDismiss = { quitRequested = false },
+            cancelText = stringResource(Res.string.cancel),
+
+            onConfirm = {
+                finishMatch()
+                navBack()
+            },
+            confirmText = "Finish This Match",
+
+            title = stringResource(Res.string.quit),
+            description = stringResource(Res.string.ensure_quit),
+
+            additionalActionText = "Suspend this match until you get back",
+            additionalAction = {
+                navBack()
+            }
+        )
+
+        match.team1.players.filter { !it.bench }.let {
+            PlayerSelectDialog(
+                visible = pointScored == Side.Team1,
+                p1 = it.getOrNull(0),
+                p2 = it.getOrNull(1),
+                select = { player ->
+                    onPointTeam1(player)
+                    pointScored = null
+                },
+                cancel = {
+                    pointScored = null
+                }
+            )
+        }
+
+        match.team2.players.filter { !it.bench }.let {
+            PlayerSelectDialog(
+                visible = pointScored == Side.Team2,
+                p1 = it.getOrNull(0),
+                p2 = it.getOrNull(1),
+                select = { player ->
+                    onPointTeam2(player)
+                    pointScored = null
+                },
+                cancel = {
+                    pointScored = null
+                }
+            )
         }
     }
 }

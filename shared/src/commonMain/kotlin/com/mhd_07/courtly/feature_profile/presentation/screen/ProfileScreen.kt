@@ -332,7 +332,7 @@ fun ProfileScreen(
                         // Matches / Profile Content
                         items(matches, key = { it.id }) { match ->
                             Card(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(vertical = dimensions.small),
                                 shape = MaterialTheme.shapes.medium,
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                 onClick = {

@@ -53,12 +53,7 @@ val coreModule = module {
         }
     }
     single<CoreRepository> { CoreRepositoryImpl(get()) }
-    single { LogoutUseCase(get()) }
     single { GetProfileUseCase(get()) }
-    single { CheckHandleUseCase(get()) }
-    single { UpdateProfileUseCase(get()) }
-    single { UpdateAvatarUseCase(get()) }
-    single { UpdateCoverUseCase(get()) }
     single { LoadFeedUseCase(get()) }
     viewModel<CoreViewmodel> {
         CoreViewmodel(

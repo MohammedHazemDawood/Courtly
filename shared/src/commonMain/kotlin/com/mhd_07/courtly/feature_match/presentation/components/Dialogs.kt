@@ -48,8 +48,8 @@ fun EnsureDialog(
     description: String,
     confirmText: String,
     cancelText: String,
-    additionalActionText : String? = null,
-    additionalAction : (() -> Unit) = {}
+    additionalActionText: String? = null,
+    additionalAction: (() -> Unit) = {}
 ) {
     val dimensions = LocalDimensions.current
     if (visible)
@@ -89,7 +89,11 @@ fun EnsureDialog(
                                 shape = RectangleShape,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                Text(text = additionalActionText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                                Text(
+                                    text = additionalActionText,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center
+                                )
                             }
                         }
                         HorizontalDivider()
@@ -98,7 +102,11 @@ fun EnsureDialog(
                             shape = RectangleShape,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = confirmText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                            Text(
+                                text = confirmText,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
                         }
                         HorizontalDivider()
                         TextButton(
@@ -106,7 +114,11 @@ fun EnsureDialog(
                             shape = RectangleShape,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(text = cancelText, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
+                            Text(
+                                text = cancelText,
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
                         }
 //                    Spacer(modifier = Modifier)
                     }
@@ -213,12 +225,13 @@ fun PlayerRow(
     name: String,
     handle: String,
     modifier: Modifier = Modifier,
-    select: () -> Unit
+    select: (() -> Unit)? = null
 ) {
     val dimensions = LocalDimensions.current
     Box(
         modifier = modifier
-            .clickable { select() }, contentAlignment = Alignment.Center
+            .clickable(enabled = select != null) { select?.invoke() },
+        contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(dimensions.xSmall),

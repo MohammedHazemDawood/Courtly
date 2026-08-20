@@ -49,11 +49,19 @@
     <string name="sub_out">Out</string>
     <string name="won_game">%1$s bagged the game</string>
     <string name="won_match">%1$s takes the whole match!</string>
-    <string name="set">Set</string>
+    <string name="set">%1$s bagged the set</string>
     <string name="ensure_quit_title">Quit</string>
     <string name="ensure_quit">Really? You're bailing now?</string>
     <string name="quit">Yep, I'm Out</string>
     <string name="cancel">Cancel</string>
+    <string name="the_end">the end of match</string>
+    <string name="started">Match Started</string>
+
+    <string name ="scored_points">%1$s Point</string>
+
+    <string name="points">Points</string>
+    <string name="top_scorers">Nominated For MOTM</string>
+
 
     <string name="select_player">Select Player</string>
     <string name="select_player_description">Who Scored This Point</string>
@@ -101,6 +109,7 @@
 
     <string name="timeline">Play-by-Play</string>
     <string name="players">Who's Playing</string>
+    <string name="stats">Stats</string>
 
     <string name="point">Point goes to %1$s!</string>
 

@@ -15,7 +15,7 @@ data class Setup(
 
 //    val host : Player,
 
-    val type: MatchType = MatchType.Double,
+    val type: MatchType = MatchType.Single,
 
     val location: String = "",
 

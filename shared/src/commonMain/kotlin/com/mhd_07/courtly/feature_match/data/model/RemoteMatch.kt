@@ -14,7 +14,7 @@ import kotlin.time.Instant
 data class RemoteMatch(
     val id: String,
     val created_at: Instant,
-    val started_at: Instant? = null,
+    val started_at: Instant?,
     val host: String,
     val team_1_name: String,
     val team_2_name: String,
@@ -26,12 +26,12 @@ data class RemoteMatch(
     val current_serve_side: Side,
     val current_court_side: HCourtSide,
     val status: MatchStatus,
-    val winner: Side? = null,
+    val winner: Side?,
     val type: MatchType,
     val mode: MatchMode,
     val best_of: Int,
     val sets: List<RemoteSet>,
     val timeline: List<Event>,
-    val done_at: Instant? = null
+    val done_at: Instant?
 )
 

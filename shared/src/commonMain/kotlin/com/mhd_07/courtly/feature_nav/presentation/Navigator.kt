@@ -49,6 +49,8 @@ fun AppNavigator(deepsLink: String? = null) {
     val viewModel: NavViewModel = koinViewModel()
     val authState = viewModel.status.collectAsStateWithLifecycle()
 
+    ForcePortrait()
+
     LaunchedEffect(authState.value, deepsLink) {
         println("AuthState: ${authState.value}")
         if (authState.value is SessionStatus.Authenticated && backStack.lastOrNull() == Graphs.Splash || backStack.lastOrNull() == Graphs.Sign) {
@@ -92,7 +94,14 @@ fun AppNavigator(deepsLink: String? = null) {
                         backStack.add(Graphs.Match(it))
                     },
                     setupScreen = {},
-                    navToProfile = { backStack.add(Graphs.ProfilePreview(it, UserSelectionType.Id)) }
+                    navToProfile = {
+                        backStack.add(
+                            Graphs.ProfilePreview(
+                                it,
+                                UserSelectionType.Id
+                            )
+                        )
+                    }
                 )
             }
             entry<Graphs.Match> { key ->
@@ -132,6 +141,9 @@ fun AppNavigator(deepsLink: String? = null) {
         }
     )
 }
+
+@Composable
+expect fun ForcePortrait()
 
 const val host = "courtly.app"
 private fun parseUrl(link: String): String? {
