@@ -1,50 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App & Navigation -->
-    <string name="app_name">Courtly</string> <!--will be shown in launcher-->
-    <string name="live">Live Now</string> <!--game is live (is playing now)-->
-    <string name="upcoming">Up Next</string> <!--game is upcoming-->
-    <string name="finished">All Wrapped Up</string> <!--game is finished (will be shown in game state)-->
-    <string name="undo">Nope, Undo That</string><!--will be readen by accisibility tools in mobile (for undo button/won't be shown in screen)-->
-    <string name="redo">Actually, Redo That</string> <!--the same of undo-->
-    <string name="back">Back It Up</string><!-- the same of undo-->
-    <string name="setup_account">Setup Account</string>
-    <!-- General Actions & Feed -->
+    <string name="app_name">Courtly</string>
+    <string name="live">Live Now</string>
+    <string name="upcoming">Up Next</string>
+    <string name="finished">All Wrapped Up</string>
+    <string name="undo">Nope, Undo That</string>
+    <string name="redo">Actually, Redo That</string>
+    <string name="back">Back It Up</string>
+    <string name="setup_account">Set Up Account</string>
     <string name="feed">Feed</string>
     <string name="my_games">My Games</string>
-    <string name="logout">Logout</string><!-- text of signout button-->
-    <string name="new_game">Let's Get This Match Started</string> <!--the same of redo and undo-->
-    <string name="profile">Profile</string><!--the same for undo and redo-->
+    <string name="logout">Log Out</string>
+    <string name="new_game">Let's Get This Match Started</string>
+    <string name="profile">Profile</string>
     <string name="settings">Settings</string>
     <string name="notification">Notifications</string>
     <string name="privacy">Privacy</string>
-    <string name="edit_profile">Edit Profile</string> <!--the same for undo and redo-->
+    <string name="edit_profile">Edit Profile</string>
     <string name="edit_avatar">Edit Avatar</string>
-    <string name="empty_feed">Tumbleweeds… no matches yet</string> <!--will be shown on screen when no saved matchs or no games from server-->
+    <string name="empty_feed">Tumbleweeds… No matches yet.</string>
     <string name="save">Save</string>
     <string name="name">Name</string>
     <string name="handle">Handle</string>
     <string name="bio">Bio</string>
-    <string name="name_error">Name cannot be empty</string>
+    <string name="name_error">Name can't be empty.</string>
     <string name="camera">Camera</string>
     <string name="gallery">Gallery</string>
     <string name="select_source">Select Source</string>
-    <string name="handle_error">This Handle Ain't Available</string>
+    <string name="handle_error">This handle ain't available.</string>
     <string name="followers">Followers</string>
     <string name="followings">Following</string>
     <string name="read_more">Read More</string>
     <string name="read_less">Read Less</string>
     <string name="follow">Follow</string>
     <string name="unfollow">Unfollow</string>
-    <string name="follow_you">Following You</string>
-    <string name="cannot_find_user">Cannot Find This User</string>
-
+    <string name="follow_you">Follows You</string>
+    <string name="cannot_find_user">Can't Find This User</string>
     <string name="permission_camera_rational">Camera Access Required</string>
-    <string name="permission_camera_rational_description">Courtly needs camera access to let you update your Profile Picture. We never snap photos without your direct input.</string>
-    <string name="open_settings">Continue To Settings</string>
-    <!-- Match Tracking -->
+    <string name="permission_camera_rational_description">Courtly needs camera access to let you update your profile picture. We never take photos without your direct input.</string>
+    <string name="open_settings">Continue to Settings</string>
     <string name="playing">On Court</string>
     <string name="bench">Benched</string>
-    <string name="sub">Substitution</string> <!--like in football-->
+    <string name="sub">Substitution</string>
     <string name="sub_in">In</string>
     <string name="sub_out">Out</string>
     <string name="won_game">%1$s bagged the game</string>
@@ -54,42 +51,43 @@
     <string name="ensure_quit">Really? You're bailing now?</string>
     <string name="quit">Yep, I'm Out</string>
     <string name="cancel">Cancel</string>
-    <string name="the_end">the end of match</string>
+    <string name="the_end">the end of the match</string>
     <string name="started">Match Started</string>
-
-    <string name ="scored_points">%1$s Point</string>
-
+    <string name="scored_points">%1$s Point</string>
     <string name="points">Points</string>
-    <string name="top_scorers">Nominated For MOTM</string>
-
-
+    <string name="top_scorers">Nominated for MOTM</string>
     <string name="select_player">Select Player</string>
-    <string name="select_player_description">Who Scored This Point</string>
-
+    <string name="select_player_description">Who scored this point?</string>
     <string name="step">Step %1$s out of %1$s</string>
     <string name="next">Next</string>
     <string name="start_match">Let's Play</string>
-
-    <string name="single">Single</string>
-    <string name="double">Double</string>
-
+    <string name="single">Singles</string>
+    <string name="double">Doubles</string>
     <string name="mode_professional">Pro Mode</string>
     <string name="mode_freestyle">Just for Fun</string>
-
-    <!-- Match Setup -->
     <string name="setup">Set the Stage</string>
-    <string name="teams_names">Teams Name</string>
-    <string name="team_left_name">Team on the Left</string>
-    <string name="team_left_name_placeholder">Name your left-side legends</string>
-    <string name="team_right_name">Team on the Right</string>
-    <string name="team_right_name_placeholder">Name your right-side legends</string>
-    <string name="team_left_players">Team Left Players</string>
+    <string name="teams_names">Team Names</string>
+    <string name="team_left_name">First Team Name</string>
+    <string name="team_left_name_placeholder">Name your First Team legends</string>
+    <string name="team_right_name">Second Team Name</string>
+    <string name="team_right_name_placeholder">Name your Second Team legends</string>
+    <string name="team_left_players">First Team Players</string>
     <string name="team_left_players_placeholder">Add players for %1$s</string>
-    <string name="team_right_players">Team Right Players</string>
-    <string name="team_right_players_placeholder">Add Players for %1$s</string>
+    <string name="team_right_players">Second Team Players</string>
+    <string name="team_right_players_placeholder">Add players for %1$s</string>
     <string name="remove_player">Remove Player</string>
     <string name="add_player">Add Player</string>
-
+    <string name="search_a_player">Search for a player</string>
+    <string name="close_search">Close Search</string>
+    <string name="add_player_with_name">Add "%1$s"</string>
+    <string name="type_a_name_or_handle_to_search">Type a name or @handle to search</string>
+    <string name="vs">vs.</string>
+    <string name="cover_banner">Cover Banner</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="placeholder_any_name">Any Name</string>
+    <string name="placeholder_any_handle">Any Handle</string>
+    <string name="finish_this_match">Finish This Match</string>
+    <string name="suspend_match_until_back">Suspend this match until you get back</string>
     <string name="location">Where's the Action?</string>
     <string name="location_placeholder">Drop the court location</string>
     <string name="mode">Match Vibe</string>
@@ -99,36 +97,73 @@
     <string name="type">Squad Size</string>
     <string name="type_description">Just you two (Singles) or bring a partner (Doubles)</string>
     <string name="system">System</string>
-    <string name="system_description">Choose Match Length</string>
+    <string name="system_description">Choose the Match Length</string>
     <string name="best_of">Best of %1$s</string>
-<!--    <string name="best_of_3">3</string>-->
-<!--    <string name="best_of_5">5</string>-->
     <string name="best_of_3_description">First to 2 sets wins it all</string>
     <string name="best_of_5_description">First to 3 sets takes the crown</string>
-    <string name="drop">Tap for more options</string>
-
+    <string name="drop">Tap for More Options</string>
     <string name="timeline">Play-by-Play</string>
     <string name="players">Who's Playing</string>
     <string name="stats">Stats</string>
-
     <string name="point">Point goes to %1$s!</string>
-
-    <!-- Auth & Validation -->
+    <string name="join_the_action">Join the Action</string>
+    <string name="find_your_people">Find Your People</string>
+    <string name="meet_the_court">Meet You on the Court</string>
+    <string name="see_whats_happening">See What's Happening</string>
+    <string name="whos_playing">Who's Playing?</string>
+    <string name="no_games_nearby">Nothing happening yet.</string>
+    <string name="be_the_first">Be the first to get a game going.</string>
+    <string name="your_court_awaits">Your court awaits.</string>
+    <string name="game_on">Game on.</string>
+    <string name="share_match">Share Match</string>
+    <string name="share_result">Share Result</string>
+    <string name="share_profile">Share</string>
+    <string name="profile_share_description">Check out %1$s's profile, matches, and padel journey on Courtly.</string>
+    <string name="invite_players">Invite Players</string>
+    <string name="invite_friends">Bring Your Crew</string>
+    <string name="share_this_match">Let the world know.</string>
+    <string name="share_match_result">Show off the result.</string>
+    <string name="match_highlight">Match Highlight</string>
+    <string name="match_of_the_day">Match of the Day</string>
+    <string name="player_of_the_match">Player of the Match</string>
+    <string name="what_a_game">What a game!</string>
+    <string name="well_played">Well Played</string>
+    <string name="clutch">Clutch!</string>
+    <string name="comeback">What a comeback!</string>
+    <string name="that_was_close">That was close.</string>
+    <string name="follow_to_keep_up">Follow to keep up with their games.</string>
+    <string name="see_their_matches">See their latest matches.</string>
+    <string name="people_you_may_know">People You May Know</string>
+    <string name="players_to_follow">Players to Follow</string>
+    <string name="no_matches_yet">No matches yet.</string>
+    <string name="get_your_first_match">Get your first match on the board.</string>
+    <string name="keep_playing">Keep Playing</string>
+    <string name="keep_the_streak">Keep the streak alive.</string>
+    <string name="your_next_match">Your next match is waiting.</string>
+    <string name="match_complete">That's a Wrap!</string>
+    <string name="great_game">Great Game!</string>
+    <string name="match_in_the_books">That's one for the books.</string>
+    <string name="until_next_time">Until next time.</string>
+    <string name="first_match">First Match</string>
+    <string name="first_win">First Win</string>
+    <string name="matches_played">Matches Played</string>
+    <string name="matches_won">Matches Won</string>
+    <string name="win_streak">Win Streak</string>
+    <string name="milestone_reached">Milestone Reached!</string>
+    <string name="keep_it_going">Keep it going.</string>
     <string name="email_title">What's your email?</string>
     <string name="email_description">Enter the email connected to your account</string>
     <string name="password_title">Enter your password</string>
     <string name="change_email">Change</string>
-    <string name="password_forgot">Forget Password?</string>
-    <string name="email_error">That email looks a little off</string>
-    <string name="pass_error">8+ characters, at least one number - you got this</string>
+    <string name="password_forgot">Forgot Password?</string>
+    <string name="email_error">That email looks a little off.</string>
+    <string name="pass_error">8+ characters, including at least one number — you got this.</string>
     <string name="email">Email</string>
     <string name="email_placeholder">you@example.com</string>
     <string name="pass">Password</string>
     <string name="pass_placeholder">Shh, it's a secret</string>
     <string name="continue_sign">Let's Go</string>
-    <string name="use_another_email">Use another email</string>
-
-    <!-- Onboarding / Login -->
+    <string name="use_another_email">Use Another Email</string>
     <string name="welcome">Welcome to Courtly!</string>
     <string name="welcome_description">Sign in to continue playing</string>
     <string name="with_google">Continue with Google</string>
@@ -136,20 +171,17 @@
     <string name="with_apple">Continue with Apple</string>
     <string name="or">or</string>
     <string name="email_password">Continue with Email</string>
-
-    <string name="otp_title">Check your inbox</string>
+    <string name="otp_title">Check Your Inbox</string>
     <string name="otp_description">We sent a code to %1$s</string>
-
     <string name="loading">Hang tight…</string>
-
-    <string name="invalid_credentials">Hmm, that email or password isn't ringing a bell</string>
-    <string name="not_confirmed">Check your inbox and confirm your email first</string>
-    <string name="account_exist">Looks like you're already one of us</string>
-    <string name="weak_password">That password needs to hit the gym</string>
-    <string name="user_banned">You've been benched from Courtly</string>
-    <string name="same_password">Time for something new, not your old password</string>
-    <string name="too_many_request">Whoa, slow down. Try again in a bit</string>
-    <string name="network_error">Lost signal - check your connection</string>
+    <string name="invalid_credentials">Hmm, that email or password isn't ringing a bell.</string>
+    <string name="not_confirmed">Check your inbox and confirm your email first.</string>
+    <string name="account_exist">Looks like you're already one of us.</string>
+    <string name="weak_password">That password needs to hit the gym.</string>
+    <string name="user_banned">You've been benched from Courtly.</string>
+    <string name="same_password">Time for something new, not your old password.</string>
+    <string name="too_many_request">Whoa, slow down. Try again in a bit.</string>
+    <string name="network_error">Lost signal — check your connection.</string>
     <string name="canceled">Canceled</string>
-    <string name="unknown">Oops, something broke. Let's try that again</string>
+    <string name="unknown">Oops, something broke. Let's try that again.</string>
 </resources>

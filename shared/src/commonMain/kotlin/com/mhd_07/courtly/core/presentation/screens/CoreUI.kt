@@ -36,7 +36,6 @@ fun CoreUI(navToGameSetup: () -> Unit, previewProfile: (id: String) -> Unit, nav
     LaunchedEffect(state) {
         state.profile?.let {
             if (it.handle.isNullOrEmpty()) {
-                backStack.clear()
                 state.profile?.id?.let { setupScreen(it) }
             }
         }

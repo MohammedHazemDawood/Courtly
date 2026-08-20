@@ -16,4 +16,7 @@ data class Team(
             players = emptyList(),
         )
     }
+    fun trim() : Team = copy(
+        name = name.trim()
+    )
 }

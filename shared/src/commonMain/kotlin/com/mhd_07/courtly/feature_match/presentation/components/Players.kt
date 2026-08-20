@@ -188,7 +188,7 @@ private fun PlayerCard(
         ) {
             PlayerAvatar(
                 name = player.name,
-                avatar = player.avatar,
+                avatar = player.avatar + "?v=" + player.avatarVersion,
                 modifier = Modifier.size(dimensions.xLarge),
                 borderColor = MaterialTheme.colorScheme.surface
             )

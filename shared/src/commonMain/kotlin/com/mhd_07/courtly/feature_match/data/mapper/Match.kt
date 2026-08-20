@@ -11,8 +11,14 @@ fun RemoteMatch.toMatch() = Match(
     startedAt = started_at,
     doneAt = done_at,
     hostId = host,
-    team1 = Team(name = team_1_name, players = team_1_players.map { it.toPlayer() }),
-    team2 = Team(name = team_2_name, players = team_2_players.map { it.toPlayer() }),
+    team1 = Team(name = team_1_name, players = team_1_players.map {
+        println("players: $it")
+        it.toPlayer()
+    }),
+    team2 = Team(name = team_2_name, players = team_2_players.map {
+        println("players: $it")
+        it.toPlayer()
+    }),
     team1Sets = team_1_sets,
     team2Sets = team_2_sets,
     sets = sets.map { it.toSet() }.toPersistentList(),
@@ -33,8 +39,14 @@ fun Match.toRemote(): RemoteMatch = RemoteMatch(
     host = hostId,
     team_1_name = team1.name,
     team_2_name = team2.name,
-    team_1_players = team1.players.map { it.toRemote() },
-    team_2_players = team2.players.map { it.toRemote() },
+    team_1_players = team1.players.map {
+        println("players: $it")
+        it.toRemote()
+    },
+    team_2_players = team2.players.map {
+        println("players: $it")
+        it.toRemote()
+    },
     team_1_sets = team1Sets,
     team_2_sets = team2Sets,
     current_set_index = currentSetIndex,

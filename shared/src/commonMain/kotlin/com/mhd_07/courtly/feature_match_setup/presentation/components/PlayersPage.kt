@@ -48,8 +48,12 @@ import com.mhd_07.courtly.core.presentation.ui.theme.notesTextStyle
 import com.mhd_07.courtly.core.presentation.ui.theme.titleTextStyle
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.add_player
+import courtly.shared.generated.resources.add_player_with_name
 import courtly.shared.generated.resources.add_square_outline
+import courtly.shared.generated.resources.close_search
 import courtly.shared.generated.resources.remove_player
+import courtly.shared.generated.resources.search_a_player
+import courtly.shared.generated.resources.type_a_name_or_handle_to_search
 import courtly.shared.generated.resources.user_bold
 import courtly.shared.generated.resources.x
 import org.jetbrains.compose.resources.painterResource
@@ -121,7 +125,7 @@ fun PlayersPage(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryEditable),
-                            placeholder = { Text("Search a player") }, // TODO: Add string resource
+                            placeholder = { Text(stringResource(Res.string.search_a_player)) },
                             trailingIcon = {
                                 IconButton(
                                     onClick = {
@@ -131,7 +135,7 @@ fun PlayersPage(
                                 ) {
                                     Icon(
                                         painter = painterResource(Res.drawable.x),
-                                        contentDescription = "Close search" // TODO: Add string resource
+                                        contentDescription = stringResource(Res.string.close_search)
                                     )
                                 }
                             },
@@ -161,7 +165,7 @@ fun PlayersPage(
                                                 modifier = Modifier.size(dimensions.xxLarge)
                                                     .clip(CircleShape)
                                             )
-                                            Text("Add \"$searchText\"")//TODO: Use string resource
+                                            Text(stringResource(Res.string.add_player_with_name, searchText.trim()), maxLines = 1)
                                         }
                                     },
                                     onClick = {
@@ -202,7 +206,7 @@ fun PlayersPage(
                             // Empty state when search produces no matching registered players and input is empty
                             if (searchResults.isEmpty() && searchText.isBlank()) {
                                 DropdownMenuItem(
-                                    text = { Text("Type a name or @handle to search") },
+                                    text = { Text(stringResource(Res.string.type_a_name_or_handle_to_search)) },
                                     onClick = { },
                                     enabled = false
                                 )
@@ -296,7 +300,7 @@ fun PlayerRowContent(
     ) {
         PlayerAvatar(avatarUrl = player.avatar + "?v=" + player.avatarVersion)
         Column {
-            Text(text = player.name)
+            Text(text = player.name, maxLines = 1)
             player.handle?.let {
                 Text(text = "@$it", style = notesTextStyle)
             }

@@ -45,14 +45,14 @@ fun Stats(timeline: List<Event>, players: List<Player>, team1Name: String, team2
         val grouped = source.groupBy { it::class }
 
         val players =
-            players.associateWith { player -> source.count { it is Event.Team1Point && player == it.player || it is Event.Team2Point && player == it.player } }
+            players.associateWith { player -> source.count { it is Event.Team1Point && player.id == it.player?.id || it is Event.Team2Point && player.id == it.player?.id } }
 
         Triple(
             grouped[Event.Team1Point::class]?.size ?: 0,
             grouped[Event.Team2Point::class]?.size ?: 0,
-            players
+            players.toList().sortedByDescending { it.second }.toMap()
         ).also {
-            println("players: $it")
+            println("state: $it")
         }
     }
 
@@ -97,21 +97,25 @@ fun TopScorers(p1: Player?, p2: Player?, player1Score: Int, player2Score: Int) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(dimensions.small)
         ) {
-            p1?.let {
-                TopScorer(
-                    player = it,
-                    score = player1Score,
-                    rank = 1,
-                    modifier = Modifier.weight(1f)
-                )
+            Box(modifier = Modifier.weight(1f)) {
+                p1?.let {
+                    TopScorer(
+                        player = it,
+                        score = player1Score,
+                        rank = 1,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
-            p2?.let {
-                TopScorer(
-                    player = it,
-                    score = player2Score,
-                    rank = 2,
-                    modifier = Modifier.weight(1f)
-                )
+            Box(modifier = Modifier.weight(1f)) {
+                p2?.let {
+                    TopScorer(
+                        player = it,
+                        score = player2Score,
+                        rank = 2,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }

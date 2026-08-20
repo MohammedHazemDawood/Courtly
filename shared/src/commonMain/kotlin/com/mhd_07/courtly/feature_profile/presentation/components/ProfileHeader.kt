@@ -42,7 +42,12 @@ import com.mhd_07.courtly.feature_profile.presentation.screen.shimmerable
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.alt_arrow_left_outline
 import courtly.shared.generated.resources.alt_arrow_right_outline
+import courtly.shared.generated.resources.back
+import courtly.shared.generated.resources.cover_banner
 import courtly.shared.generated.resources.follow_you
+import courtly.shared.generated.resources.placeholder_any_handle
+import courtly.shared.generated.resources.placeholder_any_name
+import courtly.shared.generated.resources.profile_picture
 import courtly.shared.generated.resources.user_bold
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -80,7 +85,7 @@ fun ProfileHeader(
         ) {
             SubcomposeAsyncImage(
                 model = cover,
-                contentDescription = "Cover Banner",
+                contentDescription = stringResource(Res.string.cover_banner),
                 contentScale = ContentScale.Crop,
                 error = {
                     Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray))
@@ -96,7 +101,7 @@ fun ProfileHeader(
             // 2. Avatar / Profile Picture
             SubcomposeAsyncImage(
                 model = avatar,
-                contentDescription = "Profile Picture",
+                contentDescription = stringResource(Res.string.profile_picture),
                 contentScale = ContentScale.Crop,
                 error = {
                     Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
@@ -141,7 +146,7 @@ fun ProfileHeader(
             ) {
                 Icon(
                     painter = painterResource(backIcon),
-                    contentDescription = "Back",
+                    contentDescription = stringResource(Res.string.back),
                 )
             }
 
@@ -155,7 +160,7 @@ fun ProfileHeader(
                 )
                 if (name == null)
                     Text(
-                        text = "Any Fucking Name",
+                        text = stringResource(Res.string.placeholder_any_name),
                         modifier = Modifier.visible(false),
                         maxLines = if (progress == 1f) 1 else 2,
                     )
@@ -172,7 +177,7 @@ fun ProfileHeader(
                 )
                 if (handle == null)
                     Text(
-                        text = "Any Handle",
+                        text = stringResource(Res.string.placeholder_any_handle),
                         modifier = Modifier.visible(false),
                         maxLines = 1
                     )

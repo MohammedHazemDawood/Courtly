@@ -2,6 +2,7 @@ package com.mhd_07.courtly.feature_profile.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mhd_07.courtly.core.domain.model.Player
 import com.mhd_07.courtly.core.presentation.model.RemoteError
 import com.mhd_07.courtly.core.presentation.model.RemoteError.*
 import com.mhd_07.courtly.core.presentation.model.RemoteResult
@@ -13,6 +14,7 @@ import com.mhd_07.courtly.feature_profile.presentation.viewmodel.model.ProfilePr
 import io.github.jan.supabase.auth.exception.AuthRestException
 import io.github.jan.supabase.postgrest.exception.PostgrestRestException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,192 +38,133 @@ class ProfilePreviewViewModel(
     val state = _state.asStateFlow()
 
     private val _userId = MutableStateFlow(getUserId())
-
     private var actionJob: Job? = null
-    private var checkHandleJob: Job? = null
 
-
+    // Helper methods now only update data arrays, NOT the main 'result' state
     private suspend fun loadUserFollowersList() {
-        try {
-            _state.update { it.copy(result = RemoteResult.Loading) }
+        runCatching {
             val followers = _userId.value?.let { loadFollowers(it) } ?: emptyList()
-            _state.update { it.copy(userFollowers = followers, result = RemoteResult.Success) }
-        } catch (e: Exception) {
-            _state.update { it.copy(result = RemoteResult.Error(Unknown)) }
-            println("Load Followers Error: ${e.message}")
-        }
-    }
-
-    private suspend fun loadFollowersList() {
-        try {
-            _state.update { it.copy(result = RemoteResult.Loading) }
-            val followers = _state.value.profile?.id?.let { loadFollowers(it) } ?: emptyList()
-            _state.update { it.copy(followers = followers, result = RemoteResult.Success) }
-        } catch (e: Exception) {
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            println("Load Followers Error: ${e.message}")
+            _state.update { it.copy(userFollowers = followers) }
+        }.onFailure { e ->
+            println("Load User Followers Error: ${e.message}")
         }
     }
 
     private suspend fun loadUserFollowingsList() {
-        try {
-            _state.update { it.copy(result = RemoteResult.Loading) }
+        runCatching {
             val followings = _userId.value?.let { loadFollowings(it) } ?: emptyList()
-            _state.update { it.copy(userFollowing = followings, result = RemoteResult.Success) }
-        } catch (e: Exception) {
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            println("Load Followings Error: ${e.message}")
+            _state.update { it.copy(userFollowing = followings) }
+        }.onFailure { e ->
+            println("Load User Followings Error: ${e.message}")
         }
     }
 
-    private suspend fun loadFollowingsList() {
-        try {
-            _state.update { it.copy(result = RemoteResult.Loading) }
-            val followings = _state.value.profile?.id?.let { loadFollowings(it) } ?: emptyList()
-            _state.update { it.copy(following = followings, result = RemoteResult.Success) }
-        } catch (e: Exception) {
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            println("Load Followings Error: ${e.message}")
+    private suspend fun loadFollowersList(profileId: String) {
+        runCatching {
+            val followers = loadFollowers(profileId)
+            _state.update { it.copy(followers = followers) }
+        }.onFailure { e ->
+            println("Load Profile Followers Error: ${e.message}")
         }
     }
 
-    private suspend fun loadPreviewProfileById(id: String) {
-        try {
-            _state.update { it.copy(result = RemoteResult.Loading) }
-            val profile = loadProfileById(id)
-            _state.update {
-                it.copy(
-                    profile = profile,
-                    result = Success
-                )
-            }
-        } catch (e: PostgrestRestException) {
-            val error = getPostgrestError(e.code)
-            println("loadPreviewProfileByHandle error: ${e.message}")
-            _state.update { it.copy(result = RemoteResult.Error(error)) }
-        } catch (e: Exception) {
-            println("loadPreviewProfileByHandle error: ${e.message}")
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+    private suspend fun loadFollowingsList(profileId: String) {
+        runCatching {
+            val followings = loadFollowings(profileId)
+            _state.update { it.copy(following = followings) }
+        }.onFailure { e ->
+            println("Load Profile Followings Error: ${e.message}")
         }
     }
 
-    private suspend fun loadPreviewProfileByHandle(handle: String) {
-        try {
-            _state.update { it.copy(result = RemoteResult.Loading) }
-            val profile = loadProfileByHandle(handle)
-            _state.update {
-                it.copy(
-                    profile = profile,
-                    result = RemoteResult.Success
-                )
-            }
-        } catch (e: PostgrestRestException) {
-            println(e.message)
-            val error = getPostgrestError(e.code)
-            println("loadPreviewProfileByHandle error: ${e.message}")
-            _state.update { it.copy(result = RemoteResult.Error(error)) }
-        } catch (e: Exception) {
-            println("loadPreviewProfileByHandle error: ${e.message}")
-            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-        }
-    }
-
-    private fun loadMatches() {
-        viewModelScope.launch {
-            try {
-                _state.update { it.copy(result = RemoteResult.Loading) }
-                val matches = _state.value.profile?.id?.let { loadMatches(it) } ?: emptyList()
-                _state.update { it.copy(matches = matches, result = RemoteResult.Success) }
-            } catch (e: PostgrestRestException) {
-                println("Loading Matches Error: ${e.message}")
-                _state.update { it.copy(result = RemoteResult.Error(getPostgrestError(e.code))) }
-            } catch (e: Exception) {
-                println("Loading Matches Error: ${e.message}")
-                _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
-            }
+    private suspend fun loadMatchesList(profileId: String) {
+        runCatching {
+            val matches = loadMatches(profileId)
+            _state.update { it.copy(matches = matches) }
+        }.onFailure { e ->
+            println("Load Matches Error: ${e.message}")
         }
     }
 
     fun handleIntent(intent: ProfilePreviewIntent) {
-        // IGNORE any incoming intent if an action or cooldown is active
         if (actionJob?.isActive == true) return
 
         actionJob = viewModelScope.launch {
             try {
                 when (intent) {
-                    is ProfilePreviewIntent.LoadProfileById -> {
-                        if (_state.value.profile != null) return@launch
-                        _state.update { it.copy(myId = _userId.value) }
-                        loadUserFollowersList()
-                        loadUserFollowingsList()
-                        loadPreviewProfileById(intent.id)
-                        loadFollowersList()
-                        loadFollowingsList()
-                        loadMatches()
-                        _state.update { it.copy(mine = _userId.value == it.profile?.id) }
+                    is ProfilePreviewIntent.LoadProfileById -> fetchProfileData {
+                        loadProfileById(intent.id)
                     }
 
-                    is ProfilePreviewIntent.LoadProfileByHandle -> {
-                        if (_state.value.profile != null) return@launch
-                        _state.update { it.copy(myId = _userId.value) }
-                        loadUserFollowersList()
-                        loadUserFollowingsList()
-                        loadPreviewProfileByHandle(intent.handle)
-                        loadFollowersList()
-                        loadFollowingsList()
-                        loadMatches()
-                        _state.update { it.copy(mine = _userId.value == it.profile?.id) }
+                    is ProfilePreviewIntent.LoadProfileByHandle -> fetchProfileData {
+                        loadProfileByHandle(intent.handle)
                     }
 
                     ProfilePreviewIntent.Refresh -> {
-                        _state.value.profile?.let {
-                            loadUserFollowersList()
-                            loadUserFollowingsList()
-                            loadPreviewProfileById(it.id)
-                            loadFollowersList()
-                            loadFollowingsList()
-                            loadMatches()
+                        _state.value.profile?.id?.let { profileId ->
+                            fetchProfileData { _state.value.profile }
                         }
                     }
 
-                    is ProfilePreviewIntent.Follow -> {
-                        try {
-                            _state.update { it.copy(result = Loading) }
-                            follow(intent.player.id)
-                            _state.update { it.copy(result = Success) }
-                        } catch (e: PostgrestRestException) {
-                            println(e.message)
-                            val error = getPostgrestError(e.code)
-                            _state.update { it.copy(result = Error(error)) }
-                        } catch (e: Exception) {
-                            _state.update { it.copy(result = Error(RemoteError.Unknown)) }
-                        }
+                    is ProfilePreviewIntent.Follow -> handleFollowAction {
+                        follow(intent.player.id)
                     }
 
-                    is ProfilePreviewIntent.Unfollow -> {
-                        try {
-                            _state.update { it.copy(result = Loading) }
-                            unfollow(intent.player.id)
-                            _state.update { it.copy(result = Success) }
-                        } catch (e: PostgrestRestException) {
-                            println(e.message)
-                            val error = getPostgrestError(e.code)
-                            _state.update { it.copy(result = Error(error)) }
-                        } catch (e: Exception) {
-                            _state.update { it.copy(result = Error(RemoteError.Unknown)) }
-                        }
+                    is ProfilePreviewIntent.Unfollow -> handleFollowAction {
+                        unfollow(intent.player.id)
                     }
 
-                    ProfilePreviewIntent.LogOut -> try {
-                        logout()
-                    } catch (e: AuthRestException) {
-                        println("error logout : ${ e.message }")
-                    }
+                    ProfilePreviewIntent.LogOut -> runCatching { logout() }
+                        .onFailure { println("Logout error: ${it.message}") }
                 }
             } finally {
                 delay(2000.milliseconds)
             }
+        }
+    }
 
+    private suspend fun fetchProfileData(fetchProfile: suspend () -> Player?) {
+        if (_state.value.profile != null) return
+
+        _state.update { it.copy(result = RemoteResult.Loading, myId = _userId.value) }
+
+        try {
+            val profile = fetchProfile() ?: throw Exception("Profile not found")
+            _state.update {
+                it.copy(
+                    profile = profile,
+                    mine = _userId.value == profile.id
+                )
+            }
+
+            coroutineScope {
+                launch { loadUserFollowersList() }
+                launch { loadUserFollowingsList() }
+                launch { loadFollowersList(profile.id) }
+                launch { loadFollowingsList(profile.id) }
+                launch { loadMatchesList(profile.id) }
+            }
+
+            _state.update { it.copy(result = RemoteResult.Success) }
+
+        } catch (e: PostgrestRestException) {
+            println("Fetch profile error: ${e.message}")
+            _state.update { it.copy(result = RemoteResult.Error(getPostgrestError(e.code))) }
+        } catch (e: Exception) {
+            println("Fetch profile error: ${e.message}")
+            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
+        }
+    }
+
+    private suspend fun handleFollowAction(action: suspend () -> Unit) {
+        try {
+            _state.update { it.copy(result = RemoteResult.Loading) }
+            action()
+            _state.update { it.copy(result = RemoteResult.Success) }
+        } catch (e: PostgrestRestException) {
+            _state.update { it.copy(result = RemoteResult.Error(getPostgrestError(e.code))) }
+        } catch (e: Exception) {
+            _state.update { it.copy(result = RemoteResult.Error(RemoteError.Unknown)) }
         }
     }
 }

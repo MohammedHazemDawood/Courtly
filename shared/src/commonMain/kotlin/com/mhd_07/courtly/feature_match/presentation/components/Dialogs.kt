@@ -244,7 +244,7 @@ fun PlayerRow(
 //                borderWidth = dimensions.default/*, modifier = Modifier.weight(1f)*/
             )
             Column(verticalArrangement = Arrangement.spacedBy(dimensions.xxSmall)) {
-                Text(text = name)
+                Text(text = name, maxLines = 1)
                 if (handle.isNotEmpty())
                     Text(text = "@$handle", style = notesTextStyle)
             }

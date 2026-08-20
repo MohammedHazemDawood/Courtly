@@ -1,6 +1,7 @@
 package com.mhd_07.courtly.feature_match.data.repository
 
 import com.mhd_07.courtly.core.data.model.MATCHES
+import com.mhd_07.courtly.core.data.model.MATCH_FEED
 import com.mhd_07.courtly.feature_match.data.mapper.toMatch
 import com.mhd_07.courtly.feature_match.data.mapper.toRemote
 import com.mhd_07.courtly.feature_match.data.model.RemoteMatch
@@ -41,7 +42,7 @@ class MatchRepositoryImpl(private val client: SupabaseClient) : MatchRepository 
         get() = client.auth.currentUserOrNull()?.id
 
     override suspend fun getMatch(id: String): Match {
-        return client.postgrest.from(MATCHES).select {
+        return client.postgrest.from(MATCH_FEED).select {
             filter {
                 RemoteMatch::id eq id
             }
@@ -50,7 +51,7 @@ class MatchRepositoryImpl(private val client: SupabaseClient) : MatchRepository 
 
     @OptIn(SupabaseExperimental::class)
     override fun observeMatch(id: String): Flow<Match> =
-        client.from(MATCHES).selectSingleValueAsFlow(RemoteMatch::id) {
+        client.from(MATCH_FEED).selectSingleValueAsFlow(RemoteMatch::id) {
             RemoteMatch::id eq id
         }.map {
             it.toMatch()

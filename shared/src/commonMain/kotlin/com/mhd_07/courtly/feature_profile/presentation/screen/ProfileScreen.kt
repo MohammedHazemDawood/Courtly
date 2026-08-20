@@ -40,6 +40,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,6 +66,7 @@ import com.mhd_07.courtly.feature_match.presentation.components.TeamSetsRow
 import com.mhd_07.courtly.feature_profile.presentation.components.ExpandableText
 import com.mhd_07.courtly.feature_profile.presentation.components.PlayerListBottomSheet
 import com.mhd_07.courtly.feature_profile.presentation.components.ProfileHeader
+import com.mhd_07.courtly.feature_profile.util.rememberShareProvider
 import com.valentinilk.shimmer.shimmer
 import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.cannot_find_user
@@ -75,9 +77,14 @@ import courtly.shared.generated.resources.followings
 import courtly.shared.generated.resources.live
 import courtly.shared.generated.resources.map_point_outline
 import courtly.shared.generated.resources.menu_dots_outline
+import courtly.shared.generated.resources.profile_share_description
 import courtly.shared.generated.resources.settings
 import courtly.shared.generated.resources.settings_outline
+import courtly.shared.generated.resources.share_outline
+import courtly.shared.generated.resources.share_profile
 import courtly.shared.generated.resources.unfollow
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -99,7 +106,7 @@ fun ProfileScreen(
     previewProfile: (Player) -> Unit,
     myId: String?,
     matches: List<Match>,
-    navToMatch : (String) -> Unit
+    navToMatch: (String) -> Unit
 ) {
     val dimensions = LocalDimensions.current
     var followerSheetVisible by remember { mutableStateOf(false) }
@@ -157,7 +164,9 @@ fun ProfileScreen(
         ) {
             var openMenu by remember { mutableStateOf(false) }
 
-            if (result is RemoteResult.Error && result.error == RemoteError.NotFound && profile == null) {
+            println("result: $result profile: $profile")
+
+            if (result is RemoteResult.Error && profile == null) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(text = stringResource(Res.string.cannot_find_user))
                 }
@@ -221,6 +230,27 @@ fun ProfileScreen(
                                                 navToSettings()
                                             }
                                         )
+                                        val shareProvider = rememberShareProvider()
+                                        val scope = rememberCoroutineScope()
+                                        DropdownMenuItem(
+                                            leadingIcon = {
+                                                Icon(
+                                                    painter = painterResource(Res.drawable.share_outline),
+                                                    contentDescription = null
+                                                )
+                                            },
+                                            text = { Text(text = stringResource(Res.string.share_profile)) },
+                                            onClick = {
+                                                profile?.handle?.let {
+                                                    scope.launch {
+                                                        shareProvider.shareProfile(
+                                                            title = getString(Res.string.profile_share_description, profile.name),
+                                                            handle = it
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        )
                                     }
                                 }
                             } else {
@@ -256,7 +286,8 @@ fun ProfileScreen(
                         }
                     )
                     LazyColumn(
-                        modifier = Modifier.weight(1f).fillMaxWidth().padding(horizontal = dimensions.small),
+                        modifier = Modifier.weight(1f).fillMaxWidth()
+                            .padding(horizontal = dimensions.small),
                         state = scrollState
                     ) {
                         item(key = "details") {
@@ -332,7 +363,8 @@ fun ProfileScreen(
                         // Matches / Profile Content
                         items(matches, key = { it.id }) { match ->
                             Card(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = dimensions.small),
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(vertical = dimensions.small),
                                 shape = MaterialTheme.shapes.medium,
                                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                                 onClick = {
@@ -349,7 +381,10 @@ fun ProfileScreen(
                                             icon = {
                                                 Box(
                                                     modifier = Modifier.fillMaxHeight()
-                                                        .background(MaterialTheme.colorScheme.onSurface, CircleShape)
+                                                        .background(
+                                                            MaterialTheme.colorScheme.onSurface,
+                                                            CircleShape
+                                                        )
                                                 )
                                             },
                                             colors = SuggestionChipDefaults.suggestionChipColors(

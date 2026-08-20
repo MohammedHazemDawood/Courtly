@@ -5,6 +5,7 @@ import com.mhd_07.courtly.core.domain.model.MatchMode
 import com.mhd_07.courtly.core.domain.model.MatchStatus
 import com.mhd_07.courtly.core.domain.model.MatchType
 import com.mhd_07.courtly.core.domain.model.Team
+import com.mhd_07.courtly.feature_match.domain.model.Set
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -29,4 +30,10 @@ data class Setup(
 
 //    val ballHalf: HCourtSide = HCourtSide.Right
 
-)
+){
+    fun trim() : Setup = copy(
+        teamLeft = teamLeft.trim(),
+        teamRight = teamRight.trim(),
+        location = location.trim()
+    )
+}

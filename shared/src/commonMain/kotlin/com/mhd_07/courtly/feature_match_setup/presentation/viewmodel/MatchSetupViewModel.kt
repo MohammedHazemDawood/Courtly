@@ -150,7 +150,7 @@ class MatchSetupViewModel(
                     if (_state.value.matchId == null)
                     try {
                         _state.update { it.copy(result = RemoteResult.Loading) }
-                        val result = setupMatch(state.value.setup)
+                        val result = setupMatch(state.value.setup.trim())
                         _state.update { it.copy(result = RemoteResult.Success, matchId = result) }
                     } catch (e: PostgrestRestException) {
                         println("Insert to database Error = $e")

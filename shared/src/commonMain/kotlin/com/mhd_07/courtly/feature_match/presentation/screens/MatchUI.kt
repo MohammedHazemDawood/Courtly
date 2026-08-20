@@ -5,8 +5,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.border
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,20 +18,17 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,9 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
@@ -70,7 +63,6 @@ import com.mhd_07.courtly.core.presentation.ui.theme.pushTransform
 import com.mhd_07.courtly.core.util.BackHandler
 import com.mhd_07.courtly.feature_match.domain.model.Match
 import com.mhd_07.courtly.feature_match.domain.model.MatchIntent
-import com.mhd_07.courtly.feature_match.domain.model.MatchState
 import com.mhd_07.courtly.feature_match.presentation.components.Court
 import com.mhd_07.courtly.feature_match.presentation.components.EnsureDialog
 import com.mhd_07.courtly.feature_match.presentation.components.PlayerAvatar
@@ -88,11 +80,13 @@ import courtly.shared.generated.resources.Res
 import courtly.shared.generated.resources.cancel
 import courtly.shared.generated.resources.ensure_quit
 import courtly.shared.generated.resources.finished
+import courtly.shared.generated.resources.finish_this_match
 import courtly.shared.generated.resources.live
 import courtly.shared.generated.resources.players
 import courtly.shared.generated.resources.quit
 import courtly.shared.generated.resources.redo
 import courtly.shared.generated.resources.stats
+import courtly.shared.generated.resources.suspend_match_until_back
 import courtly.shared.generated.resources.timeline
 import courtly.shared.generated.resources.undo
 import courtly.shared.generated.resources.undo_left_outline
@@ -135,6 +129,7 @@ fun MatchUI(
             }
         }
     }, Graphs.Match.Preview)
+
     NavDisplay(
         backStack,
         transitionSpec = { pushTransform },
@@ -169,10 +164,8 @@ fun MatchUI(
                     if (state == Match.initial) return@LaunchedEffect
                     val doneAt = state.doneAt
 
-
                     val isExpired =
-                        doneAt?.let { da -> Clock.System.now() - da > 5.minutes } ?: false
-                    println("is expired: $isExpired | doneAt: $doneAt")
+                        doneAt?.let { da -> Clock.System.now() - da > 15.minutes } ?: false
 
                     if (isMine && !isExpired) {
                         backStack.clear()
@@ -215,8 +208,6 @@ fun MatchScreen(
     isMine: Boolean,
     finishMatch: () -> Unit
 ) {
-    println("id: ${match.id}")
-
     val direction = LocalLayoutDirection.current
     val dimensions = LocalDimensions.current
 
@@ -224,7 +215,7 @@ fun MatchScreen(
         stringResource(Res.string.timeline),
         stringResource(Res.string.stats),
         stringResource(Res.string.players)
-    )//TODO
+    )
 
     var quitRequested by remember { mutableStateOf(false) }
     var pointScored by remember { mutableStateOf<Side?>(null) }
@@ -295,143 +286,53 @@ fun MatchScreen(
     ) { innerPadding ->
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
                 .padding(horizontal = dimensions.small)
-                .verticalScroll(
-                    rememberScrollState()
-                ),
+                .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dimensions.medium)
         ) {
+            // Teams and Score Section
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                        modifier = Modifier.weight(1f, fill = false)
-                    ) {
-                        val team1ActivePlayers = match.team1.players.filter { !it.bench }
+                MatchTeamRow(
+                    teamName = match.team1.name,
+                    players = match.team1.players,
+                    matchType = match.rules.type,
+                    sets = match.sets.map { it.team1Games },
+                    bestOf = match.rules.bestOf,
+                    currentSetIndex = match.currentSetIndex,
+                    currentGameScore = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team1Score ?: Score.Zero,
+                    isPlaying = match.winner == null,
+                    isWinner = match.winner == Side.Team1
+                )
 
-                        Box(
-                            modifier = Modifier/*height(dimensions.xxLarge).*/.height(dimensions.xxLarge)
-                                .aspectRatio(
-                                    if (match.rules.type == MatchType.Single || team1ActivePlayers.getOrNull(
-                                            1
-                                        ) == null
-                                    ) 1f else 1.5f
-                                )
-                        ) {
-                            team1ActivePlayers.getOrNull(0)?.let {
-                                PlayerAvatar(
-                                    name = it.name,
-                                    avatar = it.avatar + "?v=" + it.avatarVersion,
-                                    modifier = Modifier.align(Alignment.CenterStart),
-                                    contentPadding = dimensions.small
-                                )
-                            }
-                            team1ActivePlayers.getOrNull(1)?.let {
-                                PlayerAvatar(
-                                    name = it.name,
-                                    avatar = it.avatar + "?v=" + it.avatarVersion,
-                                    modifier = Modifier.align(Alignment.CenterEnd),
-                                    contentPadding = dimensions.small
-                                )
-                            }
-                        }
-                        Column {
-                            Text(text = match.team1.name, maxLines = 1)
-                            PlayerNamesText(
-                                p1 = team1ActivePlayers.getOrNull(0)?.name,
-                                p2 = team1ActivePlayers.getOrNull(1)?.name,
-                                style = notesTextStyle
-                            )
-                        }
-                    }
-                    TeamSetsRow(
-                        modifier = Modifier.padding(start = dimensions.xSmall),
-                        sets = match.sets.map { it.team1Games },
-                        bestOf = match.rules.bestOf,
-                        currentSetIndex = match.currentSetIndex,
-                        currentGameScore = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team1Score
-                            ?: Score.Zero,
-                        isPlaying = match.winner == null,
-                        isWinner = match.winner == Side.Team1
-                    )
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(dimensions.xxSmall),
-                        modifier = Modifier.weight(1f, fill = false)
-                    ) {
-                        val team2ActivePlayers = match.team2.players.filter { !it.bench }
-                        Box(
-                            modifier = Modifier.height(dimensions.xxLarge)
-                                .aspectRatio(
-                                    if (match.rules.type == MatchType.Single || team2ActivePlayers.getOrNull(
-                                            1
-                                        ) == null
-                                    ) 1f else 1.5f
-                                )
-                        ) {
-                            team2ActivePlayers.getOrNull(0)?.let {
-                                PlayerAvatar(
-                                    name = it.name,
-                                    avatar = it.avatar + "?v=" + it.avatarVersion,
-                                    modifier = Modifier.align(Alignment.CenterStart),
-                                    contentPadding = dimensions.small
-                                )
-                            }
-                            if (match.rules.type == MatchType.Double)
-                                team2ActivePlayers.getOrNull(1)?.let {
-                                    PlayerAvatar(
-                                        name = it.name,
-                                        avatar = it.avatar + "?v=" + it.avatarVersion,
-                                        modifier = Modifier.align(Alignment.CenterEnd),
-                                        contentPadding = dimensions.small
-                                    )
-                                }
-                        }
-                        Column {
-                            Text(text = match.team2.name, maxLines = 1)
-                            PlayerNamesText(
-                                p1 = team2ActivePlayers.getOrNull(0)?.name,
-                                p2 = team2ActivePlayers.getOrNull(1)?.name,
-                                style = notesTextStyle
-                            )
-                        }
-                    }
-                    TeamSetsRow(
-                        modifier = Modifier.padding(start = dimensions.xSmall),
-                        sets = match.sets.map { it.team2Games },
-                        bestOf = match.rules.bestOf,
-                        currentSetIndex = match.currentSetIndex,
-                        currentGameScore = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team2Score
-                            ?: Score.Zero,
-                        isPlaying = match.winner == null,
-                        isWinner = match.winner == Side.Team2
-                    )
-                }
+                MatchTeamRow(
+                    teamName = match.team2.name,
+                    players = match.team2.players,
+                    matchType = match.rules.type,
+                    sets = match.sets.map { it.team2Games },
+                    bestOf = match.rules.bestOf,
+                    currentSetIndex = match.currentSetIndex,
+                    currentGameScore = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team2Score ?: Score.Zero,
+                    isPlaying = match.winner == null,
+                    isWinner = match.winner == Side.Team2
+                )
             }
+
             AnimatedVisibility(
                 visible = match.status == MatchStatus.Live,
                 enter = slideInVertically() + fadeIn(),
                 exit = slideOutVertically() + fadeOut()
             ) {
                 Court(
-                    modifier = Modifier.fillMaxWidth(0.5f).aspectRatio(2f),
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(2f),
                     fill = MaterialTheme.colorScheme.primary,
                     stroke = MaterialTheme.colorScheme.onBackground,
                     hCourtSide = match.currentCourtSide,
@@ -460,14 +361,16 @@ fun MatchScreen(
                         }
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(dimensions.small),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimensions.small),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(dimensions.small)
                         ) {
                             Text(text = match.team1.name, maxLines = 1)
                             Text(
-                                text = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team1Score?.display
-                                    ?: "0", maxLines = 1
+                                text = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team1Score?.display ?: "0",
+                                maxLines = 1
                             )
                         }
                     }
@@ -482,14 +385,16 @@ fun MatchScreen(
                         }
                     ) {
                         Column(
-                            modifier = Modifier.fillMaxWidth().padding(dimensions.small),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimensions.small),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(dimensions.small)
                         ) {
                             Text(text = match.team2.name, maxLines = 1)
                             Text(
-                                text = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team2Score?.display
-                                    ?: "0", maxLines = 1
+                                text = match.sets.getOrNull(match.currentSetIndex)?.currentGame?.team2Score?.display ?: "0",
+                                maxLines = 1
                             )
                         }
                     }
@@ -517,8 +422,8 @@ fun MatchScreen(
                         )
                     }
                 }
-                HorizontalPager(pagerState, Modifier.fillMaxSize()) {
-                    when (it) {
+                HorizontalPager(pagerState, Modifier.fillMaxSize()) { page ->
+                    when (page) {
                         0 -> TimelineList(
                             timeline = match.timeLine,
                             startTime = match.startedAt,
@@ -533,13 +438,16 @@ fun MatchScreen(
                             team2Name = match.team2.name
                         )
 
-                        2 -> Players(team1Players = match.team1.players, team2Players = match.team2.players, onSubOrTransfer = {}, mine = isMine)
+                        2 -> Players(
+                            team1Players = match.team1.players,
+                            team2Players = match.team2.players,
+                            onSubOrTransfer = {},
+                            mine = isMine
+                        )
                     }
                 }
             }
-
         }
-
 
         if (match.status == MatchStatus.Finished && match.winner != null)
             ConfettiKit(
@@ -551,27 +459,24 @@ fun MatchScreen(
             visible = quitRequested && isMine,
             onDismiss = { quitRequested = false },
             cancelText = stringResource(Res.string.cancel),
-
             onConfirm = {
                 finishMatch()
                 navBack()
             },
-            confirmText = "Finish This Match",
-
+            confirmText = stringResource(Res.string.finish_this_match),
             title = stringResource(Res.string.quit),
             description = stringResource(Res.string.ensure_quit),
-
-            additionalActionText = "Suspend this match until you get back",
+            additionalActionText = stringResource(Res.string.suspend_match_until_back),
             additionalAction = {
                 navBack()
             }
         )
 
-        match.team1.players.filter { !it.bench }.let {
+        match.team1.players.filter { !it.bench }.let { activePlayers ->
             PlayerSelectDialog(
                 visible = pointScored == Side.Team1,
-                p1 = it.getOrNull(0),
-                p2 = it.getOrNull(1),
+                p1 = activePlayers.getOrNull(0),
+                p2 = activePlayers.getOrNull(1),
                 select = { player ->
                     onPointTeam1(player)
                     pointScored = null
@@ -582,11 +487,11 @@ fun MatchScreen(
             )
         }
 
-        match.team2.players.filter { !it.bench }.let {
+        match.team2.players.filter { !it.bench }.let { activePlayers ->
             PlayerSelectDialog(
                 visible = pointScored == Side.Team2,
-                p1 = it.getOrNull(0),
-                p2 = it.getOrNull(1),
+                p1 = activePlayers.getOrNull(0),
+                p2 = activePlayers.getOrNull(1),
                 select = { player ->
                     onPointTeam2(player)
                     pointScored = null
@@ -596,6 +501,79 @@ fun MatchScreen(
                 }
             )
         }
+    }
+}
+
+@Composable
+fun MatchTeamRow(
+    teamName: String,
+    players: List<Player>,
+    matchType: MatchType,
+    sets: List<Int>,
+    bestOf: Int,
+    currentSetIndex: Int,
+    currentGameScore: Score,
+    isPlaying: Boolean,
+    isWinner: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val dimensions = LocalDimensions.current
+    val activePlayers = remember(players) { players.filter { !it.bench } }
+
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall),
+            modifier = Modifier.weight(1f, fill = false)
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(dimensions.xxLarge)
+                    .aspectRatio(
+                        if (matchType == MatchType.Single || activePlayers.getOrNull(1) == null) 1f else 1.5f
+                    )
+            ) {
+                activePlayers.getOrNull(0)?.let { player ->
+                    PlayerAvatar(
+                        name = player.name,
+                        avatar = "${player.avatar}?v=${player.avatarVersion}",
+                        modifier = Modifier.align(Alignment.CenterStart),
+                        contentPadding = dimensions.small
+                    )
+                }
+                if (matchType == MatchType.Double) {
+                    activePlayers.getOrNull(1)?.let { player ->
+                        PlayerAvatar(
+                            name = player.name,
+                            avatar = "${player.avatar}?v=${player.avatarVersion}",
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            contentPadding = dimensions.small
+                        )
+                    }
+                }
+            }
+            Column {
+                Text(text = teamName, maxLines = 1)
+                PlayerNamesText(
+                    p1 = activePlayers.getOrNull(0)?.name,
+                    p2 = activePlayers.getOrNull(1)?.name,
+                    style = notesTextStyle
+                )
+            }
+        }
+        TeamSetsRow(
+            modifier = Modifier.padding(start = dimensions.xSmall),
+            sets = sets,
+            bestOf = bestOf,
+            currentSetIndex = currentSetIndex,
+            currentGameScore = currentGameScore,
+            isPlaying = isPlaying,
+            isWinner = isWinner
+        )
     }
 }
 

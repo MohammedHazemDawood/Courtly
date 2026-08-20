@@ -8,6 +8,9 @@ import kotlinx.serialization.Serializable
 sealed interface Graphs : NavKey {
 
     @Serializable
+    data class ProfileSetup(val id: String) : Graphs, NavKey
+
+    @Serializable
     data class ProfilePreview(val key: String, val type : UserSelectionType = UserSelectionType.Id) : Graphs, NavKey{
         @Serializable
         data class Profile(val id: String?) : Graphs, NavKey

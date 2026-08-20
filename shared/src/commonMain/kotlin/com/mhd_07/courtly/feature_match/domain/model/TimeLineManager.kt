@@ -32,7 +32,7 @@ class TimeLineManager {
     }
 
     val undoAvailable: Boolean
-        get() = cursor >= 0
+        get() = cursor >= 0 && events[cursor] !is Event.Start
 
     val redoAvailable: Boolean
         get() = cursor < events.size - 1

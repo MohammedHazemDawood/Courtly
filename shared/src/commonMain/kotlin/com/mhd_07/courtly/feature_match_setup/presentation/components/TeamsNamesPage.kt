@@ -28,6 +28,7 @@ import courtly.shared.generated.resources.team_left_name_placeholder
 import courtly.shared.generated.resources.team_right_name
 import courtly.shared.generated.resources.team_right_name_placeholder
 import courtly.shared.generated.resources.teams_names
+import courtly.shared.generated.resources.vs
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -75,7 +76,7 @@ fun TeamsNamesPage(
             horizontalArrangement = Arrangement.spacedBy(dimensions.xSmall)
         ) {
             HorizontalDivider(modifier = Modifier.weight(1f), color = Color.Gray)
-            Text("vs", color = Color.Gray)
+            Text(stringResource(Res.string.vs), color = Color.Gray)
             HorizontalDivider(modifier = Modifier.weight(1f), color = Color.Gray)
         }
 //        Box(
