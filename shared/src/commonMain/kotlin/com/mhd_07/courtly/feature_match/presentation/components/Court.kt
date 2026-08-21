@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFontFamilyResolver
@@ -35,25 +36,25 @@ fun Court(
 //    val density = LocalDensity.current
     val direction = LocalLayoutDirection.current
     val isLtr = direction == LayoutDirection.Rtl
-    val lineStart by animateOffsetAsState(
+    val topLeft by animateOffsetAsState(
         targetValue = when {
-            (((isLtr && side == Side.Team1) || (!isLtr && side == Side.Team2)) && hCourtSide == HCourtSide.Left) -> Offset(
+            (side == Side.Team1 && hCourtSide == HCourtSide.Left) -> Offset(
                 0f,
                 0f
             )
 
-            (((isLtr && side == Side.Team1) || (!isLtr && side == Side.Team2)) && hCourtSide == HCourtSide.Right) -> Offset(
+            (side == Side.Team1 && hCourtSide == HCourtSide.Right) -> Offset(
                 0f,
                 width * 0.25f
             )
 
-            (((isLtr && side == Side.Team2) || (!isLtr && side == Side.Team1)) && hCourtSide == HCourtSide.Right) -> Offset(
-                width,
+            (side == Side.Team2 && hCourtSide == HCourtSide.Right) -> Offset(
+                width * 0.85f,
                 0f
             )
 
-            (((isLtr && side == Side.Team2) || (!isLtr && side == Side.Team1)) && hCourtSide == HCourtSide.Left) -> Offset(
-                width,
+            (side == Side.Team2 && hCourtSide == HCourtSide.Left) -> Offset(
+                width * 0.85f,
                 width * 0.25f
             )
 
@@ -107,21 +108,11 @@ fun Court(
         )
 
         if (side != null && !win)
-            drawLine(
+            drawRect(
                 color = fill,
-                strokeWidth = 5f,
-//                style = Fill,
-                start = lineStart,
-                end = lineStart + Offset(0f, width * 0.25f),
-//                size = Size(width = width * 0.15f, height = width * 0.25f)
+                style = Fill,
+                topLeft = topLeft,
+                size = Size(width = width * 0.15f, height = width * 0.25f)
             )
-        /* drawText(
-             textLayoutResult = TextMeasurer(
-                 defaultDensity = density,
-                 defaultFontFamilyResolver = LocalFontFamilyResolver.current,
-                 defaultLayoutDirection = TODO(),
-                 cacheSize = TODO(),
-             ).measure("Player Name")
-         ) *///TODO: Add Player Name
     }
 }

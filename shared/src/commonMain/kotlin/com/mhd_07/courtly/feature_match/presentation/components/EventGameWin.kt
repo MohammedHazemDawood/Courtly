@@ -66,13 +66,13 @@ fun EventGameWin(
                 ) {
                     Text(text = stringResource(Res.string.won_game, team1Name))
                 }
-                Column(
+            }
+            Column(
 //                    verticalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("${event.team1Games} - ${event.team2Games}")
-                    Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
-                }
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("${event.team1Games} - ${event.team2Games}")
+                Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
             }
         }
     }
@@ -111,13 +111,13 @@ fun EventGameWin(
                 ) {
                     Text(text = stringResource(Res.string.won_game, team2Name))
                 }
-                Column(
+            }
+            Column(
 //                    verticalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("${event.team1Games} - ${event.team2Games}")
-                    Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
-                }
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("${event.team1Games} - ${event.team2Games}")
+                Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
             }
         }
     }

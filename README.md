@@ -1,24 +1,18 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Courtly
+> A social media platform for padel players
+[![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=Kotlin&logoColor=white)]
+![KMP](https://img.shields.io/badge/Kotlin_Multiplatform-blue?label=KMP)
 
-* [/iosApp](./iosApp/iosApp) contains an iOS application. Even if you’re sharing your UI with Compose Multiplatform,
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+# About
+Courtly is a social platform for padel players to discover matches,
+connect with other players, and share their games.
 
-* [/shared](./shared/src) is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - [commonMain](./shared/src/commonMain/kotlin) is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    the [iosMain](./shared/src/iosMain/kotlin) folder would be the right place for such calls.
-    Similarly, if you want to edit the Desktop (JVM) specific part, the [jvmMain](./shared/src/jvmMain/kotlin)
-    folder is the appropriate location.
-
-### Running the apps
-
-Use the run configurations provided by the run widget in your IDE's toolbar. You can also use these commands and options:
-
-- Android app: `./gradlew :androidApp:assembleDebug`
-- iOS app: open the [/iosApp](./iosApp) directory in Xcode and run it from there.
-
----
-
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+## Features
+- [x] Match Record
+- [x] Match Preview
+- [x] Profiles Preview and Following
+- [ ] Visibility & Privacy
+## Architecture
+- Kmp
+- Standard Clean Architecture with features separated into packages
+- Supabase for backend (Auth, Postgres, Realtime, Functions, Storage)

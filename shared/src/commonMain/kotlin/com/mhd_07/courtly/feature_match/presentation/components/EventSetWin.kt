@@ -54,7 +54,6 @@ fun EventSetWin(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
-
                 Box(
                     modifier = Modifier.size(dimensions.xSmall).background(
                         MaterialTheme.colorScheme.primary,
@@ -67,13 +66,13 @@ fun EventSetWin(
                 ) {
                     Text(text = stringResource(Res.string.set, team1Name))
                 }
-                Column(
+            }
+            Column(
 //                    verticalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("${event.team1Sets} - ${event.team2Sets}")
-                    Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
-                }
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("${event.team1Sets} - ${event.team2Sets}")
+                Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
             }
         }
     }
@@ -113,13 +112,13 @@ fun EventSetWin(
                 ) {
                     Text(text = stringResource(Res.string.set, team2Name))
                 }
-                Column(
+            }
+            Column(
 //                    verticalArrangement = Arrangement.spacedBy(dimensions.xSmall),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text("${event.team1Sets} - ${event.team2Sets}")
-                    Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
-                }
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("${event.team1Sets} - ${event.team2Sets}")
+                Text("${minutes(event.createdAt, startTime)}'", style = notesTextStyle)
             }
         }
     }

@@ -109,14 +109,14 @@ fun SignOptionsScreen(
                 verticalArrangement = Arrangement.spacedBy(dimensions.small)
             ) {
                 NativeSignButton(modifier = Modifier.fillMaxWidth(), sign = sign)
-                SignButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    icon = painterResource(Res.drawable.x_brand),
-                    text = stringResource(Res.string.with_x),
-                    backgroundColor = Color.Black,
-                    tint = Color.White,
-                    onClick = {/*TODO: Implement X Login*/ }
-                )
+//                SignButton(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    icon = painterResource(Res.drawable.x_brand),
+//                    text = stringResource(Res.string.with_x),
+//                    backgroundColor = Color.Black,
+//                    tint = Color.White,
+//                    onClick = {/*TODO: Implement X Login*/ }
+//                )
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(horizontal = dimensions.medium),
                     verticalAlignment = Alignment.CenterVertically,

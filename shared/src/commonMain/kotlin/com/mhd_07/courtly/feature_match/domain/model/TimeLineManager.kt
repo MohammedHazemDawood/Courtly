@@ -52,6 +52,7 @@ class TimeLineManager {
     )
 
     fun push(event: Event): Match {
+        if(events[cursor] is Event.Done) return currentState
         if (redoAvailable) {
             events.subList(cursor + 1, events.size).clear()
         }

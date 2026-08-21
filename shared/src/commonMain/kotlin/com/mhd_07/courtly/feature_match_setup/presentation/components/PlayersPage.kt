@@ -143,13 +143,19 @@ fun PlayersPage(
                                 imeAction = ImeAction.Search
                             ),
                             singleLine = true,
-                            shape = MaterialTheme.shapes.medium.copy(bottomEnd = CornerSize(0.dp), bottomStart = CornerSize(0.dp))
+                            shape = MaterialTheme.shapes.medium.copy(
+                                bottomEnd = CornerSize(0.dp),
+                                bottomStart = CornerSize(0.dp)
+                            )
                         )
 
                         ExposedDropdownMenu(
                             expanded = searching,
                             onDismissRequest = { },
-                            shape = MaterialTheme.shapes.medium.copy(topEnd = CornerSize(0.dp), topStart = CornerSize(0.dp)),
+                            shape = MaterialTheme.shapes.medium.copy(
+                                topEnd = CornerSize(0.dp),
+                                topStart = CornerSize(0.dp)
+                            ),
                         ) {
                             // Option to add as a custom player (if text is typed)
                             if (searchText.isNotBlank()) {
@@ -165,7 +171,12 @@ fun PlayersPage(
                                                 modifier = Modifier.size(dimensions.xxLarge)
                                                     .clip(CircleShape)
                                             )
-                                            Text(stringResource(Res.string.add_player_with_name, searchText.trim()), maxLines = 1)
+                                            Text(
+                                                stringResource(
+                                                    Res.string.add_player_with_name,
+                                                    searchText.trim()
+                                                ), maxLines = 1
+                                            )
                                         }
                                     },
                                     onClick = {
@@ -275,7 +286,7 @@ private fun SelectedPlayerCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            PlayerRowContent(player = player)
+            PlayerRowContent(player = player, modifier = Modifier.weight(1f, false))
             IconButton(onClick = onRemove) {
                 Icon(
                     painter = painterResource(Res.drawable.x),
